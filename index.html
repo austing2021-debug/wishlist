@@ -15,7 +15,7 @@
             --accent-blue: #7A90A4;       
             --accent-pink: #D4A5A5;       
             --accent-red: #B86B6B;
-            --morandi-white: #F2F0EB; /* Fix 9: 莫蘭迪白 */
+            --morandi-white: #F2F0EB; 
             
             --shadow-light: #ffffff;      
             --shadow-dark: #bebebe;       
@@ -71,7 +71,7 @@
 
         .btn-full { width: 100%; }
 
-        /* Fix 3: 類別按鈕 (5個一排) */
+        /* 類別按鈕 */
         .category-group { 
             display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; 
         }
@@ -90,14 +90,12 @@
             margin-bottom: 30px;
         }
         
-        /* Fix 6: 輸入框標籤 */
         .input-group { margin-bottom: 15px; width: 100%; }
         .input-label {
             font-size: 12px; color: #999; margin-left: 10px; margin-bottom: 5px; display: block;
         }
         .input-row-multi { display: flex; gap: 10px; width: 100%; }
 
-        /* 圖片預覽 */
         .img-preview-box {
             width: 100%; height: 150px; border-radius: 12px; margin-top: 10px;
             box-shadow: inset 3px 3px 6px rgba(0,0,0,0.1), inset -3px -3px 6px rgba(255,255,255,0.5);
@@ -108,7 +106,32 @@
         .img-preview-box.has-img { display: flex; }
         .img-preview-content { width: 100%; height: 100%; object-fit: cover; }
 
-        /* --- 卡片區設定 (Fix 10) --- */
+        /* --- 篩選器樣式 (NEW) --- */
+        .filter-container {
+            display: flex; gap: 10px; margin-bottom: 20px;
+            overflow-x: auto; padding-bottom: 5px; /* 手機可滑動 */
+        }
+        .filter-select {
+            flex: 1; min-width: 100px;
+            background: #E8E8E8; border: none; 
+            padding: 8px 12px; border-radius: 12px;
+            color: var(--text-main); font-size: 13px;
+            /* 凸起效果 */
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+            outline: none; appearance: none; /* 隱藏預設箭頭 */
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235F6F6E%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;
+        }
+        .filter-reset-btn {
+            background: var(--morandi-white); color: var(--text-light);
+            border: none; padding: 0 15px; border-radius: 12px;
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+            cursor: pointer; white-space: nowrap; font-size: 12px;
+        }
+        .filter-reset-btn:active { box-shadow: inset 2px 2px 4px var(--shadow-dark); }
+
+
+        /* --- 卡片區設定 --- */
         .grid-container { 
             display: flex; 
             overflow-x: auto; 
@@ -120,35 +143,30 @@
         .grid-container::-webkit-scrollbar { display: none; }
 
         .card { 
-            /* Fix 10: 固定大小 */
             width: 280px; 
-            height: 420px; /* 固定高度，讓版面整齊 */
+            height: 420px; 
             flex-shrink: 0;
             scroll-snap-align: center;
-            
             background: #E8E8E8; border-radius: 20px; overflow: hidden; 
             box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
             display: flex; flex-direction: column;
             position: relative;
         }
 
-        /* Fix 7: 圖片區懸浮感 (類似卡片) */
         .card-img-wrapper {
             width: 90%; 
-            margin: 15px auto 0 auto; /* 居中 */
-            height: 160px; /* 固定圖片高度 */
+            margin: 15px auto 0 auto; 
+            height: 160px; 
             border-radius: 15px;
             overflow: hidden;
-            /* 凸起懸浮效果 */
             box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
-            cursor: pointer; /* 讓使用者知道可點擊 */
-            background: var(--morandi-white); /* 預設底色 */
+            cursor: pointer; 
+            background: var(--morandi-white); 
             display: flex; align-items: center; justify-content: center;
         }
 
         .card-img { width: 100%; height: 100%; object-fit: cover; display: block;}
         
-        /* Fix 9: 無圖片樣式 */
         .no-img-box {
             width: 100%; height: 100%;
             background: var(--morandi-white);
@@ -157,13 +175,12 @@
         .card-body { 
             padding: 15px; 
             display: flex; flex-direction: column; 
-            flex: 1; /* 佔滿剩餘空間 */
+            flex: 1; 
         }
 
-        /* Fix 11: 資料列固定尺寸 */
         .card-meta-row { display: flex; gap: 8px; margin-bottom: 10px; }
         .meta-box {
-            width: 33.33%; /* 三等分固定寬度 */
+            width: 33.33%; 
             font-size: 12px; color: var(--text-light); text-align: center;
             padding: 6px 2px; border-radius: 10px; background: #E8E8E8;
             box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
@@ -174,16 +191,14 @@
             font-size: 18px; font-family: 'Noto Serif TC', serif; 
             color: var(--text-main); font-weight: bold; 
             margin-bottom: 10px;
-            /* 限制標題高度，超過隱藏 */
             max-height: 50px; overflow: hidden;
         }
 
-        /* Fix 13: 按鈕區固定在底部 */
         .card-btn-row { 
             display: flex; 
             justify-content: flex-end; 
             gap: 8px; 
-            margin-top: auto; /* 關鍵：將按鈕推到最底 */
+            margin-top: auto; 
             padding-top: 10px;
         }
         
@@ -195,7 +210,7 @@
         .btn-mini:active { box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light); transform: translateY(1px); }
         .btn-edit { color: var(--accent-pink); }
         .btn-del { color: var(--accent-red); }
-        .btn-map { color: #333; } /* Fix 12: 黑色 */
+        .btn-map { color: #333; }
 
         #go-top-btn {
             position: fixed; bottom: 20px; right: 20px;
@@ -208,13 +223,12 @@
         }
         .hidden { display: none; }
 
-        /* 電腦版 Grid 佈局 */
         @media(min-width: 650px) {
             .grid-container { 
                 display: grid; 
                 grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
                 overflow-x: visible; 
-                justify-items: center; /* 卡片置中 */
+                justify-items: center; 
             }
         }
     </style>
@@ -226,7 +240,7 @@
     <div id="section-add" class="panel-container">
         
         <div class="input-group">
-            <span class="input-label">參考連結 (用於自動抓取)</span>
+            <span class="input-label">參考連結 (自動抓取用，貼官方網站效果最佳)</span>
             <input type="text" id="add-link" class="sunken-input" placeholder="🔗 貼上網址">
         </div>
         <div class="input-group">
@@ -267,7 +281,7 @@
         </div>
         
         <div class="input-group">
-            <span class="input-label">詳細地址 (輸入後點擊空白處自動辨識)</span>
+            <span class="input-label">詳細地址 (點擊空白處自動辨識)</span>
             <input type="text" id="add-loc" class="sunken-input" placeholder="📍 地址" onblur="parseAddress('add')">
         </div>
         
@@ -338,6 +352,19 @@
         <button class="convex-btn" style="width:100%; margin-top:10px; font-size:12px; background:transparent; box-shadow:none;" onclick="switchToAddMode()">取消修改</button>
     </div>
 
+    <div class="filter-container" id="filter-bar">
+        <select id="filter-category" class="filter-select" onchange="applyFilter()">
+            <option value="">所有類別</option>
+            </select>
+        <select id="filter-country" class="filter-select" onchange="applyFilter()">
+            <option value="">所有國家</option>
+            </select>
+        <select id="filter-city" class="filter-select" onchange="applyFilter()">
+            <option value="">所有都市</option>
+            </select>
+        <button class="filter-reset-btn" onclick="resetFilter()">重置</button>
+    </div>
+
     <div id="card-area" class="grid-container">
         <p style="text-align:center; width:100%; color:#999;">載入中...</p>
     </div>
@@ -352,7 +379,8 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcmJreWNscmhobnl2em9zYnljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyNzgyMjksImV4cCI6MjA4Mzg1NDIyOX0.DB44xf_i3WMyjpek2nQk5oo9MyzTYNsDCqiExmpMOgA';
         const db = supabase.createClient(supabaseUrl, supabaseKey);
 
-        let allItems = [];
+        let allItems = []; // 存所有資料
+        let filteredItems = []; // 存篩選後的資料
 
         window.onscroll = function() {
             const btn = document.getElementById('go-top-btn');
@@ -405,7 +433,7 @@
             const cityMatch = desc.match(/\n?\[City:(.*?)\]/);
             if (cityMatch) { city = cityMatch[1]; desc = desc.replace(cityMatch[0], ""); }
             
-            document.getElementById('edit-link').value = refUrl; // 只用這欄存 Link
+            document.getElementById('edit-link').value = refUrl; 
             document.getElementById('edit-country').value = country;
             document.getElementById('edit-city').value = city;
             document.getElementById('edit-desc').value = desc.trim();
@@ -457,7 +485,6 @@
             }
         }
 
-        // Fix 12: 開啟地圖 (只在按鈕觸發)
         function openMapDirect(loc, city) {
             const fullLoc = city + " " + loc;
             if(loc || city) window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullLoc)}`, '_blank');
@@ -478,7 +505,7 @@
             const category = document.getElementById('add-category').value;
             let desc = document.getElementById('add-desc').value;
             const loc = document.getElementById('add-loc').value;
-            const ref = document.getElementById('add-link').value; // 改抓 link 欄位
+            const ref = document.getElementById('add-link').value;
             const country = document.getElementById('add-country').value;
             const city = document.getElementById('add-city').value;
 
@@ -528,50 +555,101 @@
             if (!error) fetchItems();
         }
 
+        // --- 核心資料讀取與篩選 ---
         async function fetchItems() {
             const { data, error } = await db.from('products').select('*').order('created_at', { ascending: false });
             if (error) return console.error(error);
 
-            allItems = data;
+            // 預先處理資料 (把隱藏欄位解出來)
+            allItems = data.map(item => {
+                let desc = item.description || "";
+                let country = "", city = "", refUrl = "";
+                
+                const cMatch = desc.match(/\n?\[Country:(.*?)\]/);
+                if(cMatch) { country = cMatch[1]; desc = desc.replace(cMatch[0], ""); }
+                
+                const cityMatch = desc.match(/\n?\[City:(.*?)\]/);
+                if(cityMatch) { city = cityMatch[1]; desc = desc.replace(cityMatch[0], ""); }
+
+                const refMatch = desc.match(/\n?\[Ref:(.*?)\]/);
+                if(refMatch) { refUrl = refMatch[1]; desc = desc.replace(refMatch[0], ""); }
+                else if(item.location && item.location.startsWith('http')) { refUrl = item.location; }
+
+                return { ...item, cleanDesc: desc, country, city, refUrl };
+            });
+
+            populateFilterOptions();
+            applyFilter(); // 預設顯示全部
+        }
+
+        // 自動產生篩選選項
+        function populateFilterOptions() {
+            const cats = new Set(), countries = new Set(), cities = new Set();
+            allItems.forEach(i => {
+                if(i.category) cats.add(i.category);
+                if(i.country && i.country !== 'null') countries.add(i.country);
+                if(i.city && i.city !== 'null') cities.add(i.city);
+            });
+
+            fillSelect('filter-category', cats, '所有類別');
+            fillSelect('filter-country', countries, '所有國家');
+            fillSelect('filter-city', cities, '所有都市');
+        }
+
+        function fillSelect(id, set, defaultText) {
+            const sel = document.getElementById(id);
+            sel.innerHTML = `<option value="">${defaultText}</option>`;
+            set.forEach(val => {
+                sel.innerHTML += `<option value="${val}">${val}</option>`;
+            });
+        }
+
+        // 執行篩選
+        function applyFilter() {
+            const cat = document.getElementById('filter-category').value;
+            const country = document.getElementById('filter-country').value;
+            const city = document.getElementById('filter-city').value;
+
+            filteredItems = allItems.filter(item => {
+                return (!cat || item.category === cat) &&
+                       (!country || item.country === country) &&
+                       (!city || item.city === city);
+            });
+
+            renderCards(filteredItems);
+        }
+
+        function resetFilter() {
+            document.getElementById('filter-category').value = "";
+            document.getElementById('filter-country').value = "";
+            document.getElementById('filter-city').value = "";
+            applyFilter();
+        }
+
+        // 渲染卡片
+        function renderCards(items) {
             const container = document.getElementById('card-area');
             container.innerHTML = ''; 
             
-            if(data.length === 0) {
-                 container.innerHTML = '<p style="text-align:center; width:100%; color:#999;">目前沒有資料</p>';
+            if(items.length === 0) {
+                 container.innerHTML = '<p style="text-align:center; width:100%; color:#999;">沒有符合的資料</p>';
                  return;
             }
 
-            data.forEach(item => {
-                const imgUrl = item.image_url ? item.image_url : '';
+            items.forEach(item => {
+                const imgUrl = item.image_url;
                 const safeTitle = escapeHtml(item.title);
-                let safeDesc = escapeHtml(item.description || '');
                 const safeLoc = escapeHtml(item.location || '');
-                
-                let linkUrl = "#";
-                let country = "";
-                let city = "";
+                const linkUrl = item.refUrl || "#";
 
-                const refMatch = safeDesc.match(/\n?\[Ref:(.*?)\]/);
-                if(refMatch) { linkUrl = refMatch[1]; safeDesc = safeDesc.replace(refMatch[0], ""); }
-                // 相容舊資料
-                else if(safeLoc.startsWith('http')) { linkUrl = safeLoc; }
-
-                const countryMatch = safeDesc.match(/\n?\[Country:(.*?)\]/);
-                if(countryMatch) { country = countryMatch[1]; safeDesc = safeDesc.replace(countryMatch[0], ""); }
-
-                const cityMatch = safeDesc.match(/\n?\[City:(.*?)\]/);
-                if(cityMatch) { city = cityMatch[1]; safeDesc = safeDesc.replace(cityMatch[0], ""); }
-
-                // Fix 8 & 9: 圖片處理
-                // 點擊圖片 -> 開啟 Ref 連結
+                // 圖片處理
                 let imgContent = '';
                 if(imgUrl) {
                     imgContent = `<img src="${imgUrl}" class="card-img" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'no-img-box\\'></div>'">`;
                 } else {
-                    imgContent = `<div class="no-img-box"></div>`; // 沒圖顯示莫蘭迪白方塊，無字
+                    imgContent = `<div class="no-img-box"></div>`; 
                 }
 
-                // Fix 11: 統一 Meta 寬度 (用 CSS 33% 處理)
                 const html = `
                     <div class="card">
                         <a href="${linkUrl}" target="_blank" class="card-img-wrapper">
@@ -581,14 +659,14 @@
                         <div class="card-body">
                             <div class="card-meta-row">
                                 <div class="meta-box">${item.category}</div>
-                                <div class="meta-box">${country || '-'}</div>
-                                <div class="meta-box">${city || '-'}</div>
+                                <div class="meta-box">${item.country || '-'}</div>
+                                <div class="meta-box">${item.city || '-'}</div>
                             </div>
 
                             <div class="card-title">${safeTitle}</div>
 
                             <div class="card-btn-row">
-                                <button class="btn-mini btn-map" onclick="openMapDirect('${safeLoc}', '${city}')">🗺️ 地圖</button>
+                                <button class="btn-mini btn-map" onclick="openMapDirect('${safeLoc}', '${item.city}')">🗺️ 地圖</button>
                                 <button class="btn-mini btn-edit" onclick="triggerEdit('${item.id}')">✏️ 編輯</button>
                                 <button class="btn-mini btn-del" onclick="deleteItem('${item.id}')">🗑 刪除</button>
                             </div>
@@ -604,7 +682,7 @@
             return text.replace(/'/g, "\\'").replace(/"/g, '"');
         }
 
-        // Fix 1: 自動抓取改良
+        // Fix 1: 抓取優化 (嘗試處理 Google Maps)
         async function autoFetch(mode) {
             const url = document.getElementById(`${mode}-link`).value;
             if (!url) return alert('請先貼上網址！');
@@ -620,14 +698,16 @@
                 if (json.status === 'success') {
                     const data = json.data;
                     
-                    // Fix 2: 強制截斷標題 25 字
                     let title = data.title || '';
+                    if(title.includes('Google Maps')) title = ""; // 如果抓到 Google Maps 標題，乾脆清空讓用戶自己填
+
+                    // 截斷標題
                     if(title.length > 25) title = title.substring(0, 25);
                     
                     document.getElementById(`${mode}-title`).value = title;
                     document.getElementById(`${mode}-desc`).value = data.description || '';
                     
-                    // 圖片抓取邏輯優化
+                    // 圖片優先順序
                     if (data.image && data.image.url) {
                         document.getElementById(`${mode}-img`).value = data.image.url;
                         updatePreview(mode);
@@ -636,7 +716,7 @@
                         updatePreview(mode);
                     }
                 } else {
-                    alert('無法抓取，請手動輸入');
+                    alert('無法抓取，請確認網址');
                 }
             } catch (err) { console.error(err); alert('抓取發生錯誤'); }
             
