@@ -7,16 +7,14 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@300;400&display=swap" rel="stylesheet">
     <style>
-        /* --- 全局莫蘭迪配色設定 --- */
+        /* --- 全局設定 --- */
         :root {
             --bg-color: #E8E8E8;          
             --text-main: #5F6F6E;         
             --text-light: #8C9696;        
-            
-            --accent-blue: #7A90A4;       /* 莫蘭迪水藍 */
-            --accent-pink: #D4A5A5;       /* 莫蘭迪粉 */
-            --accent-red: #B86B6B;        /* 莫蘭迪紅 */
-            
+            --accent-blue: #7A90A4;       
+            --accent-pink: #D4A5A5;       
+            --accent-red: #B86B6B;        
             --shadow-light: #ffffff;      
             --shadow-dark: #bebebe;       
         }
@@ -25,18 +23,22 @@
             font-family: 'Noto Sans TC', sans-serif; 
             background: var(--bg-color); 
             color: var(--text-main);
-            padding: 30px 20px; 
+            padding: 15px; /* 縮減邊距 */
             max-width: 900px; 
             margin: 0 auto; 
-            transition: 0.3s;
+            padding-bottom: 80px; /* 留給懸浮按鈕空間 */
         }
 
+        /* 1. 縮減標題空白 */
         h1 { 
             font-family: 'Noto Serif TC', serif; text-align: center; 
-            color: var(--text-main); margin-bottom: 30px; letter-spacing: 2px;
+            color: var(--text-main); 
+            margin: 15px 0 20px 0; /* 上下縮減 */
+            letter-spacing: 2px;
+            font-size: 22px;
         }
 
-        /* --- 凹陷感 (Sunken) --- */
+        /* --- 凹陷感輸入框 --- */
         .sunken-input {
             background: transparent; border: none; border-radius: 12px;
             padding: 12px 15px; width: 100%; box-sizing: border-box;
@@ -44,19 +46,18 @@
             box-shadow: inset 3px 3px 7px var(--shadow-dark), inset -3px -3px 7px var(--shadow-light);
             transition: 0.3s;
         }
-        .sunken-input::placeholder { color: #aaa; }
         .sunken-input:focus {
             box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
         }
 
-        /* --- 凸起感按鈕 (Convex) --- */
+        /* --- 凸起感按鈕 --- */
         .convex-btn {
             background: #E8E8E8; color: var(--text-main); border: none;
-            padding: 10px 20px; border-radius: 50px; cursor: pointer;
+            padding: 12px; border-radius: 15px; cursor: pointer;
             font-weight: bold; letter-spacing: 1px;
             box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
             transition: all 0.2s ease;
-            display: flex; align-items: center; justify-content: center; gap: 5px;
+            display: flex; align-items: center; justify-content: center;
         }
         .convex-btn:active {
             box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
@@ -67,89 +68,128 @@
             box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2), inset -2px -2px 4px rgba(255,255,255,0.1);
         }
 
+        /* 2. 自動抓取按鈕全寬 */
+        .btn-full { width: 100%; }
+
+        /* 3. 類別按鈕優化 (Emoji 上, 文字下) */
+        .category-group { 
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; 
+        }
+        .cat-btn-layout {
+            flex-direction: column; gap: 5px; padding: 10px 5px; height: 100%;
+        }
+        .cat-emoji { font-size: 24px; line-height: 1; }
+        .cat-text { font-size: 12px; }
+
         /* 執行按鈕 */
         .action-btn-add { width: 100%; margin-top: 15px; color: white; background-color: var(--accent-blue); }
         .action-btn-edit { width: 100%; margin-top: 15px; color: white; background-color: var(--accent-pink); }
 
-        /* --- 排版 --- */
+        /* 面板設定 */
         .panel-container {
-            padding: 30px; border-radius: 20px; background-color: var(--bg-color);
+            padding: 20px; border-radius: 20px; background-color: var(--bg-color);
             box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
         
-        .input-row { display: flex; gap: 12px; margin-bottom: 15px; align-items: center; }
-        .category-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px; }
-
-        /* 圖片輸入區 */
-        .img-input-group { display: flex; gap: 15px; margin-bottom: 15px; }
-        .img-input-left { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+        .input-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; flex-wrap: wrap; }
+        
+        /* 5. 圖片預覽在下方 */
+        .img-input-container { margin-bottom: 15px; }
         .img-preview-box {
-            width: 100px; border-radius: 12px;
+            width: 100%; height: 150px; border-radius: 12px; margin-top: 10px;
             box-shadow: inset 3px 3px 6px rgba(0,0,0,0.1), inset -3px -3px 6px rgba(255,255,255,0.5);
-            overflow: hidden; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; display: none; /* 預設隱藏 */
+            align-items: center; justify-content: center;
             background: rgba(0,0,0,0.03);
         }
-        .img-preview-content { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.3s; }
-        .img-preview-content.show { opacity: 1; }
+        .img-preview-box.has-img { display: flex; }
+        .img-preview-content { width: 100%; height: 100%; object-fit: cover; }
 
-        /* --- 卡片區樣式 --- */
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
-        .card { 
-            background: #E8E8E8; border-radius: 15px; overflow: hidden; 
-            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
-            transition: 0.3s; display: flex; flex-direction: column;
-        }
-        .card:hover { transform: translateY(-3px); }
-
-        .card-img { width: 100%; height: 180px; object-fit: cover; display: block;}
-        .card-body { padding: 15px; display: flex; flex-direction: column; gap: 12px; }
-
-        /* 卡片第二排：三個凹陷方塊 (類別 | 國家 | 城市) */
-        .card-meta-row { 
-            display: flex; gap: 8px; 
-        }
-        .meta-box {
-            flex: 1; /* 三個均分寬度 */
-            font-size: 12px; color: var(--text-light); text-align: center;
-            padding: 6px 2px;
-            border-radius: 8px;
+        /* 8a. 無圖片時的立體霧化方塊 */
+        .no-img-box {
+            width: 100%; height: 180px; 
             background: #E8E8E8;
-            /* 凹陷效果 */
+            /* 霧化立體效果 */
+            box-shadow: inset 5px 5px 15px var(--shadow-light), 
+                        inset -5px -5px 15px var(--shadow-dark);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-light); font-size: 14px; font-weight: 300;
+        }
+
+        /* --- 8c. 手機版橫向滑動卡片 (Carousel) --- */
+        .grid-container { 
+            display: flex; 
+            overflow-x: auto; /* 橫向捲動 */
+            scroll-snap-type: x mandatory; /* 滑動對齊 */
+            gap: 20px;
+            padding-bottom: 20px; /* 預留捲軸空間 */
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* 隱藏捲軸但保留功能 */
+        .grid-container::-webkit-scrollbar { display: none; }
+
+        .card { 
+            /* 讓卡片大小統一 */
+            min-width: 85vw; /* 手機上佔 85% 寬度 */
+            max-width: 350px; /* 電腦版最大寬度 */
+            scroll-snap-align: center; /* 滑動時會停在中間 */
+            
+            background: #E8E8E8; border-radius: 20px; overflow: hidden; 
+            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+            display: flex; flex-direction: column;
+            flex-shrink: 0; /* 防止被擠壓 */
+        }
+
+        .card-img { width: 100%; height: 200px; object-fit: cover; display: block;}
+        .card-body { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+
+        /* 資料列 */
+        .card-meta-row { display: flex; gap: 8px; }
+        .meta-box {
+            flex: 1; font-size: 13px; color: var(--text-light); text-align: center;
+            padding: 8px 4px; border-radius: 10px; background: #E8E8E8;
             box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
-        /* 第三排：主題 */
-        .card-title { font-size: 18px; font-family: 'Noto Serif TC', serif; color: var(--text-main); margin: 0; font-weight: bold; padding: 0 5px;}
-
-        /* 第四排：凸起按鈕 (右向左) */
-        .card-btn-row { display: flex; justify-content: flex-end; gap: 12px; margin-top: 5px; padding: 0 5px;}
+        .card-title { font-size: 20px; font-family: 'Noto Serif TC', serif; color: var(--text-main); font-weight: bold; margin: 5px 0;}
         
-        /* 卡片內的小按鈕改為凸起風格 */
+        .card-btn-row { display: flex; justify-content: flex-end; gap: 12px; margin-top: 5px; }
+        
         .btn-mini { 
-            padding: 6px 15px; font-size: 12px; border-radius: 20px; border: none; cursor: pointer; font-weight: bold;
-            background: #E8E8E8;
-            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
-            transition: 0.2s;
+            padding: 8px 18px; font-size: 13px; border-radius: 20px; border: none; cursor: pointer; font-weight: bold;
+            background: #E8E8E8; box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
         }
-        .btn-mini:active {
-            box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light);
-            transform: translateY(1px);
-        }
+        .btn-mini:active { box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light); transform: translateY(1px); }
         .btn-edit { color: var(--accent-pink); }
         .btn-del { color: var(--accent-red); }
 
         .card-link-overlay { text-decoration: none; color: inherit; }
         .hidden { display: none; }
 
-        /* RWD */
-        @media(max-width: 600px) {
-            .category-group { grid-template-columns: repeat(2, 1fr); }
-            .img-input-group { flex-direction: column-reverse; } 
-            .img-preview-box { width: 100%; height: 150px; }
-            .input-row { flex-wrap: wrap; }
-            .location-inputs input { width: 100% !important; margin-bottom: 10px;}
+        /* 9. 回到頂端按鈕 */
+        #go-top-btn {
+            position: fixed; bottom: 20px; right: 20px;
+            width: 50px; height: 50px; border-radius: 50%;
+            background: #E8E8E8; color: var(--text-main);
+            border: none; cursor: pointer;
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; z-index: 999;
+            opacity: 0.8; transition: 0.3s;
+        }
+        #go-top-btn:active { transform: scale(0.95); box-shadow: inset 2px 2px 5px var(--shadow-dark); }
+
+        /* 電腦版適配 */
+        @media(min-width: 601px) {
+            .grid-container { 
+                display: grid; 
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+                overflow-x: visible; /* 電腦版不需要橫向滑動 */
+            }
+            .card { min-width: auto; max-width: none; }
         }
     </style>
 </head>
@@ -161,34 +201,49 @@
         
         <div class="input-row">
             <input type="text" id="add-link" class="sunken-input" placeholder="🔗 在此貼上參考連結 (用於自動抓取)">
-            <button class="convex-btn" onclick="autoFetch('add')" style="white-space: nowrap; color: var(--accent-blue);">📝 自動抓取資料</button>
+        </div>
+        <div class="input-row">
+            <button class="convex-btn btn-full" onclick="autoFetch('add')" style="color: var(--accent-blue);">📝 自動抓取資料</button>
         </div>
 
         <div class="category-group">
-            <button class="convex-btn cat-btn-add active" onclick="selectCategory('add', '購物', this)">🛒 購物</button>
-            <button class="convex-btn cat-btn-add" onclick="selectCategory('add', '美食', this)">🍿 美食</button>
-            <button class="convex-btn cat-btn-add" onclick="selectCategory('add', '景點', this)">🌎️ 景點</button>
-            <button class="convex-btn cat-btn-add" onclick="selectCategory('add', '其他', this)">💭 其他</button>
+            <button class="convex-btn cat-btn-layout active cat-btn-add" onclick="selectCategory('add', '購物', this)">
+                <span class="cat-emoji">🛒</span><span class="cat-text">購物</span>
+            </button>
+            <button class="convex-btn cat-btn-layout cat-btn-add" onclick="selectCategory('add', '美食', this)">
+                <span class="cat-emoji">🍿</span><span class="cat-text">美食</span>
+            </button>
+            <button class="convex-btn cat-btn-layout cat-btn-add" onclick="selectCategory('add', '景點', this)">
+                <span class="cat-emoji">🌎</span><span class="cat-text">景點</span>
+            </button>
+            <button class="convex-btn cat-btn-layout cat-btn-add" onclick="selectCategory('add', '其他', this)">
+                <span class="cat-emoji">💭</span><span class="cat-text">其他</span>
+            </button>
         </div>
         <input type="hidden" id="add-category" value="購物">
 
-        <div class="img-input-group">
-            <div class="img-input-left">
-                <input type="text" id="add-title" class="sunken-input" placeholder="🔖 主題名稱">
-                <input type="text" id="add-img" class="sunken-input" placeholder="📸 圖片網址" oninput="updatePreview('add')">
-            </div>
-            <div class="img-preview-box">
-                <img id="preview-add" src="" class="img-preview-content" onerror="this.classList.remove('show')" onload="this.classList.add('show')">
+        <div class="input-row">
+            <input type="text" id="add-title" class="sunken-input" placeholder="🔖 主題名稱 (最多 25 字)" maxlength="50">
+        </div>
+
+        <div class="img-input-container">
+            <input type="text" id="add-img" class="sunken-input" placeholder="📸 圖片網址" oninput="updatePreview('add')">
+            <div id="box-preview-add" class="img-preview-box">
+                <img id="preview-add" src="" class="img-preview-content">
             </div>
         </div>
 
-        <div class="input-row location-inputs">
-            <input type="text" id="add-country" class="sunken-input" placeholder="🏳️ 國家" style="width: 25%;">
-            <input type="text" id="add-city" class="sunken-input" placeholder="🏙️ 都市" style="width: 25%;">
-            <input type="text" id="add-loc" class="sunken-input" placeholder="📍 詳細地址" style="width: 50%;">
+        <div class="input-row">
+            <input type="text" id="add-country" class="sunken-input" placeholder="🏳️ 國家" maxlength="10" style="width: 40%;">
+            <input type="text" id="add-city" class="sunken-input" placeholder="🏙️ 都市" maxlength="10" style="width: 60%;">
         </div>
-        <div class="input-row" style="justify-content: flex-end;">
-             <button class="convex-btn" onclick="openMap('add')" style="font-size:12px;">🗺️ 開啟 Google 地圖</button>
+        
+        <div class="input-row">
+            <input type="text" id="add-loc" class="sunken-input" placeholder="📍 詳細地址 (輸入完點選其他地方自動辨識)" onblur="parseAddress('add')">
+        </div>
+        
+        <div class="input-row">
+             <button class="convex-btn btn-full" onclick="openMap('add')">🗺️ 開啟 Google 地圖</button>
         </div>
 
         <div class="input-row">
@@ -208,34 +263,41 @@
 
         <div class="input-row">
             <input type="text" id="edit-link" class="sunken-input" placeholder="🔗 參考連結">
-            <button class="convex-btn" onclick="autoFetch('edit')" style="white-space: nowrap;">📝 自動抓取</button>
+        </div>
+        <div class="input-row">
+            <button class="convex-btn btn-full" onclick="autoFetch('edit')">📝 自動抓取</button>
         </div>
 
         <div class="category-group">
-            <button class="convex-btn cat-btn-edit" onclick="selectCategory('edit', '購物', this)">🛒 購物</button>
-            <button class="convex-btn cat-btn-edit" onclick="selectCategory('edit', '美食', this)">🍿 美食</button>
-            <button class="convex-btn cat-btn-edit" onclick="selectCategory('edit', '景點', this)">🌎️ 景點</button>
-            <button class="convex-btn cat-btn-edit" onclick="selectCategory('edit', '其他', this)">💭 其他</button>
+            <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '購物', this)"><span class="cat-emoji">🛒</span><span class="cat-text">購物</span></button>
+            <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '美食', this)"><span class="cat-emoji">🍿</span><span class="cat-text">美食</span></button>
+            <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '景點', this)"><span class="cat-emoji">🌎</span><span class="cat-text">景點</span></button>
+            <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '其他', this)"><span class="cat-emoji">💭</span><span class="cat-text">其他</span></button>
         </div>
         <input type="hidden" id="edit-category" value="">
 
-        <div class="img-input-group">
-            <div class="img-input-left">
-                <input type="text" id="edit-title" class="sunken-input" placeholder="🔖 主題名稱">
-                <input type="text" id="edit-img" class="sunken-input" placeholder="📸 圖片網址" oninput="updatePreview('edit')">
-            </div>
-            <div class="img-preview-box">
-                <img id="preview-edit" src="" class="img-preview-content" onerror="this.classList.remove('show')" onload="this.classList.add('show')">
+        <div class="input-row">
+            <input type="text" id="edit-title" class="sunken-input" placeholder="🔖 主題名稱" maxlength="50">
+        </div>
+
+        <div class="img-input-container">
+            <input type="text" id="edit-img" class="sunken-input" placeholder="📸 圖片網址" oninput="updatePreview('edit')">
+            <div id="box-preview-edit" class="img-preview-box">
+                <img id="preview-edit" src="" class="img-preview-content">
             </div>
         </div>
 
-        <div class="input-row location-inputs">
-            <input type="text" id="edit-country" class="sunken-input" placeholder="🏳️ 國家" style="width: 25%;">
-            <input type="text" id="edit-city" class="sunken-input" placeholder="🏙️ 都市" style="width: 25%;">
-            <input type="text" id="edit-loc" class="sunken-input" placeholder="📍 詳細地址" style="width: 50%;">
+        <div class="input-row">
+            <input type="text" id="edit-country" class="sunken-input" placeholder="🏳️ 國家" maxlength="10" style="width: 40%;">
+            <input type="text" id="edit-city" class="sunken-input" placeholder="🏙️ 都市" maxlength="10" style="width: 60%;">
         </div>
-        <div class="input-row" style="justify-content: flex-end;">
-             <button class="convex-btn" onclick="openMap('edit')" style="font-size:12px;">🗺️ 開啟 Google 地圖</button>
+        
+        <div class="input-row">
+            <input type="text" id="edit-loc" class="sunken-input" placeholder="📍 詳細地址" onblur="parseAddress('edit')">
+        </div>
+        
+        <div class="input-row">
+             <button class="convex-btn btn-full" onclick="openMap('edit')">🗺️ 開啟 Google 地圖</button>
         </div>
 
         <div class="input-row">
@@ -251,8 +313,10 @@
     </div>
 
     <div id="card-area" class="grid-container">
-        <p style="text-align:center; color:#999;">載入中...</p>
+        <p style="text-align:center; width:100%; color:#999;">載入中...</p>
     </div>
+
+    <button id="go-top-btn" onclick="scrollToTop()" class="hidden">⬆</button>
 
     <script>
         // ==========================================
@@ -263,6 +327,20 @@
         const db = supabase.createClient(supabaseUrl, supabaseKey);
 
         let allItems = [];
+
+        // 監聽捲動顯示回到頂端按鈕
+        window.onscroll = function() {
+            const btn = document.getElementById('go-top-btn');
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                btn.classList.remove('hidden');
+            } else {
+                btn.classList.add('hidden');
+            }
+        };
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
         function selectCategory(mode, value, btnElement) {
             document.getElementById(`${mode}-category`).value = value;
@@ -289,20 +367,17 @@
             document.getElementById('edit-img').value = item.image_url;
             document.getElementById('edit-loc').value = item.location;
             
-            // 解析備註中的隱藏標籤
+            // 解析資料
             let desc = item.description || "";
             let refUrl = "", country = "", city = "";
             
-            // 抓取 Ref
             const refMatch = desc.match(/\n?\[Ref:(.*?)\]/);
             if (refMatch) { refUrl = refMatch[1]; desc = desc.replace(refMatch[0], ""); }
-            else { refUrl = document.getElementById('edit-link').value; } // 舊相容
+            else { refUrl = document.getElementById('edit-link').value; }
 
-            // 抓取 Country
             const countryMatch = desc.match(/\n?\[Country:(.*?)\]/);
             if (countryMatch) { country = countryMatch[1]; desc = desc.replace(countryMatch[0], ""); }
 
-            // 抓取 City
             const cityMatch = desc.match(/\n?\[City:(.*?)\]/);
             if (cityMatch) { city = cityMatch[1]; desc = desc.replace(cityMatch[0], ""); }
             
@@ -310,7 +385,7 @@
             document.getElementById('edit-link').value = refUrl;
             document.getElementById('edit-country').value = country;
             document.getElementById('edit-city').value = city;
-            document.getElementById('edit-desc').value = desc.trim(); // 去除多餘空白
+            document.getElementById('edit-desc').value = desc.trim();
 
             updatePreview('edit');
 
@@ -325,9 +400,44 @@
         function updatePreview(mode) {
             const url = document.getElementById(`${mode}-img`).value;
             const img = document.getElementById(`preview-${mode}`);
-            img.classList.remove('show');
-            if(url) img.src = url;
-            else img.src = "";
+            const box = document.getElementById(`box-preview-${mode}`);
+            
+            if(url) {
+                img.src = url;
+                box.classList.add('has-img');
+            } else {
+                img.src = "";
+                box.classList.remove('has-img');
+            }
+        }
+
+        // 6. 地址自動辨識邏輯 (簡易版)
+        function parseAddress(mode) {
+            const addr = document.getElementById(`${mode}-loc`).value;
+            const countryField = document.getElementById(`${mode}-country`);
+            const cityField = document.getElementById(`${mode}-city`);
+
+            if (!addr) return;
+
+            // 預設國家：如果有 '台灣' 或 'Taiwan'，或沒寫國家但有台灣縣市名
+            if (!countryField.value) {
+                if (addr.includes('台灣') || addr.includes('Taiwan')) {
+                    countryField.value = '台灣';
+                }
+            }
+
+            // 簡易台灣縣市抓取
+            const cities = ['台北', '新北', '桃園', '台中', '台南', '高雄', '基隆', '新竹', '嘉義', '苗栗', '彰化', '南投', '雲林', '屏東', '宜蘭', '花蓮', '台東', '澎湖', '金門', '連江'];
+            
+            if (!cityField.value) {
+                for (let c of cities) {
+                    if (addr.includes(c)) {
+                        cityField.value = c;
+                        if(!countryField.value) countryField.value = '台灣'; // 抓到縣市自動補台灣
+                        break;
+                    }
+                }
+            }
         }
 
         function openMap(mode) {
@@ -338,7 +448,6 @@
             else alert('請先輸入地址或城市');
         }
 
-        // 共用打包資料函式
         function bundleDescription(desc, ref, country, city) {
             let finalDesc = desc;
             if(country) finalDesc += `\n[Country:${country}]`;
@@ -359,7 +468,6 @@
 
             if (!title) return alert('請輸入主題名稱');
 
-            // 將新欄位打包進 description
             desc = bundleDescription(desc, ref, country, city);
 
             const { error } = await db.from('products').insert([{ 
@@ -412,41 +520,56 @@
             const container = document.getElementById('card-area');
             container.innerHTML = ''; 
             
+            if(data.length === 0) {
+                 container.innerHTML = '<p style="text-align:center; width:100%; color:#999;">目前沒有資料</p>';
+                 return;
+            }
+
             data.forEach(item => {
                 const imgUrl = item.image_url ? item.image_url : '';
                 const safeTitle = escapeHtml(item.title);
                 let safeDesc = escapeHtml(item.description || '');
                 const safeLoc = escapeHtml(item.location || '');
                 
-                // 解析隱藏欄位
                 let linkUrl = "#";
-                let country = "未設定";
-                let city = "未設定";
+                let country = "";
+                let city = "";
 
-                // 解析 Ref
                 const refMatch = safeDesc.match(/\n?\[Ref:(.*?)\]/);
                 if(refMatch) { linkUrl = refMatch[1]; safeDesc = safeDesc.replace(refMatch[0], ""); }
 
-                // 解析 Country
                 const countryMatch = safeDesc.match(/\n?\[Country:(.*?)\]/);
                 if(countryMatch) { country = countryMatch[1]; safeDesc = safeDesc.replace(countryMatch[0], ""); }
 
-                // 解析 City
                 const cityMatch = safeDesc.match(/\n?\[City:(.*?)\]/);
                 if(cityMatch) { city = cityMatch[1]; safeDesc = safeDesc.replace(cityMatch[0], ""); }
+
+                // 8a. 圖片處理：有圖顯示圖，沒圖顯示立體方塊
+                let imgHtml = '';
+                if(imgUrl) {
+                    imgHtml = `<img src="${imgUrl}" class="card-img" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'no-img-box\\'>${item.category}</div>'">`;
+                } else {
+                    imgHtml = `<div class="no-img-box">${item.category}</div>`;
+                }
+
+                // 8b. 資料列處理：空白不顯示
+                let metaHtml = '';
+                if (item.category || country || city) {
+                    metaHtml += '<div class="card-meta-row">';
+                    if(item.category) metaHtml += `<div class="meta-box">${item.category}</div>`;
+                    if(country) metaHtml += `<div class="meta-box">${country}</div>`;
+                    if(city) metaHtml += `<div class="meta-box">${city}</div>`;
+                    metaHtml += '</div>';
+                }
 
                 const html = `
                     <div class="card">
                         <a href="${linkUrl}" target="_blank" class="card-link-overlay">
-                            <img src="${imgUrl}" class="card-img" onerror="this.src='https://via.placeholder.com/300x180?text=No+Image'">
+                            ${imgHtml}
                         </a>
                         
                         <div class="card-body">
-                            <div class="card-meta-row">
-                                <div class="meta-box">${item.category}</div>
-                                <div class="meta-box">${country}</div>
-                                <div class="meta-box">${city}</div>
-                            </div>
+                            ${metaHtml}
 
                             <div class="card-title">${safeTitle}</div>
 
