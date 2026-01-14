@@ -106,19 +106,29 @@
         .img-preview-box.has-img { display: flex; }
         .img-preview-content { width: 100%; height: 100%; object-fit: cover; }
 
-        /* --- 篩選器樣式 (NEW) --- */
+        /* --- 關鍵字搜尋區 (NEW) --- */
+        .keyword-row { display: flex; gap: 8px; margin-bottom: 10px; }
+        .keyword-row input { width: 33.33%; text-align: center; }
+        
+        /* 輔助搜尋按鈕區 */
+        .quick-search-row { display: flex; gap: 10px; margin-top: 10px; justify-content: space-around;}
+        .btn-quick { 
+            font-size: 11px; padding: 6px 10px; border-radius: 10px; width: 33%;
+            background: var(--morandi-white); color: var(--text-light);
+        }
+
+        /* --- 篩選器樣式 --- */
         .filter-container {
             display: flex; gap: 10px; margin-bottom: 20px;
-            overflow-x: auto; padding-bottom: 5px; /* 手機可滑動 */
+            overflow-x: auto; padding-bottom: 5px; 
         }
         .filter-select {
             flex: 1; min-width: 100px;
             background: #E8E8E8; border: none; 
             padding: 8px 12px; border-radius: 12px;
             color: var(--text-main); font-size: 13px;
-            /* 凸起效果 */
             box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
-            outline: none; appearance: none; /* 隱藏預設箭頭 */
+            outline: none; appearance: none; 
             background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235F6F6E%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
             background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;
         }
@@ -128,60 +138,38 @@
             box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
             cursor: pointer; white-space: nowrap; font-size: 12px;
         }
-        .filter-reset-btn:active { box-shadow: inset 2px 2px 4px var(--shadow-dark); }
-
 
         /* --- 卡片區設定 --- */
         .grid-container { 
-            display: flex; 
-            overflow-x: auto; 
-            scroll-snap-type: x mandatory; 
-            gap: 20px;
-            padding-bottom: 20px;
-            -webkit-overflow-scrolling: touch;
+            display: flex; overflow-x: auto; scroll-snap-type: x mandatory; 
+            gap: 20px; padding-bottom: 20px; -webkit-overflow-scrolling: touch;
         }
         .grid-container::-webkit-scrollbar { display: none; }
 
         .card { 
-            width: 280px; 
-            height: 420px; 
-            flex-shrink: 0;
-            scroll-snap-align: center;
+            width: 280px; height: 420px; flex-shrink: 0; scroll-snap-align: center;
             background: #E8E8E8; border-radius: 20px; overflow: hidden; 
             box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
-            display: flex; flex-direction: column;
-            position: relative;
+            display: flex; flex-direction: column; position: relative;
         }
 
         .card-img-wrapper {
-            width: 90%; 
-            margin: 15px auto 0 auto; 
-            height: 160px; 
-            border-radius: 15px;
-            overflow: hidden;
+            width: 90%; margin: 15px auto 0 auto; height: 160px; 
+            border-radius: 15px; overflow: hidden;
             box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
-            cursor: pointer; 
-            background: var(--morandi-white); 
+            cursor: pointer; background: var(--morandi-white); 
             display: flex; align-items: center; justify-content: center;
         }
 
         .card-img { width: 100%; height: 100%; object-fit: cover; display: block;}
         
-        .no-img-box {
-            width: 100%; height: 100%;
-            background: var(--morandi-white);
-        }
+        .no-img-box { width: 100%; height: 100%; background: var(--morandi-white); }
 
-        .card-body { 
-            padding: 15px; 
-            display: flex; flex-direction: column; 
-            flex: 1; 
-        }
+        .card-body { padding: 15px; display: flex; flex-direction: column; flex: 1; }
 
         .card-meta-row { display: flex; gap: 8px; margin-bottom: 10px; }
         .meta-box {
-            width: 33.33%; 
-            font-size: 12px; color: var(--text-light); text-align: center;
+            width: 33.33%; font-size: 12px; color: var(--text-light); text-align: center;
             padding: 6px 2px; border-radius: 10px; background: #E8E8E8;
             box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -189,17 +177,13 @@
 
         .card-title { 
             font-size: 18px; font-family: 'Noto Serif TC', serif; 
-            color: var(--text-main); font-weight: bold; 
-            margin-bottom: 10px;
+            color: var(--text-main); font-weight: bold; margin-bottom: 10px;
             max-height: 50px; overflow: hidden;
         }
 
         .card-btn-row { 
-            display: flex; 
-            justify-content: flex-end; 
-            gap: 8px; 
-            margin-top: auto; 
-            padding-top: 10px;
+            display: flex; justify-content: flex-end; gap: 8px; 
+            margin-top: auto; padding-top: 10px;
         }
         
         .btn-mini { 
@@ -225,10 +209,8 @@
 
         @media(min-width: 650px) {
             .grid-container { 
-                display: grid; 
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-                overflow-x: visible; 
-                justify-items: center; 
+                display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+                overflow-x: visible; justify-items: center; 
             }
         }
     </style>
@@ -239,13 +221,36 @@
 
     <div id="section-add" class="panel-container">
         
+        <p style="text-align:center; font-size:12px; color:#999; margin-bottom:15px;">🔍 方式一：輸入網址抓取</p>
+
         <div class="input-group">
-            <span class="input-label">參考連結 (自動抓取用，貼官方網站效果最佳)</span>
+            <span class="input-label">參考連結 (貼官方網站效果最佳)</span>
             <input type="text" id="add-link" class="sunken-input" placeholder="🔗 貼上網址">
         </div>
         <div class="input-group">
-            <button class="convex-btn btn-full" onclick="autoFetch('add')" style="color: var(--accent-blue);">📝 自動抓取資料</button>
+            <button class="convex-btn btn-full" onclick="autoFetch('add')" style="color: var(--accent-blue);">📝 透過網址自動抓取</button>
         </div>
+
+        <hr style="border:0; border-top:1px dashed #ccc; margin: 20px 0;">
+
+        <p style="text-align:center; font-size:12px; color:#999; margin-bottom:15px;">🔍 方式二：輸入關鍵字反查 (適合景點/知名地標)</p>
+        <div class="input-group">
+            <span class="input-label">關鍵字 (最多3個，例如：京都 / 清水寺 / 楓葉)</span>
+            <div class="keyword-row">
+                <input type="text" id="kw-1" class="sunken-input" placeholder="關鍵字1">
+                <input type="text" id="kw-2" class="sunken-input" placeholder="關鍵字2">
+                <input type="text" id="kw-3" class="sunken-input" placeholder="關鍵字3">
+            </div>
+            <button class="convex-btn btn-full" onclick="searchByKeywords('add')">🕵️‍♂️ 透過關鍵字搜尋</button>
+            
+            <div class="quick-search-row">
+                <button class="convex-btn btn-quick" onclick="quickSearch('google')">🔍 Google 搜尋</button>
+                <button class="convex-btn btn-quick" onclick="quickSearch('image')">🖼️ 找圖片</button>
+                <button class="convex-btn btn-quick" onclick="quickSearch('map')">🗺️ 找地圖</button>
+            </div>
+            <p style="font-size:10px; color:#999; margin-top:5px; text-align:center;">*若自動搜尋找不到，請點下方按鈕開啟新分頁，複製網址貼回上方</p>
+        </div>
+
 
         <div class="category-group">
             <button class="convex-btn cat-btn-layout cat-btn-add active" onclick="selectCategory('add', '購物', this)"><span class="cat-emoji">🛒</span><span class="cat-text">購物</span></button>
@@ -355,13 +360,13 @@
     <div class="filter-container" id="filter-bar">
         <select id="filter-category" class="filter-select" onchange="applyFilter()">
             <option value="">所有類別</option>
-            </select>
+        </select>
         <select id="filter-country" class="filter-select" onchange="applyFilter()">
             <option value="">所有國家</option>
-            </select>
+        </select>
         <select id="filter-city" class="filter-select" onchange="applyFilter()">
             <option value="">所有都市</option>
-            </select>
+        </select>
         <button class="filter-reset-btn" onclick="resetFilter()">重置</button>
     </div>
 
@@ -379,8 +384,8 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcmJreWNscmhobnl2em9zYnljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyNzgyMjksImV4cCI6MjA4Mzg1NDIyOX0.DB44xf_i3WMyjpek2nQk5oo9MyzTYNsDCqiExmpMOgA';
         const db = supabase.createClient(supabaseUrl, supabaseKey);
 
-        let allItems = []; // 存所有資料
-        let filteredItems = []; // 存篩選後的資料
+        let allItems = []; 
+        let filteredItems = [];
 
         window.onscroll = function() {
             const btn = document.getElementById('go-top-btn');
@@ -555,12 +560,10 @@
             if (!error) fetchItems();
         }
 
-        // --- 核心資料讀取與篩選 ---
         async function fetchItems() {
             const { data, error } = await db.from('products').select('*').order('created_at', { ascending: false });
             if (error) return console.error(error);
 
-            // 預先處理資料 (把隱藏欄位解出來)
             allItems = data.map(item => {
                 let desc = item.description || "";
                 let country = "", city = "", refUrl = "";
@@ -579,10 +582,9 @@
             });
 
             populateFilterOptions();
-            applyFilter(); // 預設顯示全部
+            applyFilter(); 
         }
 
-        // 自動產生篩選選項
         function populateFilterOptions() {
             const cats = new Set(), countries = new Set(), cities = new Set();
             allItems.forEach(i => {
@@ -604,7 +606,6 @@
             });
         }
 
-        // 執行篩選
         function applyFilter() {
             const cat = document.getElementById('filter-category').value;
             const country = document.getElementById('filter-country').value;
@@ -626,7 +627,6 @@
             applyFilter();
         }
 
-        // 渲染卡片
         function renderCards(items) {
             const container = document.getElementById('card-area');
             container.innerHTML = ''; 
@@ -642,7 +642,6 @@
                 const safeLoc = escapeHtml(item.location || '');
                 const linkUrl = item.refUrl || "#";
 
-                // 圖片處理
                 let imgContent = '';
                 if(imgUrl) {
                     imgContent = `<img src="${imgUrl}" class="card-img" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'no-img-box\\'></div>'">`;
@@ -682,7 +681,6 @@
             return text.replace(/'/g, "\\'").replace(/"/g, '"');
         }
 
-        // Fix 1: 抓取優化 (嘗試處理 Google Maps)
         async function autoFetch(mode) {
             const url = document.getElementById(`${mode}-link`).value;
             if (!url) return alert('請先貼上網址！');
@@ -697,17 +695,13 @@
                 
                 if (json.status === 'success') {
                     const data = json.data;
-                    
                     let title = data.title || '';
-                    if(title.includes('Google Maps')) title = ""; // 如果抓到 Google Maps 標題，乾脆清空讓用戶自己填
-
-                    // 截斷標題
+                    if(title.includes('Google Maps')) title = ""; 
                     if(title.length > 25) title = title.substring(0, 25);
                     
                     document.getElementById(`${mode}-title`).value = title;
                     document.getElementById(`${mode}-desc`).value = data.description || '';
                     
-                    // 圖片優先順序
                     if (data.image && data.image.url) {
                         document.getElementById(`${mode}-img`).value = data.image.url;
                         updatePreview(mode);
@@ -721,6 +715,66 @@
             } catch (err) { console.error(err); alert('抓取發生錯誤'); }
             
             btn.innerText = originalText;
+        }
+
+        // --- NEW: 關鍵字搜尋 (Wiki API) ---
+        async function searchByKeywords(mode) {
+            const k1 = document.getElementById('kw-1').value.trim();
+            const k2 = document.getElementById('kw-2').value.trim();
+            const k3 = document.getElementById('kw-3').value.trim();
+            
+            // 找出最重要的一個關鍵字來搜尋 Wiki (通常是第1或2個)
+            const mainKeyword = k1 || k2 || k3;
+            if(!mainKeyword) return alert('請至少輸入一個關鍵字');
+
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "⏳ 搜尋維基百科...";
+
+            try {
+                // 呼叫維基百科 API
+                const apiUrl = `https://zh.wikipedia.org/w/api.php?action=query&format=json&origin=*&prop=extracts|pageimages&piprop=original&exintro&explaintext&generator=search&gsrsearch=${encodeURIComponent(mainKeyword)}&gsrlimit=1`;
+                
+                const res = await fetch(apiUrl);
+                const data = await res.json();
+                
+                if(data.query && data.query.pages) {
+                    const pages = Object.values(data.query.pages);
+                    const result = pages[0]; // 抓第一個結果
+                    
+                    document.getElementById('add-title').value = result.title;
+                    document.getElementById('add-desc').value = result.extract ? result.extract.substring(0, 100) + "..." : "";
+                    
+                    if(result.original && result.original.source) {
+                        document.getElementById('add-img').value = result.original.source;
+                        updatePreview('add');
+                    }
+                    alert('✅ 找到資料了！');
+                } else {
+                    alert('❌ 維基百科找不到，請使用下方按鈕前往 Google 搜尋');
+                }
+            } catch (e) {
+                console.error(e);
+                alert('搜尋錯誤');
+            }
+            btn.innerText = originalText;
+        }
+
+        // 輔助按鈕功能
+        function quickSearch(type) {
+            const k1 = document.getElementById('kw-1').value;
+            const k2 = document.getElementById('kw-2').value;
+            const k3 = document.getElementById('kw-3').value;
+            const query = `${k1} ${k2} ${k3}`.trim();
+            
+            if(!query) return alert('請先輸入關鍵字');
+
+            let url = "";
+            if(type === 'google') url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+            if(type === 'image') url = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
+            if(type === 'map') url = `https://www.google.com/maps/search/${encodeURIComponent(query)}`;
+
+            window.open(url, '_blank');
         }
 
         fetchItems();
