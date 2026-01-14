@@ -281,6 +281,17 @@
         }
         #full-map { flex: 1; width: 100%; background: #e5e5e5; }
         
+        /* Fix 1: 搜尋此區域按鈕 */
+        #btn-filter-area {
+            position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+            z-index: 2500;
+            background: white; color: var(--accent-blue);
+            padding: 10px 20px; border-radius: 25px;
+            font-weight: bold; border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            cursor: pointer; display: none; /* 預設隱藏，地圖移動時顯示 */
+        }
+
         .marker-pin {
             width: 32px; height: 32px;
             border-radius: 50% 50% 50% 0;
@@ -307,11 +318,9 @@
         .leaflet-popup-content-wrapper { border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.2); }
         .popup-img { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; margin-bottom: 5px; cursor: pointer;}
         .popup-title { font-weight: bold; font-size: 14px; margin-bottom: 3px; }
-        /* Fix 1: Popup Feature Note */
         .popup-feature { font-size: 12px; color: #7A90A4; margin-bottom: 3px; font-weight: bold;}
         .popup-desc { font-size: 12px; color: #666; }
 
-        /* MarkerCluster Custom Style (Overriding defaults) */
         .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
             background-color: rgba(122, 144, 164, 0.6);
         }
@@ -557,9 +566,9 @@
             <h3 style="margin:0; color:var(--text-main);">📍 收藏地圖</h3>
             <button class="convex-btn" onclick="closeMap()">❌ 關閉</button>
         </div>
-        <div id="map-loading">🔍 正在啟動地圖引擎...</div>
+        <button id="btn-filter-area" onclick="filterByMapBounds()">🎯 篩選此區域</button>
+        <div id="map-loading">🔍 正在啟動地圖...</div>
         <div id="full-map"></div>
-        <p style="text-align:center; font-size:12px; color:#666; padding:5px; background:#fff;">*圖釘會自動合併，請點擊或放大地圖</p>
     </div>
 
     <script>
@@ -571,6 +580,7 @@
         let filteredItems = [];
         let map = null; 
         let markersCluster = null; 
+        let currentMarkers = []; // 暫存地圖上的 Marker 物件，用於反向篩選
 
         window.onscroll = function() {
             const btn = document.getElementById('go-top-btn');
@@ -1000,14 +1010,14 @@
             window.open(url, '_blank');
         }
 
-        // --- MAP FUNCTIONS (Fix 2: Cluster & Geolocation) ---
+        // --- MAP FUNCTIONS (Fix 1: Filter by Bounds) ---
         function showMap() {
             document.getElementById('map-overlay').style.display = 'flex';
             setTimeout(() => {
                 if(!map) initMap();
                 else {
                     map.invalidateSize();
-                    getUserLocation(); // 每次打開重新定位
+                    getUserLocation();
                 }
             }, 200);
         }
@@ -1023,13 +1033,18 @@
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
 
-            // Fix 2: Marker Cluster Group
             markersCluster = L.markerClusterGroup({
                 disableClusteringAtZoom: 16
             });
             map.addLayer(markersCluster);
             
-            getUserLocation(); // 初始化時定位
+            // 監聽地圖移動，顯示「搜尋此區域」按鈕
+            map.on('moveend', function() {
+                const btn = document.getElementById('btn-filter-area');
+                btn.style.display = 'block';
+            });
+
+            getUserLocation();
         }
 
         function getUserLocation() {
@@ -1043,21 +1058,15 @@
                         const lat = position.coords.latitude;
                         const lng = position.coords.longitude;
                         
-                        // 藍點標記使用者位置
                         L.circleMarker([lat, lng], {
-                            radius: 8,
-                            fillColor: "#3b82f6",
-                            color: "#fff",
-                            weight: 2,
-                            opacity: 1,
-                            fillOpacity: 0.8
+                            radius: 8, fillColor: "#3b82f6", color: "#fff", weight: 2, opacity: 1, fillOpacity: 0.8
                         }).addTo(map).bindPopup("你現在位置");
 
-                        map.setView([lat, lng], 13); // 鎖定在 10km 左右範圍 (Zoom 13)
-                        plotItemsOnMap(); // 開始畫圖釘
+                        map.setView([lat, lng], 13);
+                        plotItemsOnMap();
                     },
                     (error) => {
-                        console.warn("Geolocation denied or error:", error);
+                        console.warn("Geolocation denied:", error);
                         loader.innerText = "無法定位，顯示全區...";
                         setTimeout(() => plotItemsOnMap(), 1000);
                     }
@@ -1067,11 +1076,37 @@
             }
         }
 
+        // Fix 1: 實作地圖區域篩選功能
+        function filterByMapBounds() {
+            const bounds = map.getBounds();
+            const btn = document.getElementById('btn-filter-area');
+            
+            // 篩選在畫面內的圖釘
+            filteredItems = allItems.filter(item => {
+                // 找出對應的 marker
+                const marker = currentMarkers.find(m => m.id === item.id);
+                if(marker) {
+                    return bounds.contains(marker.layer.getLatLng());
+                }
+                return false;
+            });
+            
+            renderCards(filteredItems);
+            btn.style.display = 'none'; // 隱藏按鈕
+            alert(`已篩選出 ${filteredItems.length} 筆資料！`);
+            closeMap(); // 選項：篩選完自動關閉地圖回列表
+        }
+
         async function plotItemsOnMap() {
             markersCluster.clearLayers(); 
+            currentMarkers = []; // 清空暫存
+            
             const loader = document.getElementById('map-loading');
             loader.style.display = 'block';
 
+            // 只載入目前列表有顯示的項目 (智慧連動)
+            const itemsToMap = filteredItems.length > 0 ? filteredItems : allItems;
+            
             const catConfig = {
                 '購物': { class: 'pin-shop', icon: '🛒' },
                 '餐廳': { class: 'pin-food', icon: '🍽️' },
@@ -1081,28 +1116,32 @@
             };
 
             let count = 0;
-            let total = allItems.length;
+            let total = itemsToMap.length;
 
             for(let i = 0; i < total; i++) {
-                let item = allItems[i];
-                // 優先使用詳細地址，若無則用 "都市+標題" (Fix 1: 三段式搜尋)
+                let item = itemsToMap[i];
                 let queryList = [];
-                
-                // 1. 詳細地址 (過濾 http)
-                if(item.location && !item.location.startsWith('http')) queryList.push(item.location);
-                // 2. 城市 + 標題
+                if(item.location && !item.location.includes('http')) queryList.push(item.location);
                 if(item.city && item.title) queryList.push(item.city + " " + item.title);
-                // 3. 標題
                 if(item.title) queryList.push(item.title);
-                
+
                 if(queryList.length === 0) continue;
+
+                // Cache Logic
+                let cacheKey = `geo_${item.id}`;
+                let cached = localStorage.getItem(cacheKey);
+                
+                if(cached) {
+                    const coords = JSON.parse(cached);
+                    addMarker(item, coords.lat, coords.lon, catConfig);
+                    count++;
+                    continue; 
+                }
 
                 let found = false;
                 for(let q of queryList) {
-                    // 如果已經找到就跳過後面的策略
                     if(found) break;
-
-                    loader.innerText = `🔍 分析地址 (${i+1}/${total}): ${q.substring(0, 10)}...`;
+                    loader.innerText = `🔍 搜尋中 (${i+1}/${total}): ${q.substring(0,8)}...`;
                     
                     try {
                         const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`;
@@ -1112,42 +1151,47 @@
                         if(data && data.length > 0) {
                             const lat = data[0].lat;
                             const lon = data[0].lon;
-                            const conf = catConfig[item.category] || catConfig['其他'];
                             
-                            const myIcon = L.divIcon({
-                                className: 'custom-div-icon',
-                                html: `<div class="marker-pin ${conf.class}" data-emoji="${conf.icon}"></div>`,
-                                iconSize: [30, 42],
-                                iconAnchor: [15, 42],
-                                popupAnchor: [0, -35]
-                            });
-
-                            const marker = L.marker([lat, lon], {icon: myIcon});
-                            
-                            // Fix 1: Popup Feature Note
-                            const popupContent = `
-                                <div style="text-align:center;">
-                                    ${item.image_url ? `<img src="${item.image_url}" class="popup-img" onclick="window.open('${item.refUrl || '#'}')">` : ''}
-                                    <div class="popup-title">${item.title}</div>
-                                    ${item.feature ? `<div class="popup-feature">✨ ${item.feature}</div>` : ''}
-                                    <div class="popup-desc">${item.category}</div>
-                                    <button class="convex-btn" style="margin-top:5px; padding:5px 10px; width:100%; font-size:12px;" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}')">🚗 導航</button>
-                                </div>
-                            `;
-                            marker.bindPopup(popupContent);
-                            markersCluster.addLayer(marker); // 加入聚合群組
+                            addMarker(item, lat, lon, catConfig);
+                            localStorage.setItem(cacheKey, JSON.stringify({lat, lon}));
                             count++;
                             found = true;
                         }
                     } catch(e) {}
-                    
-                    // 慢速請求 (安全閥)
                     await new Promise(r => setTimeout(r, 1000));
                 }
             }
             
             loader.style.display = 'none';
-            if(count === 0) alert("地圖上找不到任何地點，請檢查地址欄位");
+            if(count === 0) alert("範圍內無可顯示的地點");
+        }
+
+        function addMarker(item, lat, lon, config) {
+            const conf = config[item.category] || config['其他'];
+            const myIcon = L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div class="marker-pin ${conf.class}" data-emoji="${conf.icon}"></div>`,
+                iconSize: [30, 42],
+                iconAnchor: [15, 42],
+                popupAnchor: [0, -35]
+            });
+
+            const marker = L.marker([lat, lon], {icon: myIcon});
+            
+            const popupContent = `
+                <div>
+                    ${item.image_url ? `<img src="${item.image_url}" class="popup-img" onclick="window.open('${item.refUrl || '#'}')">` : ''}
+                    <div class="popup-title">${item.title}</div>
+                    ${item.feature ? `<div class="popup-feature">✨ ${item.feature}</div>` : ''}
+                    <div class="popup-desc">${item.category}</div>
+                    <button class="convex-btn" style="margin-top:5px; padding:5px; width:100%; font-size:10px;" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location || item.title)}')">🚗 導航</button>
+                </div>
+            `;
+            marker.bindPopup(popupContent);
+            markersCluster.addLayer(marker);
+            
+            // 存入全域變數供篩選使用
+            currentMarkers.push({ id: item.id, layer: marker });
         }
 
         fetchItems();
