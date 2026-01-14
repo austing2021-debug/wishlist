@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚜️收藏清單 (Photon版)⚜️</title>
+    <title>⚜️收藏清單 (座標快取版)⚜️</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -93,7 +93,6 @@
             transform: translateY(1px);
         }
 
-        /* 搜尋區塊佈局 */
         .search-container {
             display: flex; gap: 15px; margin-bottom: 20px;
         }
@@ -108,7 +107,6 @@
         .keyword-row input { flex: 1; text-align: center; font-size: 12px;}
         .quick-search-row { display: flex; gap: 8px; }
 
-        /* 類別按鈕 */
         .category-group { 
             display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; 
         }
@@ -156,7 +154,6 @@
             background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;
         }
 
-        /* 篩選器 */
         .filter-wrapper {
             display: flex; gap: 8px; margin-bottom: 20px; align-items: center;
         }
@@ -183,7 +180,6 @@
             cursor: pointer; white-space: nowrap; font-size: 12px; flex-shrink: 0;
         }
 
-        /* 卡片 */
         .grid-container { 
             display: flex; overflow-x: auto; scroll-snap-type: x mandatory; 
             gap: 20px; padding-bottom: 20px; -webkit-overflow-scrolling: touch;
@@ -276,25 +272,28 @@
             padding: 15px; display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 2001; background: #E8E8E8;
         }
+        #map-loading {
+            position: absolute; top: 100px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); color: white; padding: 10px 20px;
+            border-radius: 20px; z-index: 3000; display: none;
+            font-size: 13px; text-align: center; white-space: nowrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
         #full-map { flex: 1; width: 100%; background: #e5e5e5; }
         
-        /* Fix: Console Log Overlay */
-        #map-console {
-            position: absolute; top: 70px; left: 10px; z-index: 2500;
-            background: rgba(0,0,0,0.7); color: white; 
-            padding: 8px 12px; border-radius: 8px; font-size: 11px;
-            max-width: 250px; pointer-events: none; /* 穿透點擊 */
+        /* Pin Picker Modal */
+        #picker-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 3000; display: none;
+            flex-direction: column; align-items: center; justify-content: center;
         }
-        
-        #btn-filter-area {
-            position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
-            z-index: 2500;
-            background: white; color: var(--accent-blue);
-            padding: 10px 20px; border-radius: 25px;
-            font-weight: bold; border: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            cursor: pointer; display: none;
+        #picker-container {
+            width: 90%; height: 70%; background: white; border-radius: 20px;
+            display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
         }
+        #picker-map { flex: 1; width: 100%; }
+        #picker-controls { padding: 15px; text-align: center; background: #eee; }
 
         /* CSS Pin */
         .marker-pin {
@@ -333,6 +332,13 @@
             background-color: rgba(122, 144, 164, 0.9);
             color: white; font-weight: bold;
         }
+        
+        #btn-filter-area {
+            position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+            z-index: 2500; background: white; color: var(--accent-blue);
+            padding: 10px 20px; border-radius: 25px; font-weight: bold; border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2); cursor: pointer; display: none;
+        }
 
         .hidden { display: none; }
 
@@ -350,7 +356,7 @@
 </head>
 <body>
 
-    <h1>⚜️收藏清單⚜️</h1>
+    <h1>⚜️收藏清單 (座標快取版)⚜️</h1>
 
     <div id="section-add" class="panel-container">
         
@@ -426,8 +432,16 @@
         </div>
         
         <div class="input-group">
-            <span class="input-label">詳細地址 (點擊空白處自動辨識)</span>
-            <input type="text" id="add-loc" class="sunken-input" placeholder="📍 地址" onblur="parseAddress('add')">
+            <span class="input-label">詳細地址 (輸入後離開會自動轉座標)</span>
+            <div style="display:flex; gap:5px;">
+                <input type="text" id="add-loc" class="sunken-input" placeholder="📍 地址" onblur="autoConvertGeo('add')">
+                <button class="convex-btn" style="padding:0 10px;" onclick="openPinPicker('add')">📍</button>
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <span class="input-label">🌐 經緯度座標 (自動生成，可手動修正)</span>
+            <input type="text" id="add-geo" class="sunken-input" placeholder="例: 25.033, 121.565" readonly>
         </div>
 
         <div class="input-group">
@@ -515,7 +529,15 @@
         
         <div class="input-group">
             <span class="input-label">詳細地址</span>
-            <input type="text" id="edit-loc" class="sunken-input" placeholder="📍 地址" onblur="parseAddress('edit')">
+            <div style="display:flex; gap:5px;">
+                <input type="text" id="edit-loc" class="sunken-input" placeholder="📍 地址" onblur="autoConvertGeo('edit')">
+                <button class="convex-btn" style="padding:0 10px;" onclick="openPinPicker('edit')">📍</button>
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <span class="input-label">🌐 經緯度座標</span>
+            <input type="text" id="edit-geo" class="sunken-input" placeholder="自動填入" readonly>
         </div>
 
         <div class="input-group">
@@ -571,11 +593,24 @@
             <h3 style="margin:0; color:var(--text-main);">📍 收藏地圖</h3>
             <button class="convex-btn" onclick="closeMap()">❌ 關閉</button>
         </div>
-        
-        <div id="map-console">準備就緒</div>
-        
         <button id="btn-filter-area" onclick="filterByMapBounds()">🎯 篩選此區域</button>
+        <div id="map-loading">🔍 正在啟動地圖引擎...</div>
         <div id="full-map"></div>
+    </div>
+    
+    <div id="picker-overlay">
+        <div id="picker-container">
+            <div id="picker-map"></div>
+            <div id="picker-controls">
+                <p style="font-size:12px; margin:0 0 10px 0;">點擊地圖選擇位置，或搜尋地址</p>
+                <div style="display:flex; gap:5px; margin-bottom:10px;">
+                    <input type="text" id="picker-search" class="sunken-input" placeholder="輸入地址搜尋...">
+                    <button class="convex-btn" onclick="searchInPicker()">🔍</button>
+                </div>
+                <button class="convex-btn action-btn-add" onclick="confirmPicker()">✅ 確認座標</button>
+                <button class="convex-btn" style="background:#ccc; margin-top:5px;" onclick="closePicker()">取消</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -588,6 +623,9 @@
         let map = null; 
         let markersCluster = null; 
         let currentMarkers = []; 
+        let pickerMap = null;
+        let pickerMarker = null;
+        let currentPickerMode = 'add';
 
         window.onscroll = function() {
             const btn = document.getElementById('go-top-btn');
@@ -636,12 +674,43 @@
                 document.getElementById('add-platform-other').value = '';
                 document.getElementById('add-platform-other').classList.remove('show');
                 document.getElementById('add-loc').value = '';
+                document.getElementById('add-geo').value = '';
                 document.getElementById('add-ref-url').value = '';
                 document.getElementById('add-desc').value = '';
                 document.getElementById('kw-1').value = '';
                 document.getElementById('kw-2').value = '';
                 updatePreview('add');
                 selectCategory('add', '購物', document.querySelector('.cat-btn-add'));
+            }
+        }
+
+        // Fix: Auto Geocode when leaving address field
+        async function autoConvertGeo(mode) {
+            const addr = document.getElementById(`${mode}-loc`).value;
+            const city = document.getElementById(`${mode}-city`).value;
+            const geoField = document.getElementById(`${mode}-geo`);
+            
+            if(!addr || geoField.value) return; // If empty or already has geo, skip
+
+            let query = addr;
+            if(!query.includes('台灣') && !query.includes('Taiwan')) {
+                if(city) query = city + " " + query;
+                else query = "台灣 " + query;
+            }
+
+            geoField.placeholder = "⏳ 正在轉換座標...";
+            
+            try {
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+                const res = await fetch(url);
+                const data = await res.json();
+                if(data && data.length > 0) {
+                    geoField.value = `${parseFloat(data[0].lat).toFixed(6)},${parseFloat(data[0].lon).toFixed(6)}`;
+                } else {
+                    geoField.placeholder = "❌ 查無座標，請手動設定";
+                }
+            } catch(e) {
+                geoField.placeholder = "⚠️ 連線錯誤";
             }
         }
 
@@ -659,7 +728,7 @@
             document.getElementById('edit-loc').value = item.location;
             
             let desc = item.description || "";
-            let refUrl = "", country = "", city = "", feature = "", platform = "";
+            let refUrl = "", country = "", city = "", feature = "", platform = "", geo = "";
             
             const refMatch = desc.match(/\n?\[Ref:(.*?)\]/);
             if (refMatch) { refUrl = refMatch[1]; desc = desc.replace(refMatch[0], ""); }
@@ -676,6 +745,9 @@
 
             const platMatch = desc.match(/\n?\[Plat:(.*?)\]/);
             if (platMatch) { platform = platMatch[1]; desc = desc.replace(platMatch[0], ""); }
+            
+            const geoMatch = desc.match(/\n?\[Geo:(.*?)\]/);
+            if (geoMatch) { geo = geoMatch[1]; desc = desc.replace(geoMatch[0], ""); }
 
             document.getElementById('edit-link-fetch').value = ""; 
             document.getElementById('edit-country').value = country;
@@ -683,6 +755,7 @@
             document.getElementById('edit-feature').value = feature;
             document.getElementById('edit-ref-url').value = refUrl;
             document.getElementById('edit-desc').value = desc.trim();
+            document.getElementById('edit-geo').value = geo;
 
             const platformSelect = document.getElementById('edit-platform');
             const standardPlatforms = ["官網", "實體", "蝦皮", "momo", "PChome", "淘寶", "Amazon"];
@@ -754,13 +827,14 @@
             else alert('無地址資料');
         }
 
-        function bundleDescription(desc, ref, country, city, feature, platform) {
+        function bundleDescription(desc, ref, country, city, feature, platform, geo) {
             let finalDesc = desc;
             if(country) finalDesc += `\n[Country:${country}]`;
             if(city) finalDesc += `\n[City:${city}]`;
             if(ref) finalDesc += `\n[Ref:${ref}]`;
             if(feature) finalDesc += `\n[Feat:${feature}]`;
             if(platform) finalDesc += `\n[Plat:${platform}]`;
+            if(geo) finalDesc += `\n[Geo:${geo}]`;
             return finalDesc;
         }
 
@@ -774,13 +848,14 @@
             const city = document.getElementById('add-city').value;
             const ref = document.getElementById('add-ref-url').value;
             const feature = document.getElementById('add-feature').value;
+            const geo = document.getElementById('add-geo').value; // Get Geo
             
             let platform = document.getElementById('add-platform').value;
             if(platform === '其他') platform = document.getElementById('add-platform-other').value;
 
             if (!title) return alert('請輸入主題名稱');
 
-            desc = bundleDescription(desc, ref, country, city, feature, platform);
+            desc = bundleDescription(desc, ref, country, city, feature, platform, geo);
 
             const { error } = await db.from('products').insert([{ 
                 title, image_url: image, category, description: desc, location: loc
@@ -804,11 +879,12 @@
             const city = document.getElementById('edit-city').value;
             const ref = document.getElementById('edit-ref-url').value;
             const feature = document.getElementById('edit-feature').value;
+            const geo = document.getElementById('edit-geo').value; // Get Geo
             
             let platform = document.getElementById('edit-platform').value;
             if(platform === '其他') platform = document.getElementById('edit-platform-other').value;
 
-            desc = bundleDescription(desc, ref, country, city, feature, platform);
+            desc = bundleDescription(desc, ref, country, city, feature, platform, geo);
 
             const { error } = await db.from('products').update({ 
                 title, image_url: image, category, description: desc, location: loc
@@ -834,7 +910,7 @@
 
             allItems = data.map(item => {
                 let desc = item.description || "";
-                let country = "", city = "", refUrl = "", feature = "", platform = "";
+                let country = "", city = "", refUrl = "", feature = "", platform = "", geo = "";
                 
                 const cMatch = desc.match(/\n?\[Country:(.*?)\]/);
                 if(cMatch) { country = cMatch[1]; desc = desc.replace(cMatch[0], ""); }
@@ -851,8 +927,11 @@
 
                 const platMatch = desc.match(/\n?\[Plat:(.*?)\]/);
                 if(platMatch) { platform = platMatch[1]; desc = desc.replace(platMatch[0], ""); }
+                
+                const geoMatch = desc.match(/\n?\[Geo:(.*?)\]/);
+                if (geoMatch) { geo = geoMatch[1]; desc = desc.replace(geoMatch[0], ""); }
 
-                return { ...item, cleanDesc: desc, country, city, refUrl, feature, platform };
+                return { ...item, cleanDesc: desc, country, city, refUrl, feature, platform, geo };
             });
 
             populateFilterOptions();
@@ -1017,14 +1096,84 @@
             window.open(url, '_blank');
         }
 
-        // --- MAP FUNCTIONS (Fix: Photon + Console + CartoDB) ---
+        // --- MAP FUNCTIONS ---
+        function openPinPicker(mode) {
+            currentPickerMode = mode;
+            document.getElementById('picker-overlay').style.display = 'flex';
+            
+            if(!pickerMap) {
+                pickerMap = L.map('picker-map').setView([23.6, 121.0], 7);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(pickerMap);
+                pickerMap.on('click', function(e) {
+                    setPickerPin(e.latlng.lat, e.latlng.lng);
+                });
+            } else {
+                setTimeout(() => pickerMap.invalidateSize(), 100);
+            }
+            
+            const existingGeo = document.getElementById(`${mode}-geo`).value;
+            if(existingGeo) {
+                const parts = existingGeo.split(',');
+                const lat = parseFloat(parts[0]);
+                const lng = parseFloat(parts[1]);
+                pickerMap.setView([lat, lng], 15);
+                setPickerPin(lat, lng);
+            } else {
+                // Try to use current address
+                const addr = document.getElementById(`${mode}-loc`).value;
+                if(addr) {
+                    document.getElementById('picker-search').value = addr;
+                    searchInPicker();
+                }
+            }
+        }
+
+        function setPickerPin(lat, lng) {
+            if(pickerMarker) pickerMap.removeLayer(pickerMarker);
+            pickerMarker = L.marker([lat, lng], {draggable: true}).addTo(pickerMap);
+            pickerMarker.on('dragend', function(event) {
+                const position = pickerMarker.getLatLng();
+                setPickerPin(position.lat, position.lng);
+            });
+        }
+
+        function closePicker() {
+            document.getElementById('picker-overlay').style.display = 'none';
+        }
+
+        function confirmPicker() {
+            if(!pickerMarker) return alert("請點擊地圖設定位置");
+            const pos = pickerMarker.getLatLng();
+            const geoStr = `${pos.lat.toFixed(6)},${pos.lng.toFixed(6)}`;
+            document.getElementById(`${currentPickerMode}-geo`).value = geoStr;
+            closePicker();
+        }
+
+        async function searchInPicker() {
+            const query = document.getElementById('picker-search').value;
+            if(!query) return;
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if(data && data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+                    pickerMap.setView([lat, lon], 15);
+                    setPickerPin(lat, lon);
+                } else {
+                    alert("找不到地點，請手動點擊地圖");
+                }
+            } catch(e) { alert("搜尋失敗"); }
+        }
+
         function showMap() {
             document.getElementById('map-overlay').style.display = 'flex';
             setTimeout(() => {
                 if(!map) initMap();
                 else {
                     map.invalidateSize();
-                    plotItemsOnMap();
+                    getUserLocation();
                 }
             }, 200);
         }
@@ -1036,9 +1185,8 @@
         function initMap() {
             map = L.map('full-map').setView([23.6, 121.0], 7);
             
-            // Fix: CartoDB Voyager Tile (Better looking)
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                attribution: '© OpenStreetMap & CartoDB'
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
             }).addTo(map);
 
             markersCluster = L.markerClusterGroup({
@@ -1046,7 +1194,6 @@
             });
             map.addLayer(markersCluster);
             
-            // Map Move -> Show Filter Button
             map.on('moveend', function() {
                 const btn = document.getElementById('btn-filter-area');
                 btn.style.display = 'block';
@@ -1056,6 +1203,10 @@
         }
 
         function getUserLocation() {
+            const loader = document.getElementById('map-loading');
+            loader.innerText = "🛰️ 正在定位中...";
+            loader.style.display = 'block';
+
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
@@ -1067,7 +1218,10 @@
                         map.setView([lat, lng], 13);
                         plotItemsOnMap();
                     },
-                    () => { plotItemsOnMap(); }
+                    (error) => {
+                        loader.innerText = "無法定位...";
+                        setTimeout(() => plotItemsOnMap(), 1000);
+                    }
                 );
             } else {
                 plotItemsOnMap();
@@ -1095,9 +1249,9 @@
 
         async function plotItemsOnMap() {
             markersCluster.clearLayers(); 
-            currentMarkers = [];
-            const consoleLog = document.getElementById('map-console');
-            consoleLog.innerText = "🚀 開始地圖搜尋...";
+            currentMarkers = []; 
+            const loader = document.getElementById('map-loading');
+            loader.style.display = 'block';
 
             const itemsToMap = filteredItems.length > 0 ? filteredItems : allItems;
             
@@ -1114,53 +1268,42 @@
 
             for(let i = 0; i < total; i++) {
                 let item = itemsToMap[i];
-                let queryList = [];
-                // Fix: 嚴格過濾 http，只留文字
-                if(item.location && !item.location.includes('http')) queryList.push(item.location);
-                if(item.title) queryList.push(item.title);
-                if(item.city) queryList.push(item.city);
-
-                if(queryList.length === 0) continue;
-
-                // Cache Logic
-                let cacheKey = `geo_p_${item.id}`;
-                let cached = localStorage.getItem(cacheKey);
                 
-                if(cached) {
-                    const coords = JSON.parse(cached);
-                    addMarker(item, coords.lat, coords.lon, catConfig);
+                // Priority 1: Saved Geo
+                if(item.geo) {
+                    const parts = item.geo.split(',');
+                    addMarker(item, parseFloat(parts[0]), parseFloat(parts[1]), catConfig);
                     count++;
                     continue; 
                 }
 
-                let found = false;
-                // Fix: Photon Search Strategy
+                // Priority 2: Fallback Search (Only if no geo)
+                let queryList = [];
+                if(item.location && !item.location.includes('http')) queryList.push(item.location);
+                if(item.city && item.title) queryList.push(item.city + " " + item.title);
+                
+                if(queryList.length === 0) continue;
+
+                loader.innerText = `🔍 搜尋中... (${i+1}/${total})`;
                 for(let q of queryList) {
-                    if(found) break;
-                    consoleLog.innerText = `🔍 搜尋中 (${i+1}/${total}): ${q.substring(0,8)}...`;
-                    
                     try {
-                        // Fix: Use Photon API
-                        const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=1`;
+                        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`;
                         const res = await fetch(url);
                         const data = await res.json();
 
-                        if(data.features && data.features.length > 0) {
-                            const coords = data.features[0].geometry.coordinates;
-                            const lat = coords[1]; // Photon is [lon, lat]
-                            const lon = coords[0];
-                            
+                        if(data && data.length > 0) {
+                            const lat = parseFloat(data[0].lat);
+                            const lon = parseFloat(data[0].lon);
                             addMarker(item, lat, lon, catConfig);
-                            localStorage.setItem(cacheKey, JSON.stringify({lat, lon}));
                             count++;
-                            found = true;
+                            break; 
                         }
                     } catch(e) {}
-                    await new Promise(r => setTimeout(r, 800));
+                    await new Promise(r => setTimeout(r, 1000));
                 }
             }
             
-            consoleLog.innerText = `✅ 完成！共標記 ${count} 個地點`;
+            loader.style.display = 'none';
             if(count > 0 && !map.getBounds().isValid()) {
                  map.fitBounds(markersCluster.getBounds().pad(0.1));
             }
