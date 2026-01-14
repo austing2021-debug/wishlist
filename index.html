@@ -71,6 +71,12 @@
 
         .btn-full { width: 100%; }
 
+        /* Fix 4: 新增區按鈕排版 (新增 + 重置) */
+        .action-row { display: flex; gap: 10px; margin-top: 15px; }
+        .action-btn-add { flex: 3; color: white; background-color: var(--accent-blue); }
+        .action-btn-edit { flex: 3; color: white; background-color: var(--accent-pink); }
+        .action-btn-reset { flex: 1; font-size: 12px; color: var(--text-light); }
+
         /* 類別按鈕 */
         .category-group { 
             display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; 
@@ -80,9 +86,6 @@
         }
         .cat-emoji { font-size: 20px; line-height: 1; }
         .cat-text { font-size: 11px; white-space: nowrap; }
-
-        .action-btn-add { width: 100%; margin-top: 15px; color: white; background-color: var(--accent-blue); }
-        .action-btn-edit { width: 100%; margin-top: 15px; color: white; background-color: var(--accent-pink); }
 
         .panel-container {
             padding: 20px; border-radius: 20px; background-color: var(--bg-color);
@@ -96,6 +99,7 @@
         }
         .input-row-multi { display: flex; gap: 10px; width: 100%; }
 
+        /* 圖片預覽 */
         .img-preview-box {
             width: 100%; height: 150px; border-radius: 12px; margin-top: 10px;
             box-shadow: inset 3px 3px 6px rgba(0,0,0,0.1), inset -3px -3px 6px rgba(255,255,255,0.5);
@@ -106,24 +110,30 @@
         .img-preview-box.has-img { display: flex; }
         .img-preview-content { width: 100%; height: 100%; object-fit: cover; }
 
-        /* --- 關鍵字搜尋區 (NEW) --- */
+        /* --- Fix 1: 關鍵字搜尋區改良 --- */
         .keyword-row { display: flex; gap: 8px; margin-bottom: 10px; }
         .keyword-row input { width: 33.33%; text-align: center; }
         
         /* 輔助搜尋按鈕區 */
-        .quick-search-row { display: flex; gap: 10px; margin-top: 10px; justify-content: space-around;}
+        .quick-search-row { display: flex; gap: 10px; margin-top: 10px; }
         .btn-quick { 
-            font-size: 11px; padding: 6px 10px; border-radius: 10px; width: 33%;
-            background: var(--morandi-white); color: var(--text-light);
+            flex: 1; font-size: 12px; padding: 10px; border-radius: 12px;
+            background: #E8E8E8; color: var(--text-main);
         }
 
-        /* --- 篩選器樣式 --- */
-        .filter-container {
-            display: flex; gap: 10px; margin-bottom: 20px;
-            overflow-x: auto; padding-bottom: 5px; 
+        /* --- Fix 5: 篩選器樣式 (重置按鈕固定在內) --- */
+        .filter-wrapper {
+            display: flex; gap: 8px; margin-bottom: 20px; align-items: center;
         }
+        .filter-scroll-area {
+            display: flex; gap: 8px; overflow-x: auto; flex: 1; padding-bottom: 5px;
+            /* 隱藏捲軸 */
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .filter-scroll-area::-webkit-scrollbar { display: none; }
+
         .filter-select {
-            flex: 1; min-width: 100px;
+            min-width: 110px;
             background: #E8E8E8; border: none; 
             padding: 8px 12px; border-radius: 12px;
             color: var(--text-main); font-size: 13px;
@@ -134,9 +144,10 @@
         }
         .filter-reset-btn {
             background: var(--morandi-white); color: var(--text-light);
-            border: none; padding: 0 15px; border-radius: 12px;
+            border: none; padding: 0 12px; height: 36px; border-radius: 12px;
             box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
             cursor: pointer; white-space: nowrap; font-size: 12px;
+            flex-shrink: 0; /* 防止被擠壓 */
         }
 
         /* --- 卡片區設定 --- */
@@ -162,7 +173,6 @@
         }
 
         .card-img { width: 100%; height: 100%; object-fit: cover; display: block;}
-        
         .no-img-box { width: 100%; height: 100%; background: var(--morandi-white); }
 
         .card-body { padding: 15px; display: flex; flex-direction: column; flex: 1; }
@@ -175,10 +185,19 @@
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
+        /* Fix 6: 主題名稱字體加大 */
         .card-title { 
-            font-size: 18px; font-family: 'Noto Serif TC', serif; 
-            color: var(--text-main); font-weight: bold; margin-bottom: 10px;
-            max-height: 50px; overflow: hidden;
+            font-size: 20px; /* 加大 */
+            font-family: 'Noto Serif TC', serif; 
+            color: var(--text-main); font-weight: bold; 
+            margin-bottom: 5px; line-height: 1.3;
+            max-height: 52px; overflow: hidden;
+        }
+
+        /* Fix 7: 特點備註顯示 */
+        .card-feature {
+            font-size: 13px; color: var(--accent-blue);
+            margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
         .card-btn-row { 
@@ -221,11 +240,10 @@
 
     <div id="section-add" class="panel-container">
         
-        <p style="text-align:center; font-size:12px; color:#999; margin-bottom:15px;">🔍 方式一：輸入網址抓取</p>
-
+        <p style="text-align:center; font-size:12px; color:#999; margin-bottom:15px;">🔍 方式一：輸入網址抓取 (適用有官網的產品)</p>
         <div class="input-group">
-            <span class="input-label">參考連結 (貼官方網站效果最佳)</span>
-            <input type="text" id="add-link" class="sunken-input" placeholder="🔗 貼上網址">
+            <span class="input-label">參考連結</span>
+            <input type="text" id="add-link-fetch" class="sunken-input" placeholder="🔗 貼上網址">
         </div>
         <div class="input-group">
             <button class="convex-btn btn-full" onclick="autoFetch('add')" style="color: var(--accent-blue);">📝 透過網址自動抓取</button>
@@ -233,24 +251,21 @@
 
         <hr style="border:0; border-top:1px dashed #ccc; margin: 20px 0;">
 
-        <p style="text-align:center; font-size:12px; color:#999; margin-bottom:15px;">🔍 方式二：輸入關鍵字反查 (適合景點/知名地標)</p>
+        <p style="text-align:center; font-size:12px; color:#999; margin-bottom:15px;">🔍 方式二：輸入關鍵字，使用下方按鈕輔助搜尋</p>
         <div class="input-group">
-            <span class="input-label">關鍵字 (最多3個，例如：京都 / 清水寺 / 楓葉)</span>
+            <span class="input-label">關鍵字 (例如：Sony 耳機 / 京都 清水寺)</span>
             <div class="keyword-row">
                 <input type="text" id="kw-1" class="sunken-input" placeholder="關鍵字1">
                 <input type="text" id="kw-2" class="sunken-input" placeholder="關鍵字2">
                 <input type="text" id="kw-3" class="sunken-input" placeholder="關鍵字3">
             </div>
-            <button class="convex-btn btn-full" onclick="searchByKeywords('add')">🕵️‍♂️ 透過關鍵字搜尋</button>
             
             <div class="quick-search-row">
-                <button class="convex-btn btn-quick" onclick="quickSearch('google')">🔍 Google 搜尋</button>
-                <button class="convex-btn btn-quick" onclick="quickSearch('image')">🖼️ 找圖片</button>
-                <button class="convex-btn btn-quick" onclick="quickSearch('map')">🗺️ 找地圖</button>
+                <button class="convex-btn btn-quick" onclick="quickSearch('google')">🔍 找資料 (Google)</button>
+                <button class="convex-btn btn-quick" onclick="quickSearch('image')">🖼️ 找圖片 (Google)</button>
+                <button class="convex-btn btn-quick" onclick="quickSearch('map')">🗺️ 找地圖 (Google)</button>
             </div>
-            <p style="font-size:10px; color:#999; margin-top:5px; text-align:center;">*若自動搜尋找不到，請點下方按鈕開啟新分頁，複製網址貼回上方</p>
         </div>
-
 
         <div class="category-group">
             <button class="convex-btn cat-btn-layout cat-btn-add active" onclick="selectCategory('add', '購物', this)"><span class="cat-emoji">🛒</span><span class="cat-text">購物</span></button>
@@ -264,6 +279,11 @@
         <div class="input-group">
             <span class="input-label">主題名稱 (最多25字)</span>
             <input type="text" id="add-title" class="sunken-input" placeholder="🔖 輸入名稱" maxlength="25">
+        </div>
+
+        <div class="input-group">
+            <span class="input-label">特點備註 (顯示於主題下方，最多20字)</span>
+            <input type="text" id="add-feature" class="sunken-input" placeholder="✨ 例如：必吃、CP值高" maxlength="20">
         </div>
 
         <div class="input-group">
@@ -289,13 +309,21 @@
             <span class="input-label">詳細地址 (點擊空白處自動辨識)</span>
             <input type="text" id="add-loc" class="sunken-input" placeholder="📍 地址" onblur="parseAddress('add')">
         </div>
+
+        <div class="input-group">
+            <span class="input-label">參考網址 (點擊圖片將連結至此)</span>
+            <input type="text" id="add-ref-url" class="sunken-input" placeholder="🌐 相關網頁連結">
+        </div>
         
         <div class="input-group">
             <span class="input-label">備註說明</span>
-            <textarea id="add-desc" class="sunken-input" rows="3" placeholder="📋️ 備註"></textarea>
+            <textarea id="add-desc" class="sunken-input" rows="3" placeholder="📋️ 詳細說明"></textarea>
         </div>
 
-        <button class="convex-btn action-btn-add" onclick="executeAdd()">新 增</button>
+        <div class="action-row">
+            <button class="convex-btn action-btn-add" onclick="executeAdd()">新 增</button>
+            <button class="convex-btn action-btn-reset" onclick="resetForm('add')">清空重置</button>
+        </div>
     </div>
 
 
@@ -303,8 +331,8 @@
         <input type="hidden" id="edit-id">
 
         <div class="input-group">
-            <span class="input-label">參考連結</span>
-            <input type="text" id="edit-link" class="sunken-input" placeholder="🔗 貼上網址">
+            <span class="input-label">參考連結 (自動抓取用)</span>
+            <input type="text" id="edit-link-fetch" class="sunken-input" placeholder="🔗 貼上網址">
         </div>
         <div class="input-group">
             <button class="convex-btn btn-full" onclick="autoFetch('edit')">📝 自動抓取</button>
@@ -322,6 +350,11 @@
         <div class="input-group">
             <span class="input-label">主題名稱</span>
             <input type="text" id="edit-title" class="sunken-input" placeholder="🔖 輸入名稱" maxlength="25">
+        </div>
+
+        <div class="input-group">
+            <span class="input-label">特點備註</span>
+            <input type="text" id="edit-feature" class="sunken-input" placeholder="✨ 特點" maxlength="20">
         </div>
 
         <div class="input-group">
@@ -349,24 +382,33 @@
         </div>
 
         <div class="input-group">
+            <span class="input-label">參考網址</span>
+            <input type="text" id="edit-ref-url" class="sunken-input" placeholder="🌐 相關網頁連結">
+        </div>
+
+        <div class="input-group">
             <span class="input-label">備註說明</span>
             <textarea id="edit-desc" class="sunken-input" rows="3" placeholder="📋️ 備註"></textarea>
         </div>
 
-        <button class="convex-btn action-btn-edit" onclick="executeUpdate()">確 認 修 改</button>
-        <button class="convex-btn" style="width:100%; margin-top:10px; font-size:12px; background:transparent; box-shadow:none;" onclick="switchToAddMode()">取消修改</button>
+        <div class="action-row">
+            <button class="convex-btn action-btn-edit" onclick="executeUpdate()">確 認 修 改</button>
+            <button class="convex-btn action-btn-reset" onclick="switchToAddMode()">取消</button>
+        </div>
     </div>
 
-    <div class="filter-container" id="filter-bar">
-        <select id="filter-category" class="filter-select" onchange="applyFilter()">
-            <option value="">所有類別</option>
-        </select>
-        <select id="filter-country" class="filter-select" onchange="applyFilter()">
-            <option value="">所有國家</option>
-        </select>
-        <select id="filter-city" class="filter-select" onchange="applyFilter()">
-            <option value="">所有都市</option>
-        </select>
+    <div class="filter-wrapper">
+        <div class="filter-scroll-area">
+            <select id="filter-category" class="filter-select" onchange="applyFilter()">
+                <option value="">所有類別</option>
+            </select>
+            <select id="filter-country" class="filter-select" onchange="applyFilter()">
+                <option value="">所有國家</option>
+            </select>
+            <select id="filter-city" class="filter-select" onchange="applyFilter()">
+                <option value="">所有都市</option>
+            </select>
+        </div>
         <button class="filter-reset-btn" onclick="resetFilter()">重置</button>
     </div>
 
@@ -378,7 +420,7 @@
 
     <script>
         // ==========================================
-        // ⚠️ 請填入你的 Supabase URL 與 Key
+        // Fix 8: 已固定 Supabase URL 與 Key
         // ==========================================
         const supabaseUrl = 'https://ocrbkyclrhhnyvzosbyc.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcmJreWNscmhobnl2em9zYnljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyNzgyMjksImV4cCI6MjA4Mzg1NDIyOX0.DB44xf_i3WMyjpek2nQk5oo9MyzTYNsDCqiExmpMOgA';
@@ -412,6 +454,27 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // Fix 4: 重置表單功能
+        function resetForm(mode) {
+            if(mode === 'add') {
+                document.getElementById('add-link-fetch').value = '';
+                document.getElementById('add-title').value = '';
+                document.getElementById('add-feature').value = '';
+                document.getElementById('add-img').value = '';
+                document.getElementById('add-country').value = '';
+                document.getElementById('add-city').value = '';
+                document.getElementById('add-loc').value = '';
+                document.getElementById('add-ref-url').value = '';
+                document.getElementById('add-desc').value = '';
+                document.getElementById('kw-1').value = '';
+                document.getElementById('kw-2').value = '';
+                document.getElementById('kw-3').value = '';
+                updatePreview('add');
+                // 恢復預設購物
+                selectCategory('add', '購物', document.querySelector('.cat-btn-add'));
+            }
+        }
+
         function triggerEdit(id) {
             const item = allItems.find(i => i.id == id);
             if (!item) return alert('讀取資料錯誤');
@@ -425,22 +488,32 @@
             document.getElementById('edit-img').value = item.image_url;
             document.getElementById('edit-loc').value = item.location;
             
+            // 解析資料包 (Unbundle)
             let desc = item.description || "";
-            let refUrl = "", country = "", city = "";
+            let refUrl = "", country = "", city = "", feature = "";
             
+            // 解析 [Ref:...]
             const refMatch = desc.match(/\n?\[Ref:(.*?)\]/);
             if (refMatch) { refUrl = refMatch[1]; desc = desc.replace(refMatch[0], ""); }
-            else { refUrl = document.getElementById('edit-link').value; }
+            else if(item.location && item.location.startsWith('http')) { refUrl = item.location; } // 舊相容
 
+            // 解析 [Country:...]
             const countryMatch = desc.match(/\n?\[Country:(.*?)\]/);
             if (countryMatch) { country = countryMatch[1]; desc = desc.replace(countryMatch[0], ""); }
 
+            // 解析 [City:...]
             const cityMatch = desc.match(/\n?\[City:(.*?)\]/);
             if (cityMatch) { city = cityMatch[1]; desc = desc.replace(cityMatch[0], ""); }
             
-            document.getElementById('edit-link').value = refUrl; 
+            // Fix 3: 解析 [Feat:...]
+            const featMatch = desc.match(/\n?\[Feat:(.*?)\]/);
+            if (featMatch) { feature = featMatch[1]; desc = desc.replace(featMatch[0], ""); }
+
+            document.getElementById('edit-link-fetch').value = ""; // 清空抓取欄
             document.getElementById('edit-country').value = country;
             document.getElementById('edit-city').value = city;
+            document.getElementById('edit-feature').value = feature;
+            document.getElementById('edit-ref-url').value = refUrl;
             document.getElementById('edit-desc').value = desc.trim();
 
             updatePreview('edit');
@@ -496,11 +569,13 @@
             else alert('無地址資料');
         }
 
-        function bundleDescription(desc, ref, country, city) {
+        // 資料打包 (Bundle)
+        function bundleDescription(desc, ref, country, city, feature) {
             let finalDesc = desc;
             if(country) finalDesc += `\n[Country:${country}]`;
             if(city) finalDesc += `\n[City:${city}]`;
             if(ref) finalDesc += `\n[Ref:${ref}]`;
+            if(feature) finalDesc += `\n[Feat:${feature}]`;
             return finalDesc;
         }
 
@@ -510,13 +585,17 @@
             const category = document.getElementById('add-category').value;
             let desc = document.getElementById('add-desc').value;
             const loc = document.getElementById('add-loc').value;
-            const ref = document.getElementById('add-link').value;
             const country = document.getElementById('add-country').value;
             const city = document.getElementById('add-city').value;
+            
+            // Fix 2: 儲存參考網址
+            const ref = document.getElementById('add-ref-url').value;
+            // Fix 3: 儲存特點
+            const feature = document.getElementById('add-feature').value;
 
             if (!title) return alert('請輸入主題名稱');
 
-            desc = bundleDescription(desc, ref, country, city);
+            desc = bundleDescription(desc, ref, country, city, feature);
 
             const { error } = await db.from('products').insert([{ 
                 title, image_url: image, category, description: desc, location: loc
@@ -536,11 +615,12 @@
             const category = document.getElementById('edit-category').value;
             let desc = document.getElementById('edit-desc').value;
             const loc = document.getElementById('edit-loc').value;
-            const ref = document.getElementById('edit-link').value;
             const country = document.getElementById('edit-country').value;
             const city = document.getElementById('edit-city').value;
+            const ref = document.getElementById('edit-ref-url').value;
+            const feature = document.getElementById('edit-feature').value;
 
-            desc = bundleDescription(desc, ref, country, city);
+            desc = bundleDescription(desc, ref, country, city, feature);
 
             const { error } = await db.from('products').update({ 
                 title, image_url: image, category, description: desc, location: loc
@@ -566,7 +646,7 @@
 
             allItems = data.map(item => {
                 let desc = item.description || "";
-                let country = "", city = "", refUrl = "";
+                let country = "", city = "", refUrl = "", feature = "";
                 
                 const cMatch = desc.match(/\n?\[Country:(.*?)\]/);
                 if(cMatch) { country = cMatch[1]; desc = desc.replace(cMatch[0], ""); }
@@ -578,7 +658,11 @@
                 if(refMatch) { refUrl = refMatch[1]; desc = desc.replace(refMatch[0], ""); }
                 else if(item.location && item.location.startsWith('http')) { refUrl = item.location; }
 
-                return { ...item, cleanDesc: desc, country, city, refUrl };
+                // Fix 3: 解包 Feature
+                const featMatch = desc.match(/\n?\[Feat:(.*?)\]/);
+                if(featMatch) { feature = featMatch[1]; desc = desc.replace(featMatch[0], ""); }
+
+                return { ...item, cleanDesc: desc, country, city, refUrl, feature };
             });
 
             populateFilterOptions();
@@ -641,6 +725,8 @@
                 const safeTitle = escapeHtml(item.title);
                 const safeLoc = escapeHtml(item.location || '');
                 const linkUrl = item.refUrl || "#";
+                // Fix 7: 特點顯示
+                const safeFeat = escapeHtml(item.feature || '');
 
                 let imgContent = '';
                 if(imgUrl) {
@@ -663,6 +749,7 @@
                             </div>
 
                             <div class="card-title">${safeTitle}</div>
+                            ${safeFeat ? `<div class="card-feature">✨ ${safeFeat}</div>` : ''}
 
                             <div class="card-btn-row">
                                 <button class="btn-mini btn-map" onclick="openMapDirect('${safeLoc}', '${item.city}')">🗺️ 地圖</button>
@@ -682,7 +769,7 @@
         }
 
         async function autoFetch(mode) {
-            const url = document.getElementById(`${mode}-link`).value;
+            const url = document.getElementById(`${mode}-link-fetch`).value;
             if (!url) return alert('請先貼上網址！');
             
             const btn = event.target;
@@ -702,6 +789,9 @@
                     document.getElementById(`${mode}-title`).value = title;
                     document.getElementById(`${mode}-desc`).value = data.description || '';
                     
+                    // 自動填入參考網址
+                    document.getElementById(`${mode}-ref-url`).value = url;
+                    
                     if (data.image && data.image.url) {
                         document.getElementById(`${mode}-img`).value = data.image.url;
                         updatePreview(mode);
@@ -717,50 +807,7 @@
             btn.innerText = originalText;
         }
 
-        // --- NEW: 關鍵字搜尋 (Wiki API) ---
-        async function searchByKeywords(mode) {
-            const k1 = document.getElementById('kw-1').value.trim();
-            const k2 = document.getElementById('kw-2').value.trim();
-            const k3 = document.getElementById('kw-3').value.trim();
-            
-            // 找出最重要的一個關鍵字來搜尋 Wiki (通常是第1或2個)
-            const mainKeyword = k1 || k2 || k3;
-            if(!mainKeyword) return alert('請至少輸入一個關鍵字');
-
-            const btn = event.target;
-            const originalText = btn.innerText;
-            btn.innerText = "⏳ 搜尋維基百科...";
-
-            try {
-                // 呼叫維基百科 API
-                const apiUrl = `https://zh.wikipedia.org/w/api.php?action=query&format=json&origin=*&prop=extracts|pageimages&piprop=original&exintro&explaintext&generator=search&gsrsearch=${encodeURIComponent(mainKeyword)}&gsrlimit=1`;
-                
-                const res = await fetch(apiUrl);
-                const data = await res.json();
-                
-                if(data.query && data.query.pages) {
-                    const pages = Object.values(data.query.pages);
-                    const result = pages[0]; // 抓第一個結果
-                    
-                    document.getElementById('add-title').value = result.title;
-                    document.getElementById('add-desc').value = result.extract ? result.extract.substring(0, 100) + "..." : "";
-                    
-                    if(result.original && result.original.source) {
-                        document.getElementById('add-img').value = result.original.source;
-                        updatePreview('add');
-                    }
-                    alert('✅ 找到資料了！');
-                } else {
-                    alert('❌ 維基百科找不到，請使用下方按鈕前往 Google 搜尋');
-                }
-            } catch (e) {
-                console.error(e);
-                alert('搜尋錯誤');
-            }
-            btn.innerText = originalText;
-        }
-
-        // 輔助按鈕功能
+        // 輔助搜尋按鈕功能
         function quickSearch(type) {
             const k1 = document.getElementById('kw-1').value;
             const k2 = document.getElementById('kw-2').value;
