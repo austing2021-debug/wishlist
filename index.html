@@ -79,19 +79,19 @@
             box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2), inset -2px -2px 4px rgba(255,255,255,0.1);
         }
 
-        /* Fix 1: 地圖轉換按鈕 (獨立懸浮凸起) */
+        /* Fix 1: 地圖轉換按鈕 (加上 margin-bottom 以對齊輸入框) */
         .btn-map-convert {
             width: 40px; height: 38px;
-            border-radius: 12px; /* 圓角矩形 */
+            border-radius: 12px; 
             background: #E8E8E8;
             border: none;
             color: var(--accent-blue);
             font-size: 18px; display: flex; align-items: center; justify-content: center;
             cursor: pointer;
-            /* 強烈的凸起陰影 */
             box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
             transition: 0.2s;
-            flex-shrink: 0; /* 防止被擠壓 */
+            flex-shrink: 0; 
+            margin-bottom: 12px; /* 關鍵修正：對齊隔壁 input-group 的 margin */
         }
         .btn-map-convert:active {
             box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
@@ -178,13 +178,13 @@
             background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;
         }
 
-        /* Fix 2: 篩選列陰影優化 (增加 Padding，讓陰影完整顯示) */
+        /* Fix 2: 篩選列陰影優化 (增加左右 Padding 避免陰影被切) */
         .filter-wrapper {
             display: flex; gap: 10px; margin-bottom: 20px; align-items: center;
         }
         .filter-scroll-area {
             display: flex; gap: 12px; overflow-x: auto; flex: 1; 
-            padding: 10px 5px; /* 關鍵：增加垂直 Padding 避免陰影被切 */
+            padding: 10px 15px; /* 關鍵：增加左右空間 */
             scrollbar-width: none;
         }
         .filter-scroll-area::-webkit-scrollbar { display: none; }
@@ -194,7 +194,7 @@
             background: #E8E8E8; border: none; 
             padding: 8px 12px; border-radius: 12px;
             color: var(--text-main); font-size: 12px;
-            box-shadow: 5px 5px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light); /* 更柔和的浮起 */
+            box-shadow: 5px 5px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
             outline: none; appearance: none; 
             background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235F6F6E%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
             background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;
@@ -206,7 +206,7 @@
             cursor: pointer; white-space: nowrap; font-size: 12px; flex-shrink: 0;
         }
 
-        /* 卡片陰影調整 */
+        /* 卡片陰影 */
         .grid-container { 
             display: flex; overflow-x: auto; scroll-snap-type: x mandatory; 
             gap: 20px; padding-bottom: 20px; -webkit-overflow-scrolling: touch;
@@ -462,10 +462,9 @@
                 <input type="text" id="add-loc" class="sunken-input" placeholder="📍 地址" onblur="autoConvertGeo('add')">
             </div>
             <button class="btn-map-convert" onclick="openPinPicker('add')">➜</button>
-            
             <div class="input-group" style="width: 35%;">
                 <span class="input-label">經緯度</span>
-                <input type="text" id="add-geo" class="sunken-input" placeholder="25.03, 121.56" readonly>
+                <input type="text" id="add-geo" class="sunken-input" placeholder="自動填入" readonly>
                 <p id="add-geo-status" style="font-size:10px; color:green; margin:0; display:none;">✅</p>
             </div>
         </div>
@@ -1038,6 +1037,7 @@
                     imgContent = `<div class="no-img-box"></div>`; 
                 }
 
+                // Fix 4: 卡片資料隱藏邏輯 + 固定寬度
                 let metaHtml = '<div class="card-meta-row">';
                 metaHtml += `<div class="meta-box">${item.category}</div>`;
                 if (item.country && item.country !== '-') metaHtml += `<div class="meta-box">${item.country}</div>`;
