@@ -277,17 +277,18 @@
         
         /* Loading Overlay inside Map */
         #map-loading {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.7); color: white; padding: 15px 25px;
+            position: absolute; top: 100px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); color: white; padding: 10px 20px;
             border-radius: 20px; z-index: 3000; display: none;
-            font-size: 14px; text-align: center;
+            font-size: 13px; text-align: center; white-space: nowrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
-        /* --- v13.0: 穩定的純 CSS 圖釘 (放棄 SVG) --- */
+        /* 純 CSS 圖釘 */
         .marker-pin {
             width: 32px; height: 32px;
             border-radius: 50% 50% 50% 0;
-            background: #333; /* 預設黑 */
+            background: #333; 
             position: absolute;
             transform: rotate(-45deg);
             left: 50%; top: 50%;
@@ -296,7 +297,7 @@
             box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
             border: 2px solid white;
         }
-        /* Emoji 在圖釘內轉正 */
+        /* Emoji */
         .marker-pin::after {
             content: attr(data-emoji);
             transform: rotate(45deg);
@@ -994,13 +995,13 @@
             window.open(url, '_blank');
         }
 
-        // --- MAP FUNCTIONS ---
+        // --- MAP FUNCTIONS (Fix: 強制刷新與三段搜尋) ---
         function showMap() {
             document.getElementById('map-overlay').style.display = 'flex';
             setTimeout(() => {
                 if(!map) initMap();
                 else {
-                    map.invalidateSize(); // 關鍵修復：強制重繪地圖
+                    map.invalidateSize(); // 關鍵修復：解決破圖
                     plotItemsOnMap();
                 }
             }, 100);
@@ -1023,10 +1024,9 @@
 
         async function plotItemsOnMap() {
             markersGroup.clearLayers(); 
-            
             const loader = document.getElementById('map-loading');
             loader.style.display = 'block';
-            
+
             const catConfig = {
                 '購物': { class: 'pin-shop', icon: '🛒' },
                 '餐廳': { class: 'pin-food', icon: '🍽️' },
@@ -1040,63 +1040,65 @@
 
             for(let i = 0; i < total; i++) {
                 let item = allItems[i];
-                let query = item.location;
-                if(!query) query = item.title;
-                if(!query) continue; 
+                let loc = item.location || '';
+                
+                // 網址過濾：如果地址欄是網址，跳過
+                if(loc.includes('http')) loc = ''; 
 
-                loader.innerText = `🔍 正在搜尋地點 (${i+1}/${total})...`;
+                let queryList = [];
+                // 策略 1: 詳細地址
+                if(loc) queryList.push(loc);
+                // 策略 2: 城市 + 標題
+                if(item.city && item.title) queryList.push(item.city + " " + item.title);
+                // 策略 3: 只搜標題
+                if(item.title) queryList.push(item.title);
 
-                if(!query.includes('台灣') && !query.includes('Taiwan') && item.city) {
-                    query = "台灣 " + item.city + " " + query;
+                if(queryList.length === 0) continue;
+
+                let found = false;
+                for(let q of queryList) {
+                    loader.innerText = `🔍 搜尋中 (${i+1}/${total}): ${q}`;
+                    try {
+                        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`;
+                        const res = await fetch(url);
+                        const data = await res.json();
+
+                        if(data && data.length > 0) {
+                            const lat = data[0].lat;
+                            const lon = data[0].lon;
+                            const conf = catConfig[item.category] || catConfig['其他'];
+                            
+                            const myIcon = L.divIcon({
+                                className: 'custom-div-icon',
+                                html: `<div class="marker-pin ${conf.class}" data-emoji="${conf.icon}"></div>`,
+                                iconSize: [30, 42],
+                                iconAnchor: [15, 42],
+                                popupAnchor: [0, -35]
+                            });
+
+                            const marker = L.marker([lat, lon], {icon: myIcon}).addTo(markersGroup);
+                            
+                            const popupContent = `
+                                <div>
+                                    ${item.image_url ? `<img src="${item.image_url}" class="popup-img" onclick="window.open('${item.refUrl || '#'}')">` : ''}
+                                    <div class="popup-title">${item.title}</div>
+                                    <button class="convex-btn" style="margin-top:5px; padding:5px; width:100%; font-size:10px;" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}')">🚗 導航</button>
+                                </div>
+                            `;
+                            marker.bindPopup(popupContent);
+                            count++;
+                            found = true;
+                            break; // 找到就跳出，不用試下一個關鍵字
+                        }
+                    } catch(e) {}
+                    
+                    await new Promise(r => setTimeout(r, 1000)); // 慢速查詢避免被鎖
                 }
-
-                try {
-                    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
-                    
-                    const res = await fetch(url);
-                    const data = await res.json();
-
-                    if(data && data.length > 0) {
-                        const lat = data[0].lat;
-                        const lon = data[0].lon;
-                        const conf = catConfig[item.category] || catConfig['其他'];
-                        
-                        // Fix 2: 穩定的 CSS 圖釘
-                        const myIcon = L.divIcon({
-                            className: 'custom-div-icon',
-                            html: `<div class="marker-pin ${conf.class}" data-emoji="${conf.icon}"></div>`,
-                            iconSize: [30, 42],
-                            iconAnchor: [15, 42],
-                            popupAnchor: [0, -35]
-                        });
-
-                        const marker = L.marker([lat, lon], {icon: myIcon}).addTo(markersGroup);
-                        
-                        const popupContent = `
-                            <div>
-                                ${item.image_url ? `<img src="${item.image_url}" class="popup-img" onclick="window.open('${item.refUrl || '#'}')">` : ''}
-                                <div class="popup-title">${item.title}</div>
-                                <div class="popup-desc">${item.category}</div>
-                                <button class="convex-btn" style="margin-top:5px; padding:5px; width:100%; font-size:10px;" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}')">🚗 導航</button>
-                            </div>
-                        `;
-                        marker.bindPopup(popupContent);
-                        count++;
-                    }
-                    
-                    // 慢速請求避免被鎖 (1秒/筆)
-                    await new Promise(r => setTimeout(r, 1000)); 
-
-                } catch(e) { console.error('Map error', e); }
             }
             
             loader.style.display = 'none';
-            
-            if(count > 0) {
-                map.fitBounds(markersGroup.getBounds().pad(0.1));
-            } else {
-                alert("找不到任何有效地址，請檢查卡片資料");
-            }
+            if(count > 0) map.fitBounds(markersGroup.getBounds().pad(0.1));
+            else alert("無法定位任何地點，請檢查地址欄位是否正確");
         }
 
         fetchItems();
