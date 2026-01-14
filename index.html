@@ -9,6 +9,10 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@300;400&display=swap" rel="stylesheet">
     <style>
         /* --- 全局設定 --- */
@@ -89,7 +93,6 @@
             transform: translateY(1px);
         }
 
-        /* 搜尋區塊佈局 */
         .search-container {
             display: flex; gap: 15px; margin-bottom: 20px;
         }
@@ -104,7 +107,6 @@
         .keyword-row input { flex: 1; text-align: center; font-size: 12px;}
         .quick-search-row { display: flex; gap: 8px; }
 
-        /* 類別按鈕 */
         .category-group { 
             display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; 
         }
@@ -152,7 +154,6 @@
             background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;
         }
 
-        /* 篩選器 */
         .filter-wrapper {
             display: flex; gap: 8px; margin-bottom: 20px; align-items: center;
         }
@@ -179,7 +180,6 @@
             cursor: pointer; white-space: nowrap; font-size: 12px; flex-shrink: 0;
         }
 
-        /* 卡片 */
         .grid-container { 
             display: flex; overflow-x: auto; scroll-snap-type: x mandatory; 
             gap: 20px; padding-bottom: 20px; -webkit-overflow-scrolling: touch;
@@ -248,7 +248,6 @@
         .action-btn-edit { flex: 3; color: white; background-color: var(--accent-pink); }
         .action-btn-reset { flex: 1; font-size: 12px; color: var(--text-light); }
 
-        /* 懸浮按鈕群 */
         .fab-container {
             position: fixed; bottom: 20px; right: 20px; z-index: 1000;
             display: flex; flex-direction: column; gap: 15px;
@@ -273,9 +272,6 @@
             padding: 15px; display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 2001; background: #E8E8E8;
         }
-        #full-map { flex: 1; width: 100%; background: #e5e5e5; }
-        
-        /* Loading Overlay inside Map */
         #map-loading {
             position: absolute; top: 100px; left: 50%; transform: translateX(-50%);
             background: rgba(0,0,0,0.8); color: white; padding: 10px 20px;
@@ -283,8 +279,8 @@
             font-size: 13px; text-align: center; white-space: nowrap;
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
-
-        /* 純 CSS 圖釘 */
+        #full-map { flex: 1; width: 100%; background: #e5e5e5; }
+        
         .marker-pin {
             width: 32px; height: 32px;
             border-radius: 50% 50% 50% 0;
@@ -297,14 +293,11 @@
             box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
             border: 2px solid white;
         }
-        /* Emoji */
         .marker-pin::after {
             content: attr(data-emoji);
             transform: rotate(45deg);
             font-size: 16px;
         }
-        
-        /* 類別顏色 */
         .pin-shop { background: #7A90A4; }
         .pin-food { background: #F59E0B; }
         .pin-spot { background: #10B981; }
@@ -314,7 +307,18 @@
         .leaflet-popup-content-wrapper { border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.2); }
         .popup-img { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; margin-bottom: 5px; cursor: pointer;}
         .popup-title { font-weight: bold; font-size: 14px; margin-bottom: 3px; }
+        /* Fix 1: Popup Feature Note */
+        .popup-feature { font-size: 12px; color: #7A90A4; margin-bottom: 3px; font-weight: bold;}
         .popup-desc { font-size: 12px; color: #666; }
+
+        /* MarkerCluster Custom Style (Overriding defaults) */
+        .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
+            background-color: rgba(122, 144, 164, 0.6);
+        }
+        .marker-cluster div {
+            background-color: rgba(122, 144, 164, 0.9);
+            color: white; font-weight: bold;
+        }
 
         .hidden { display: none; }
 
@@ -452,7 +456,7 @@
             <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '旅館', this)"><span class="cat-emoji">🏨</span><span class="cat-text">旅館</span></button>
             <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '其他', this)"><span class="cat-emoji">💭</span><span class="cat-text">其他</span></button>
         </div>
-        <input type="hidden" id="edit-category" value="">
+        <input type="hidden" id="edit-category" value="購物">
 
         <div class="input-group">
             <span class="input-label">主題名稱</span>
@@ -555,6 +559,7 @@
         </div>
         <div id="map-loading">🔍 正在啟動地圖引擎...</div>
         <div id="full-map"></div>
+        <p style="text-align:center; font-size:12px; color:#666; padding:5px; background:#fff;">*圖釘會自動合併，請點擊或放大地圖</p>
     </div>
 
     <script>
@@ -565,7 +570,7 @@
         let allItems = []; 
         let filteredItems = [];
         let map = null; 
-        let markersGroup = null; 
+        let markersCluster = null; 
 
         window.onscroll = function() {
             const btn = document.getElementById('go-top-btn');
@@ -995,16 +1000,16 @@
             window.open(url, '_blank');
         }
 
-        // --- MAP FUNCTIONS (Fix: 強制刷新與三段搜尋) ---
+        // --- MAP FUNCTIONS (Fix 2: Cluster & Geolocation) ---
         function showMap() {
             document.getElementById('map-overlay').style.display = 'flex';
             setTimeout(() => {
                 if(!map) initMap();
                 else {
-                    map.invalidateSize(); // 關鍵修復：解決破圖
-                    plotItemsOnMap();
+                    map.invalidateSize();
+                    getUserLocation(); // 每次打開重新定位
                 }
-            }, 100);
+            }, 200);
         }
 
         function closeMap() {
@@ -1018,12 +1023,52 @@
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
 
-            markersGroup = L.featureGroup().addTo(map); 
-            plotItemsOnMap();
+            // Fix 2: Marker Cluster Group
+            markersCluster = L.markerClusterGroup({
+                disableClusteringAtZoom: 16
+            });
+            map.addLayer(markersCluster);
+            
+            getUserLocation(); // 初始化時定位
+        }
+
+        function getUserLocation() {
+            const loader = document.getElementById('map-loading');
+            loader.innerText = "🛰️ 正在定位中...";
+            loader.style.display = 'block';
+
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        // 藍點標記使用者位置
+                        L.circleMarker([lat, lng], {
+                            radius: 8,
+                            fillColor: "#3b82f6",
+                            color: "#fff",
+                            weight: 2,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        }).addTo(map).bindPopup("你現在位置");
+
+                        map.setView([lat, lng], 13); // 鎖定在 10km 左右範圍 (Zoom 13)
+                        plotItemsOnMap(); // 開始畫圖釘
+                    },
+                    (error) => {
+                        console.warn("Geolocation denied or error:", error);
+                        loader.innerText = "無法定位，顯示全區...";
+                        setTimeout(() => plotItemsOnMap(), 1000);
+                    }
+                );
+            } else {
+                plotItemsOnMap();
+            }
         }
 
         async function plotItemsOnMap() {
-            markersGroup.clearLayers(); 
+            markersCluster.clearLayers(); 
             const loader = document.getElementById('map-loading');
             loader.style.display = 'block';
 
@@ -1040,24 +1085,25 @@
 
             for(let i = 0; i < total; i++) {
                 let item = allItems[i];
-                let loc = item.location || '';
-                
-                // 網址過濾：如果地址欄是網址，跳過
-                if(loc.includes('http')) loc = ''; 
-
+                // 優先使用詳細地址，若無則用 "都市+標題" (Fix 1: 三段式搜尋)
                 let queryList = [];
-                // 策略 1: 詳細地址
-                if(loc) queryList.push(loc);
-                // 策略 2: 城市 + 標題
+                
+                // 1. 詳細地址 (過濾 http)
+                if(item.location && !item.location.startsWith('http')) queryList.push(item.location);
+                // 2. 城市 + 標題
                 if(item.city && item.title) queryList.push(item.city + " " + item.title);
-                // 策略 3: 只搜標題
+                // 3. 標題
                 if(item.title) queryList.push(item.title);
-
+                
                 if(queryList.length === 0) continue;
 
                 let found = false;
                 for(let q of queryList) {
-                    loader.innerText = `🔍 搜尋中 (${i+1}/${total}): ${q}`;
+                    // 如果已經找到就跳過後面的策略
+                    if(found) break;
+
+                    loader.innerText = `🔍 分析地址 (${i+1}/${total}): ${q.substring(0, 10)}...`;
+                    
                     try {
                         const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`;
                         const res = await fetch(url);
@@ -1076,29 +1122,32 @@
                                 popupAnchor: [0, -35]
                             });
 
-                            const marker = L.marker([lat, lon], {icon: myIcon}).addTo(markersGroup);
+                            const marker = L.marker([lat, lon], {icon: myIcon});
                             
+                            // Fix 1: Popup Feature Note
                             const popupContent = `
-                                <div>
+                                <div style="text-align:center;">
                                     ${item.image_url ? `<img src="${item.image_url}" class="popup-img" onclick="window.open('${item.refUrl || '#'}')">` : ''}
                                     <div class="popup-title">${item.title}</div>
-                                    <button class="convex-btn" style="margin-top:5px; padding:5px; width:100%; font-size:10px;" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}')">🚗 導航</button>
+                                    ${item.feature ? `<div class="popup-feature">✨ ${item.feature}</div>` : ''}
+                                    <div class="popup-desc">${item.category}</div>
+                                    <button class="convex-btn" style="margin-top:5px; padding:5px 10px; width:100%; font-size:12px;" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}')">🚗 導航</button>
                                 </div>
                             `;
                             marker.bindPopup(popupContent);
+                            markersCluster.addLayer(marker); // 加入聚合群組
                             count++;
                             found = true;
-                            break; // 找到就跳出，不用試下一個關鍵字
                         }
                     } catch(e) {}
                     
-                    await new Promise(r => setTimeout(r, 1000)); // 慢速查詢避免被鎖
+                    // 慢速請求 (安全閥)
+                    await new Promise(r => setTimeout(r, 1000));
                 }
             }
             
             loader.style.display = 'none';
-            if(count > 0) map.fitBounds(markersGroup.getBounds().pad(0.1));
-            else alert("無法定位任何地點，請檢查地址欄位是否正確");
+            if(count === 0) alert("地圖上找不到任何地點，請檢查地址欄位");
         }
 
         fetchItems();
