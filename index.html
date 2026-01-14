@@ -70,16 +70,16 @@
 
         .btn-full { width: 100%; }
 
-        /* Fix 1: 關鍵字按鈕樣式 (繼承 convex-btn 但指定藍色字) */
+        /* Fix 1: 輔助按鈕樣式 (完全比照 convex-btn，字體藍色) */
         .btn-quick { 
-            /* 基礎樣式繼承 convex-btn */
             background: #E8E8E8; border: none;
             padding: 8px 12px; border-radius: 12px; cursor: pointer;
             font-weight: bold; font-size: 12px;
             box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
             transition: all 0.2s ease;
             flex: 1; white-space: nowrap;
-            color: var(--accent-blue); /* 指定藍色 */
+            color: var(--accent-blue); /* 藍色字體 */
+            display: flex; align-items: center; justify-content: center;
         }
         .btn-quick:active {
             box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
@@ -123,13 +123,13 @@
         }
         .input-row-multi { display: flex; gap: 8px; width: 100%; }
 
-        /* Fix 3: 平台輸入框水平排列 */
+        /* Fix 3: 平台輸入框水平排列 (確保不換行) */
         .platform-wrapper {
-            display: flex; gap: 5px; width: 100%;
+            display: flex; gap: 5px; width: 100%; flex-wrap: nowrap;
         }
-        .platform-select { flex: 1; width: 100%; } /* 預設佔滿 */
+        .platform-select { flex-grow: 1; width: auto; transition: width 0.3s; } 
         .platform-other { 
-            display: none; width: 40%; /* 彈出時佔 40% */
+            display: none; width: 50%; /* 彈出時佔 50% */
         }
         .platform-other.show { display: block; }
 
@@ -211,11 +211,15 @@
 
         .card-body { padding: 15px; display: flex; flex-direction: column; flex: 1; }
 
-        .card-meta-row { display: flex; gap: 6px; margin-bottom: 8px; justify-content: center;}
+        /* Fix 4: 資料格排版 - 居中、固定寬度 */
+        .card-meta-row { 
+            display: flex; gap: 6px; margin-bottom: 8px; justify-content: center; /* 居中 */
+        }
         .meta-box {
-            flex: 1; /* 自動均分 */
+            width: 23%; /* 固定寬度，一排4個 */
+            flex: 0 0 auto; /* 不放大也不縮小 */
             font-size: 11px; color: var(--text-light); text-align: center;
-            padding: 6px 2px; border-radius: 10px; background: #E8E8E8;
+            padding: 6px 0px; border-radius: 10px; background: #E8E8E8;
             box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
@@ -339,8 +343,7 @@
                     <select id="add-platform" class="sunken-input platform-select" onchange="toggleOtherInput('add')">
                         <option value="">(無)</option>
                         <option value="官網">官網</option>
-                        <option value="實體">實體</option>
-                        <option value="蝦皮">蝦皮</option>
+                        <option value="實體">實體</option> <option value="蝦皮">蝦皮</option>
                         <option value="momo">momo</option>
                         <option value="PChome">PChome</option>
                         <option value="淘寶">淘寶</option>
@@ -839,8 +842,7 @@
                     imgContent = `<div class="no-img-box"></div>`; 
                 }
 
-                // Fix 4: 卡片資料隱藏邏輯 (有值才顯示 div)
-                // Fix 5: 平台樣式回歸一般 (移除藍色樣式)
+                // Fix 4: 卡片資料隱藏邏輯 (Fix 5: 樣式統一)
                 let metaHtml = '<div class="card-meta-row">';
                 
                 // 類別 (一定有)
