@@ -2,9 +2,13 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>⚜️收藏清單⚜️</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@300;400&display=swap" rel="stylesheet">
     <style>
         /* --- 全局設定 --- */
@@ -28,7 +32,7 @@
             padding: 15px;
             max-width: 900px; 
             margin: 0 auto; 
-            padding-bottom: 80px; 
+            padding-bottom: 100px; /* 留給懸浮按鈕 */
         }
 
         h1 { 
@@ -69,8 +73,7 @@
         }
 
         .btn-full { width: 100%; }
-
-        /* Fix 1: 輔助按鈕樣式 (完全比照 convex-btn，字體藍色) */
+        
         .btn-quick { 
             background: #E8E8E8; border: none;
             padding: 8px 12px; border-radius: 12px; cursor: pointer;
@@ -78,7 +81,7 @@
             box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
             transition: all 0.2s ease;
             flex: 1; white-space: nowrap;
-            color: var(--accent-blue); /* 藍色字體 */
+            color: var(--accent-blue);
             display: flex; align-items: center; justify-content: center;
         }
         .btn-quick:active {
@@ -123,16 +126,13 @@
         }
         .input-row-multi { display: flex; gap: 8px; width: 100%; }
 
-        /* Fix 3: 平台輸入框水平排列 (確保不換行) */
+        /* 平台輸入框水平排列 */
         .platform-wrapper {
             display: flex; gap: 5px; width: 100%; flex-wrap: nowrap;
         }
         .platform-select { flex-grow: 1; width: auto; transition: width 0.3s; } 
-        .platform-other { 
-            display: none; width: 50%; /* 彈出時佔 50% */
-        }
+        .platform-other { display: none; width: 50%; }
         .platform-other.show { display: block; }
-
 
         /* 圖片預覽 */
         .img-preview-box {
@@ -211,13 +211,11 @@
 
         .card-body { padding: 15px; display: flex; flex-direction: column; flex: 1; }
 
-        /* Fix 4: 資料格排版 - 居中、固定寬度 */
         .card-meta-row { 
-            display: flex; gap: 6px; margin-bottom: 8px; justify-content: center; /* 居中 */
+            display: flex; gap: 6px; margin-bottom: 8px; justify-content: center;
         }
         .meta-box {
-            width: 23%; /* 固定寬度，一排4個 */
-            flex: 0 0 auto; /* 不放大也不縮小 */
+            width: 23%; flex: 0 0 auto;
             font-size: 11px; color: var(--text-light); text-align: center;
             padding: 6px 0px; border-radius: 10px; background: #E8E8E8;
             box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
@@ -250,21 +248,44 @@
         .btn-del { color: var(--accent-red); }
         .btn-map { color: #333; }
 
-        /* 新增按鈕區塊 */
         .action-row { display: flex; gap: 10px; margin-top: 15px; }
         .action-btn-add { flex: 3; color: white; background-color: var(--accent-blue); }
         .action-btn-edit { flex: 3; color: white; background-color: var(--accent-pink); }
         .action-btn-reset { flex: 1; font-size: 12px; color: var(--text-light); }
 
-        #go-top-btn {
-            position: fixed; bottom: 20px; right: 20px;
+        /* 懸浮按鈕群 */
+        .fab-container {
+            position: fixed; bottom: 20px; right: 20px; z-index: 1000;
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .fab-btn {
             width: 50px; height: 50px; border-radius: 50%;
             background: #E8E8E8; color: var(--text-main);
             border: none; cursor: pointer;
             box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
             display: flex; align-items: center; justify-content: center;
-            font-size: 20px; z-index: 999; opacity: 0.8; transition: 0.3s;
+            font-size: 20px; opacity: 0.9; transition: 0.3s;
         }
+        .fab-btn:active { box-shadow: inset 2px 2px 5px var(--shadow-dark); transform: scale(0.95); }
+        
+        /* Map View Overlay */
+        #map-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #E8E8E8; z-index: 2000; display: none;
+            flex-direction: column;
+        }
+        #map-header {
+            padding: 15px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 2001; background: #E8E8E8;
+        }
+        #full-map { flex: 1; width: 100%; }
+        
+        /* Leaflet Popup Style */
+        .leaflet-popup-content-wrapper { border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.2); }
+        .popup-img { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; margin-bottom: 5px; cursor: pointer;}
+        .popup-title { font-weight: bold; font-size: 14px; margin-bottom: 3px; }
+        .popup-desc { font-size: 12px; color: #666; }
+
         .hidden { display: none; }
 
         @media(min-width: 650px) {
@@ -343,7 +364,8 @@
                     <select id="add-platform" class="sunken-input platform-select" onchange="toggleOtherInput('add')">
                         <option value="">(無)</option>
                         <option value="官網">官網</option>
-                        <option value="實體">實體</option> <option value="蝦皮">蝦皮</option>
+                        <option value="實體">實體</option>
+                        <option value="蝦皮">蝦皮</option>
                         <option value="momo">momo</option>
                         <option value="PChome">PChome</option>
                         <option value="淘寶">淘寶</option>
@@ -491,7 +513,19 @@
         <p style="text-align:center; width:100%; color:#999;">載入中...</p>
     </div>
 
-    <button id="go-top-btn" onclick="scrollToTop()" class="hidden">⬆</button>
+    <div class="fab-container">
+        <button class="fab-btn" onclick="showMap()">🗺️</button>
+        <button class="fab-btn hidden" id="go-top-btn" onclick="scrollToTop()">⬆</button>
+    </div>
+
+    <div id="map-overlay">
+        <div id="map-header">
+            <h3 style="margin:0; color:var(--text-main);">📍 收藏地圖</h3>
+            <button class="convex-btn" onclick="closeMap()">❌ 關閉</button>
+        </div>
+        <div id="full-map"></div>
+        <p style="text-align:center; font-size:12px; color:#666; padding:5px; background:#fff;">*自動定位僅供參考，若位置不準請檢查地址詳細度</p>
+    </div>
 
     <script>
         const supabaseUrl = 'https://ocrbkyclrhhnyvzosbyc.supabase.co';
@@ -500,6 +534,7 @@
 
         let allItems = []; 
         let filteredItems = [];
+        let map = null; // Leaflet map instance
 
         window.onscroll = function() {
             const btn = document.getElementById('go-top-btn');
@@ -514,7 +549,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Fix 3: 水平切換其他平台輸入框
         function toggleOtherInput(mode) {
             const select = document.getElementById(`${mode}-platform`);
             const otherInput = document.getElementById(`${mode}-platform-other`);
@@ -776,8 +810,8 @@
             const cats = new Set(), countries = new Set(), cities = new Set(), plats = new Set();
             allItems.forEach(i => {
                 if(i.category) cats.add(i.category);
-                if(i.country && i.country !== 'null') countries.add(i.country);
-                if(i.city && i.city !== 'null') cities.add(i.city);
+                if(i.country && i.country !== 'null' && i.country !== '-') countries.add(i.country);
+                if(i.city && i.city !== 'null' && i.city !== '-') cities.add(i.city);
                 if(i.platform) plats.add(i.platform);
             });
 
@@ -842,26 +876,14 @@
                     imgContent = `<div class="no-img-box"></div>`; 
                 }
 
-                // Fix 4: 卡片資料隱藏邏輯 (Fix 5: 樣式統一)
+                // Fix 4: 卡片資料隱藏邏輯 (空值不顯示)
                 let metaHtml = '<div class="card-meta-row">';
-                
                 // 類別 (一定有)
                 metaHtml += `<div class="meta-box">${item.category}</div>`;
                 
-                // 國家
-                if (item.country && item.country !== '-') {
-                    metaHtml += `<div class="meta-box">${item.country}</div>`;
-                }
-                
-                // 都市
-                if (item.city && item.city !== '-') {
-                    metaHtml += `<div class="meta-box">${item.city}</div>`;
-                }
-                
-                // 平台
-                if (item.platform && item.platform !== '-') {
-                    metaHtml += `<div class="meta-box">${item.platform}</div>`;
-                }
+                if (item.country && item.country !== '-') metaHtml += `<div class="meta-box">${item.country}</div>`;
+                if (item.city && item.city !== '-') metaHtml += `<div class="meta-box">${item.city}</div>`;
+                if (item.platform && item.platform !== '-') metaHtml += `<div class="meta-box">${item.platform}</div>`;
                 
                 metaHtml += '</div>';
 
@@ -944,6 +966,90 @@
             if(type === 'map') url = `https://www.google.com/maps/search/${encodeURIComponent(query)}`;
 
             window.open(url, '_blank');
+        }
+
+        // --- MAP FUNCTIONS ---
+        function showMap() {
+            document.getElementById('map-overlay').style.display = 'flex';
+            if(!map) initMap();
+            else plotItemsOnMap();
+        }
+
+        function closeMap() {
+            document.getElementById('map-overlay').style.display = 'none';
+        }
+
+        function initMap() {
+            // 預設中心點 (台灣)
+            map = L.map('full-map').setView([23.6, 121.0], 7);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            plotItemsOnMap();
+        }
+
+        async function plotItemsOnMap() {
+            // 清除舊標記 (除了底圖)
+            map.eachLayer((layer) => {
+                if(layer instanceof L.Marker) { map.removeLayer(layer); }
+            });
+
+            // 顏色定義
+            const catColors = {
+                '購物': 'blue', '餐廳': 'orange', '景點': 'green', '旅館': 'violet', '其他': 'grey'
+            };
+
+            // 逐一處理有地址或名稱的項目
+            for(let item of allItems) {
+                // 優先使用 詳細地址 > 都市 > 名稱
+                let query = item.location;
+                if(!query) query = item.title;
+                if(!query) continue; // 沒資料就不標
+
+                // 使用 Nominatim 免費 Geocoding
+                // 注意：這有頻率限制，實務上最好存起來
+                try {
+                    // 為了避免瞬間太多請求被擋，這裡只做簡易示範
+                    // 真正要準確需要後端 geocoding
+                    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+                    
+                    fetch(url).then(res => res.json()).then(data => {
+                        if(data && data.length > 0) {
+                            const lat = data[0].lat;
+                            const lon = data[0].lon;
+                            
+                            // 製作顏色標記 (使用 CSS Filter 濾鏡變色)
+                            const color = catColors[item.category] || 'blue';
+                            const myIcon = new L.Icon({
+                                iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
+                                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                                iconSize: [25, 41],
+                                iconAnchor: [12, 41],
+                                popupAnchor: [1, -34],
+                                shadowSize: [41, 41]
+                            });
+
+                            const marker = L.marker([lat, lon], {icon: myIcon}).addTo(map);
+                            
+                            const popupContent = `
+                                <div>
+                                    ${item.image_url ? `<img src="${item.image_url}" class="popup-img" onclick="window.open('${item.refUrl || '#'}')">` : ''}
+                                    <div class="popup-title">${item.title}</div>
+                                    <div class="popup-desc">${item.category} | ${item.location || ''}</div>
+                                    <button class="convex-btn" style="margin-top:5px; padding:5px; width:100%; font-size:10px;" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}')">🚗 導航</button>
+                                </div>
+                            `;
+                            marker.bindPopup(popupContent);
+                        }
+                    });
+                    
+                    // 簡單延遲避免被鎖
+                    await new Promise(r => setTimeout(r, 800)); 
+
+                } catch(e) { console.error('Map error', e); }
+            }
         }
 
         fetchItems();
