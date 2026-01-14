@@ -273,25 +273,42 @@
             padding: 15px; display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 2001; background: #E8E8E8;
         }
-        #map-status { font-size: 12px; color: var(--accent-blue); margin-left: 10px; }
         #full-map { flex: 1; width: 100%; background: #e5e5e5; }
         
-        /* --- Fix 2: 穩定的 SVG 圖釘樣式 --- */
-        .custom-pin {
-            width: 36px; height: 36px;
+        /* Loading Overlay inside Map */
+        #map-loading {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7); color: white; padding: 15px 25px;
+            border-radius: 20px; z-index: 3000; display: none;
+            font-size: 14px; text-align: center;
+        }
+
+        /* --- v13.0: 穩定的純 CSS 圖釘 (放棄 SVG) --- */
+        .marker-pin {
+            width: 32px; height: 32px;
+            border-radius: 50% 50% 50% 0;
+            background: #333; /* 預設黑 */
+            position: absolute;
+            transform: rotate(-45deg);
+            left: 50%; top: 50%;
+            margin: -15px 0 0 -15px;
             display: flex; align-items: center; justify-content: center;
-            position: relative;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            border: 2px solid white;
         }
-        /* 底座 SVG */
-        .pin-svg {
-            width: 100%; height: 100%;
-            filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.3));
+        /* Emoji 在圖釘內轉正 */
+        .marker-pin::after {
+            content: attr(data-emoji);
+            transform: rotate(45deg);
+            font-size: 16px;
         }
-        /* 上面的 Emoji */
-        .pin-emoji {
-            position: absolute; top: 3px; left: 50%; transform: translateX(-50%);
-            font-size: 18px; z-index: 2;
-        }
+        
+        /* 類別顏色 */
+        .pin-shop { background: #7A90A4; }
+        .pin-food { background: #F59E0B; }
+        .pin-spot { background: #10B981; }
+        .pin-hotel { background: #8B5CF6; }
+        .pin-other { background: #6B7280; }
 
         .leaflet-popup-content-wrapper { border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.2); }
         .popup-img { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; margin-bottom: 5px; cursor: pointer;}
@@ -532,11 +549,11 @@
 
     <div id="map-overlay">
         <div id="map-header">
-            <h3 style="margin:0; color:var(--text-main);">📍 收藏地圖 <span id="map-status"></span></h3>
+            <h3 style="margin:0; color:var(--text-main);">📍 收藏地圖</h3>
             <button class="convex-btn" onclick="closeMap()">❌ 關閉</button>
         </div>
+        <div id="map-loading">🔍 正在啟動地圖引擎...</div>
         <div id="full-map"></div>
-        <p style="text-align:center; font-size:12px; color:#666; padding:5px; background:#fff;">*自動定位僅供參考，若圖釘未顯示請檢查地址</p>
     </div>
 
     <script>
@@ -889,7 +906,6 @@
                     imgContent = `<div class="no-img-box"></div>`; 
                 }
 
-                // Fix 4: 資料格隱藏邏輯 + 固定寬度
                 let metaHtml = '<div class="card-meta-row">';
                 metaHtml += `<div class="meta-box">${item.category}</div>`;
                 if (item.country && item.country !== '-') metaHtml += `<div class="meta-box">${item.country}</div>`;
@@ -984,7 +1000,7 @@
             setTimeout(() => {
                 if(!map) initMap();
                 else {
-                    map.invalidateSize();
+                    map.invalidateSize(); // 關鍵修復：強制重繪地圖
                     plotItemsOnMap();
                 }
             }, 100);
@@ -996,30 +1012,39 @@
 
         function initMap() {
             map = L.map('full-map').setView([23.6, 121.0], 7);
+            
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
+
             markersGroup = L.featureGroup().addTo(map); 
             plotItemsOnMap();
         }
 
         async function plotItemsOnMap() {
             markersGroup.clearLayers(); 
-            document.getElementById('map-status').innerText = "搜尋座標中...";
-
+            
+            const loader = document.getElementById('map-loading');
+            loader.style.display = 'block';
+            
             const catConfig = {
-                '購物': { color: '#7A90A4', icon: '🛒' },
-                '餐廳': { color: '#F59E0B', icon: '🍽️' },
-                '景點': { color: '#10B981', icon: '🌎' },
-                '旅館': { color: '#8B5CF6', icon: '🏨' },
-                '其他': { color: '#6B7280', icon: '💭' }
+                '購物': { class: 'pin-shop', icon: '🛒' },
+                '餐廳': { class: 'pin-food', icon: '🍽️' },
+                '景點': { class: 'pin-spot', icon: '🌎' },
+                '旅館': { class: 'pin-hotel', icon: '🏨' },
+                '其他': { class: 'pin-other', icon: '💭' }
             };
 
             let count = 0;
-            for(let item of allItems) {
+            let total = allItems.length;
+
+            for(let i = 0; i < total; i++) {
+                let item = allItems[i];
                 let query = item.location;
                 if(!query) query = item.title;
                 if(!query) continue; 
+
+                loader.innerText = `🔍 正在搜尋地點 (${i+1}/${total})...`;
 
                 if(!query.includes('台灣') && !query.includes('Taiwan') && item.city) {
                     query = "台灣 " + item.city + " " + query;
@@ -1028,54 +1053,50 @@
                 try {
                     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
                     
-                    fetch(url).then(res => res.json()).then(data => {
-                        if(data && data.length > 0) {
-                            const lat = data[0].lat;
-                            const lon = data[0].lon;
-                            const conf = catConfig[item.category] || catConfig['其他'];
-                            
-                            // Fix 2: SVG Marker
-                            const svgPin = `
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="${conf.color}" class="pin-svg">
-                                    <path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/>
-                                </svg>
-                            `;
+                    const res = await fetch(url);
+                    const data = await res.json();
 
-                            const myIcon = L.divIcon({
-                                className: 'custom-div-icon',
-                                html: `<div class="custom-pin">
-                                         ${svgPin}
-                                         <div class="pin-emoji">${conf.icon}</div>
-                                       </div>`,
-                                iconSize: [36, 36],
-                                iconAnchor: [18, 36],
-                                popupAnchor: [0, -36]
-                            });
+                    if(data && data.length > 0) {
+                        const lat = data[0].lat;
+                        const lon = data[0].lon;
+                        const conf = catConfig[item.category] || catConfig['其他'];
+                        
+                        // Fix 2: 穩定的 CSS 圖釘
+                        const myIcon = L.divIcon({
+                            className: 'custom-div-icon',
+                            html: `<div class="marker-pin ${conf.class}" data-emoji="${conf.icon}"></div>`,
+                            iconSize: [30, 42],
+                            iconAnchor: [15, 42],
+                            popupAnchor: [0, -35]
+                        });
 
-                            const marker = L.marker([lat, lon], {icon: myIcon}).addTo(markersGroup);
-                            
-                            const popupContent = `
-                                <div>
-                                    ${item.image_url ? `<img src="${item.image_url}" class="popup-img" onclick="window.open('${item.refUrl || '#'}')">` : ''}
-                                    <div class="popup-title">${item.title}</div>
-                                    <div class="popup-desc">${item.category} | ${item.location || ''}</div>
-                                    <button class="convex-btn" style="margin-top:5px; padding:5px; width:100%; font-size:10px;" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}')">🚗 導航</button>
-                                </div>
-                            `;
-                            marker.bindPopup(popupContent);
-                            count++;
-                            document.getElementById('map-status').innerText = `已標記 ${count} 個地點...`;
-                        }
-                    });
+                        const marker = L.marker([lat, lon], {icon: myIcon}).addTo(markersGroup);
+                        
+                        const popupContent = `
+                            <div>
+                                ${item.image_url ? `<img src="${item.image_url}" class="popup-img" onclick="window.open('${item.refUrl || '#'}')">` : ''}
+                                <div class="popup-title">${item.title}</div>
+                                <div class="popup-desc">${item.category}</div>
+                                <button class="convex-btn" style="margin-top:5px; padding:5px; width:100%; font-size:10px;" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}')">🚗 導航</button>
+                            </div>
+                        `;
+                        marker.bindPopup(popupContent);
+                        count++;
+                    }
                     
-                    await new Promise(r => setTimeout(r, 600)); 
+                    // 慢速請求避免被鎖 (1秒/筆)
+                    await new Promise(r => setTimeout(r, 1000)); 
 
                 } catch(e) { console.error('Map error', e); }
             }
-            setTimeout(() => {
-                 if(count > 0) map.fitBounds(markersGroup.getBounds().pad(0.1));
-                 document.getElementById('map-status').innerText = "";
-            }, 2000);
+            
+            loader.style.display = 'none';
+            
+            if(count > 0) {
+                map.fitBounds(markersGroup.getBounds().pad(0.1));
+            } else {
+                alert("找不到任何有效地址，請檢查卡片資料");
+            }
         }
 
         fetchItems();
