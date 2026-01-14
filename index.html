@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚜️收藏清單 (Pro Max)⚜️</title>
+    <title>⚜️收藏清單⚜️</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -51,14 +51,16 @@
             background: transparent; border: none; border-radius: 10px;
             padding: 8px 10px; width: 100%; box-sizing: border-box; 
             color: var(--text-main); font-size: 14px; outline: none;
+            /* 保持凹陷感不變 */
             box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
             transition: 0.3s;
+            height: 38px; /* Fix 2: 強制高度統一 */
         }
         .sunken-input:focus {
             box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
         }
 
-        /* --- 凸起感按鈕 --- */
+        /* --- 凸起感按鈕 (通用) --- */
         .convex-btn {
             background: #E8E8E8; color: var(--text-main); border: none;
             padding: 8px 12px; border-radius: 12px; cursor: pointer;
@@ -66,6 +68,8 @@
             box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
             transition: all 0.2s ease;
             display: flex; align-items: center; justify-content: center;
+            height: 38px; /* Fix 2: 強制高度統一 */
+            box-sizing: border-box;
         }
         .convex-btn:active {
             box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
@@ -74,6 +78,24 @@
         .convex-btn.active {
             color: white; background-color: var(--accent-blue);
             box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2), inset -2px -2px 4px rgba(255,255,255,0.1);
+        }
+
+        /* Fix 3: 轉換箭頭按鈕 (平面化) */
+        .btn-arrow-flat {
+            background: var(--bg-color); /* 背景同底色 */
+            color: var(--accent-blue); /* 莫蘭迪藍 */
+            border: none; padding: 0 10px; font-size: 20px; cursor: pointer;
+            box-shadow: none; /* 移除陰影 */
+            display: flex; align-items: center; justify-content: center;
+            height: 38px;
+        }
+        .btn-arrow-flat:active { transform: translateX(2px); } /* 點擊微動 */
+
+        /* Fix 1: 面板樣式 - 移除白光，改用深色陰影 */
+        .panel-container {
+            padding: 20px; border-radius: 20px; background-color: var(--bg-color);
+            box-shadow: 5px 5px 15px var(--shadow-dark), -2px -2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
         }
 
         .btn-full { width: 100%; }
@@ -87,6 +109,8 @@
             flex: 1; white-space: nowrap;
             color: var(--accent-blue);
             display: flex; align-items: center; justify-content: center;
+            height: 38px; /* Fix 2: 高度統一 */
+            box-sizing: border-box;
         }
         .btn-quick:active {
             box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
@@ -111,19 +135,10 @@
             display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; 
         }
         .cat-btn-layout {
-            flex-direction: column; gap: 5px; padding: 10px 2px; height: 100%;
+            flex-direction: column; gap: 5px; padding: 10px 2px; height: 100%; height: auto; /* reset height */
         }
         .cat-emoji { font-size: 20px; line-height: 1; }
         .cat-text { font-size: 11px; white-space: nowrap; }
-
-        /* Fix 1: 面板樣式調整 - 移除左上白光，改用純粹的陰影 */
-        .panel-container {
-            padding: 20px; border-radius: 20px; background-color: var(--bg-color);
-            /* 舊設定: box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light); */
-            /* 新設定: 只有深色陰影，營造扎實的浮起感，不發光 */
-            box-shadow: 5px 5px 15px var(--shadow-dark), -2px -2px 5px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
-        }
         
         .input-group { margin-bottom: 12px; width: 100%; }
         .input-label {
@@ -157,6 +172,7 @@
             background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;
         }
 
+        /* 篩選器 */
         .filter-wrapper {
             display: flex; gap: 8px; margin-bottom: 20px; align-items: center;
         }
@@ -166,12 +182,14 @@
         }
         .filter-scroll-area::-webkit-scrollbar { display: none; }
 
+        /* Fix 4: 篩選列陰影優化 (移除白光) */
         .filter-select {
             min-width: 100px;
             background: #E8E8E8; border: none; 
             padding: 8px 12px; border-radius: 12px;
             color: var(--text-main); font-size: 12px;
-            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+            /* New Shadow */
+            box-shadow: 5px 5px 10px var(--shadow-dark), -2px -2px 5px rgba(0,0,0,0.05);
             outline: none; appearance: none; 
             background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235F6F6E%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
             background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;
@@ -179,10 +197,12 @@
         .filter-reset-btn {
             background: var(--morandi-white); color: var(--text-light);
             border: none; padding: 0 12px; height: 36px; border-radius: 12px;
-            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+            /* New Shadow */
+            box-shadow: 5px 5px 10px var(--shadow-dark), -2px -2px 5px rgba(0,0,0,0.05);
             cursor: pointer; white-space: nowrap; font-size: 12px; flex-shrink: 0;
         }
 
+        /* Fix 4: 卡片陰影優化 (移除白光) */
         .grid-container { 
             display: flex; overflow-x: auto; scroll-snap-type: x mandatory; 
             gap: 20px; padding-bottom: 20px; -webkit-overflow-scrolling: touch;
@@ -192,7 +212,8 @@
         .card { 
             width: 280px; height: 420px; flex-shrink: 0; scroll-snap-align: center;
             background: #E8E8E8; border-radius: 20px; overflow: hidden; 
-            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+            /* New Shadow */
+            box-shadow: 6px 6px 12px var(--shadow-dark), -2px -2px 6px rgba(0,0,0,0.05);
             display: flex; flex-direction: column; position: relative;
         }
 
@@ -284,6 +305,7 @@
         }
         #full-map { flex: 1; width: 100%; background: #e5e5e5; }
         
+        /* Pin Picker Modal */
         #picker-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); z-index: 3000; display: none;
@@ -297,6 +319,7 @@
         #picker-map { flex: 1; width: 100%; }
         #picker-controls { padding: 15px; text-align: center; background: #eee; }
 
+        /* CSS Pin */
         .marker-pin {
             width: 32px; height: 32px;
             border-radius: 50% 50% 50% 0;
@@ -357,7 +380,7 @@
 </head>
 <body>
 
-    <h1>⚜️收藏清單 (Pro Max)⚜️</h1>
+    <h1>⚜️收藏清單⚜️</h1>
 
     <div id="section-add" class="panel-container">
         
@@ -435,15 +458,16 @@
         <div class="input-row-multi">
             <div class="input-group" style="width: 65%;">
                 <span class="input-label">詳細地址 (輸入後離開會自動轉座標)</span>
-                <div style="display:flex; gap:5px;">
-                    <input type="text" id="add-loc" class="sunken-input" placeholder="📍 地址" onblur="autoConvertGeo('add')">
-                    <button class="convex-btn" style="padding:0 10px;" onclick="openPinPicker('add')">📍</button>
+                <div style="display:flex; gap:0;">
+                    <input type="text" id="add-loc" class="sunken-input" placeholder="📍 地址" onblur="autoConvertGeo('add')" style="border-top-right-radius:0; border-bottom-right-radius:0;">
+                    <button class="btn-arrow-flat" onclick="openPinPicker('add')">➜</button>
                 </div>
             </div>
             
             <div class="input-group" style="width: 35%;">
-                <span class="input-label">經緯度座標</span>
-                <input type="text" id="add-geo" class="sunken-input" placeholder="例: 25.03, 121.56" readonly>
+                <span class="input-label">經緯度</span>
+                <input type="text" id="add-geo" class="sunken-input" placeholder="25.03, 121.56" readonly style="border-top-left-radius:0; border-bottom-left-radius:0;">
+                <p id="add-geo-status" style="font-size:10px; color:green; margin:0; display:none;">✅</p>
             </div>
         </div>
 
@@ -533,15 +557,16 @@
         <div class="input-row-multi">
             <div class="input-group" style="width: 65%;">
                 <span class="input-label">詳細地址</span>
-                <div style="display:flex; gap:5px;">
-                    <input type="text" id="edit-loc" class="sunken-input" placeholder="📍 地址" onblur="autoConvertGeo('edit')">
-                    <button class="convex-btn" style="padding:0 10px;" onclick="openPinPicker('edit')">📍</button>
+                <div style="display:flex; gap:0;">
+                    <input type="text" id="edit-loc" class="sunken-input" placeholder="📍 地址" onblur="autoConvertGeo('edit')" style="border-top-right-radius:0; border-bottom-right-radius:0;">
+                    <button class="btn-arrow-flat" onclick="openPinPicker('edit')">➜</button>
                 </div>
             </div>
             
             <div class="input-group" style="width: 35%;">
-                <span class="input-label">經緯度座標</span>
-                <input type="text" id="edit-geo" class="sunken-input" placeholder="自動填入" readonly>
+                <span class="input-label">經緯度</span>
+                <input type="text" id="edit-geo" class="sunken-input" placeholder="自動填入" readonly style="border-top-left-radius:0; border-bottom-left-radius:0;">
+                <p id="edit-geo-status" style="font-size:10px; color:green; margin:0; display:none;">✅</p>
             </div>
         </div>
 
@@ -684,6 +709,7 @@
                 document.getElementById('add-desc').value = '';
                 document.getElementById('kw-1').value = '';
                 document.getElementById('kw-2').value = '';
+                document.getElementById('add-geo-status').style.display = 'none';
                 updatePreview('add');
                 selectCategory('add', '購物', document.querySelector('.cat-btn-add'));
             }
@@ -702,7 +728,7 @@
                 else query = "台灣 " + query;
             }
 
-            geoField.placeholder = "⏳ 轉換中...";
+            geoField.placeholder = "⏳...";
             
             try {
                 const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
@@ -710,6 +736,7 @@
                 const data = await res.json();
                 if(data && data.length > 0) {
                     geoField.value = `${parseFloat(data[0].lat).toFixed(6)},${parseFloat(data[0].lon).toFixed(6)}`;
+                    document.getElementById(`${mode}-geo-status`).style.display = 'block';
                 } else {
                     geoField.placeholder = "❌ 查無";
                 }
@@ -760,6 +787,9 @@
             document.getElementById('edit-ref-url').value = refUrl;
             document.getElementById('edit-desc').value = desc.trim();
             document.getElementById('edit-geo').value = geo;
+            
+            if(geo) document.getElementById('edit-geo-status').style.display = 'block';
+            else document.getElementById('edit-geo-status').style.display = 'none';
 
             const platformSelect = document.getElementById('edit-platform');
             const standardPlatforms = ["官網", "實體", "蝦皮", "momo", "PChome", "淘寶", "Amazon"];
@@ -1117,8 +1147,10 @@
             const existingGeo = document.getElementById(`${mode}-geo`).value;
             if(existingGeo) {
                 const parts = existingGeo.split(',');
-                setPickerPin(parseFloat(parts[0]), parseFloat(parts[1]));
-                pickerMap.setView([parseFloat(parts[0]), parseFloat(parts[1])], 15);
+                const lat = parseFloat(parts[0]);
+                const lng = parseFloat(parts[1]);
+                pickerMap.setView([lat, lng], 15);
+                setPickerPin(lat, lng);
             } else {
                 const addr = document.getElementById(`${mode}-loc`).value;
                 if(addr) {
@@ -1146,6 +1178,7 @@
             const pos = pickerMarker.getLatLng();
             const geoStr = `${pos.lat.toFixed(6)},${pos.lng.toFixed(6)}`;
             document.getElementById(`${currentPickerMode}-geo`).value = geoStr;
+            document.getElementById(`${currentPickerMode}-geo-status`).style.display = 'block';
             closePicker();
         }
 
@@ -1266,7 +1299,7 @@
                     continue; 
                 }
 
-                // Priority 2: Fallback to Search
+                // Priority 2: Fallback Search (Only if no geo)
                 let queryList = [];
                 if(item.location && !item.location.includes('http')) queryList.push(item.location);
                 if(item.city && item.title) queryList.push(item.city + " " + item.title);
