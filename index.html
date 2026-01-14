@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚜️收藏清單 (座標快取版)⚜️</title>
+    <title>⚜️收藏清單 (Pro Max)⚜️</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -116,9 +116,12 @@
         .cat-emoji { font-size: 20px; line-height: 1; }
         .cat-text { font-size: 11px; white-space: nowrap; }
 
+        /* Fix 1: 面板樣式調整 - 移除左上白光，改用純粹的陰影 */
         .panel-container {
             padding: 20px; border-radius: 20px; background-color: var(--bg-color);
-            box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+            /* 舊設定: box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light); */
+            /* 新設定: 只有深色陰影，營造扎實的浮起感，不發光 */
+            box-shadow: 5px 5px 15px var(--shadow-dark), -2px -2px 5px rgba(0,0,0,0.05);
             margin-bottom: 30px;
         }
         
@@ -281,7 +284,6 @@
         }
         #full-map { flex: 1; width: 100%; background: #e5e5e5; }
         
-        /* Pin Picker Modal */
         #picker-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); z-index: 3000; display: none;
@@ -295,7 +297,6 @@
         #picker-map { flex: 1; width: 100%; }
         #picker-controls { padding: 15px; text-align: center; background: #eee; }
 
-        /* CSS Pin */
         .marker-pin {
             width: 32px; height: 32px;
             border-radius: 50% 50% 50% 0;
@@ -356,7 +357,7 @@
 </head>
 <body>
 
-    <h1>⚜️收藏清單 (座標快取版)⚜️</h1>
+    <h1>⚜️收藏清單 (Pro Max)⚜️</h1>
 
     <div id="section-add" class="panel-container">
         
@@ -431,17 +432,19 @@
             </div>
         </div>
         
-        <div class="input-group">
-            <span class="input-label">詳細地址 (輸入後離開會自動轉座標)</span>
-            <div style="display:flex; gap:5px;">
-                <input type="text" id="add-loc" class="sunken-input" placeholder="📍 地址" onblur="autoConvertGeo('add')">
-                <button class="convex-btn" style="padding:0 10px;" onclick="openPinPicker('add')">📍</button>
+        <div class="input-row-multi">
+            <div class="input-group" style="width: 65%;">
+                <span class="input-label">詳細地址 (輸入後離開會自動轉座標)</span>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="add-loc" class="sunken-input" placeholder="📍 地址" onblur="autoConvertGeo('add')">
+                    <button class="convex-btn" style="padding:0 10px;" onclick="openPinPicker('add')">📍</button>
+                </div>
             </div>
-        </div>
-        
-        <div class="input-group">
-            <span class="input-label">🌐 經緯度座標 (自動生成，可手動修正)</span>
-            <input type="text" id="add-geo" class="sunken-input" placeholder="例: 25.033, 121.565" readonly>
+            
+            <div class="input-group" style="width: 35%;">
+                <span class="input-label">經緯度座標</span>
+                <input type="text" id="add-geo" class="sunken-input" placeholder="例: 25.03, 121.56" readonly>
+            </div>
         </div>
 
         <div class="input-group">
@@ -527,17 +530,19 @@
             </div>
         </div>
         
-        <div class="input-group">
-            <span class="input-label">詳細地址</span>
-            <div style="display:flex; gap:5px;">
-                <input type="text" id="edit-loc" class="sunken-input" placeholder="📍 地址" onblur="autoConvertGeo('edit')">
-                <button class="convex-btn" style="padding:0 10px;" onclick="openPinPicker('edit')">📍</button>
+        <div class="input-row-multi">
+            <div class="input-group" style="width: 65%;">
+                <span class="input-label">詳細地址</span>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="edit-loc" class="sunken-input" placeholder="📍 地址" onblur="autoConvertGeo('edit')">
+                    <button class="convex-btn" style="padding:0 10px;" onclick="openPinPicker('edit')">📍</button>
+                </div>
             </div>
-        </div>
-        
-        <div class="input-group">
-            <span class="input-label">🌐 經緯度座標</span>
-            <input type="text" id="edit-geo" class="sunken-input" placeholder="自動填入" readonly>
+            
+            <div class="input-group" style="width: 35%;">
+                <span class="input-label">經緯度座標</span>
+                <input type="text" id="edit-geo" class="sunken-input" placeholder="自動填入" readonly>
+            </div>
         </div>
 
         <div class="input-group">
@@ -684,13 +689,12 @@
             }
         }
 
-        // Fix: Auto Geocode when leaving address field
         async function autoConvertGeo(mode) {
             const addr = document.getElementById(`${mode}-loc`).value;
             const city = document.getElementById(`${mode}-city`).value;
             const geoField = document.getElementById(`${mode}-geo`);
             
-            if(!addr || geoField.value) return; // If empty or already has geo, skip
+            if(!addr || geoField.value) return; 
 
             let query = addr;
             if(!query.includes('台灣') && !query.includes('Taiwan')) {
@@ -698,7 +702,7 @@
                 else query = "台灣 " + query;
             }
 
-            geoField.placeholder = "⏳ 正在轉換座標...";
+            geoField.placeholder = "⏳ 轉換中...";
             
             try {
                 const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
@@ -707,10 +711,10 @@
                 if(data && data.length > 0) {
                     geoField.value = `${parseFloat(data[0].lat).toFixed(6)},${parseFloat(data[0].lon).toFixed(6)}`;
                 } else {
-                    geoField.placeholder = "❌ 查無座標，請手動設定";
+                    geoField.placeholder = "❌ 查無";
                 }
             } catch(e) {
-                geoField.placeholder = "⚠️ 連線錯誤";
+                geoField.placeholder = "⚠️ 錯誤";
             }
         }
 
@@ -848,7 +852,7 @@
             const city = document.getElementById('add-city').value;
             const ref = document.getElementById('add-ref-url').value;
             const feature = document.getElementById('add-feature').value;
-            const geo = document.getElementById('add-geo').value; // Get Geo
+            const geo = document.getElementById('add-geo').value;
             
             let platform = document.getElementById('add-platform').value;
             if(platform === '其他') platform = document.getElementById('add-platform-other').value;
@@ -879,7 +883,7 @@
             const city = document.getElementById('edit-city').value;
             const ref = document.getElementById('edit-ref-url').value;
             const feature = document.getElementById('edit-feature').value;
-            const geo = document.getElementById('edit-geo').value; // Get Geo
+            const geo = document.getElementById('edit-geo').value;
             
             let platform = document.getElementById('edit-platform').value;
             if(platform === '其他') platform = document.getElementById('edit-platform-other').value;
@@ -1096,7 +1100,6 @@
             window.open(url, '_blank');
         }
 
-        // --- MAP FUNCTIONS ---
         function openPinPicker(mode) {
             currentPickerMode = mode;
             document.getElementById('picker-overlay').style.display = 'flex';
@@ -1114,12 +1117,9 @@
             const existingGeo = document.getElementById(`${mode}-geo`).value;
             if(existingGeo) {
                 const parts = existingGeo.split(',');
-                const lat = parseFloat(parts[0]);
-                const lng = parseFloat(parts[1]);
-                pickerMap.setView([lat, lng], 15);
-                setPickerPin(lat, lng);
+                setPickerPin(parseFloat(parts[0]), parseFloat(parts[1]));
+                pickerMap.setView([parseFloat(parts[0]), parseFloat(parts[1])], 15);
             } else {
-                // Try to use current address
                 const addr = document.getElementById(`${mode}-loc`).value;
                 if(addr) {
                     document.getElementById('picker-search').value = addr;
@@ -1184,29 +1184,22 @@
 
         function initMap() {
             map = L.map('full-map').setView([23.6, 121.0], 7);
-            
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap'
             }).addTo(map);
 
-            markersCluster = L.markerClusterGroup({
-                disableClusteringAtZoom: 16
-            });
+            markersCluster = L.markerClusterGroup({ disableClusteringAtZoom: 16 });
             map.addLayer(markersCluster);
-            
             map.on('moveend', function() {
                 const btn = document.getElementById('btn-filter-area');
                 btn.style.display = 'block';
             });
-
             getUserLocation();
         }
 
         function getUserLocation() {
             const loader = document.getElementById('map-loading');
-            loader.innerText = "🛰️ 正在定位中...";
             loader.style.display = 'block';
-
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
@@ -1232,15 +1225,11 @@
             if(!map) return;
             const bounds = map.getBounds();
             const btn = document.getElementById('btn-filter-area');
-            
             filteredItems = allItems.filter(item => {
                 const mData = currentMarkers.find(m => m.id === item.id);
-                if(mData && mData.layer) {
-                    return bounds.contains(mData.layer.getLatLng());
-                }
+                if(mData && mData.layer) return bounds.contains(mData.layer.getLatLng());
                 return false;
             });
-            
             renderCards(filteredItems);
             btn.style.display = 'none';
             alert(`已篩選出 ${filteredItems.length} 筆資料！`);
@@ -1277,12 +1266,22 @@
                     continue; 
                 }
 
-                // Priority 2: Fallback Search (Only if no geo)
+                // Priority 2: Fallback to Search
                 let queryList = [];
                 if(item.location && !item.location.includes('http')) queryList.push(item.location);
                 if(item.city && item.title) queryList.push(item.city + " " + item.title);
                 
                 if(queryList.length === 0) continue;
+
+                let cacheKey = `geo_p_${item.id}`;
+                let cached = localStorage.getItem(cacheKey);
+                
+                if(cached) {
+                    const coords = JSON.parse(cached);
+                    addMarker(item, coords.lat, coords.lon, catConfig);
+                    count++;
+                    continue; 
+                }
 
                 loader.innerText = `🔍 搜尋中... (${i+1}/${total})`;
                 for(let q of queryList) {
@@ -1295,6 +1294,7 @@
                             const lat = parseFloat(data[0].lat);
                             const lon = parseFloat(data[0].lon);
                             addMarker(item, lat, lon, catConfig);
+                            localStorage.setItem(cacheKey, JSON.stringify({lat, lon}));
                             count++;
                             break; 
                         }
