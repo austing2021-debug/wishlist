@@ -34,29 +34,28 @@
         h1 { 
             font-family: 'Noto Serif TC', serif; text-align: center; 
             color: var(--text-main); 
-            margin: 15px 0 20px 0; 
-            letter-spacing: 2px;
-            font-size: 22px;
+            margin: 10px 0 20px 0; 
+            letter-spacing: 2px; font-size: 22px;
         }
 
         /* --- 凹陷感輸入框 --- */
         .sunken-input {
-            background: transparent; border: none; border-radius: 12px;
-            padding: 12px 15px; width: 100%; box-sizing: border-box;
-            color: var(--text-main); font-size: 15px; outline: none;
-            box-shadow: inset 3px 3px 7px var(--shadow-dark), inset -3px -3px 7px var(--shadow-light);
+            background: transparent; border: none; border-radius: 10px;
+            padding: 8px 10px; width: 100%; box-sizing: border-box; /* 縮小 Padding */
+            color: var(--text-main); font-size: 14px; outline: none;
+            box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
             transition: 0.3s;
         }
         .sunken-input:focus {
-            box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
         }
 
         /* --- 凸起感按鈕 --- */
         .convex-btn {
             background: #E8E8E8; color: var(--text-main); border: none;
-            padding: 12px; border-radius: 15px; cursor: pointer;
-            font-weight: bold; letter-spacing: 1px;
-            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+            padding: 8px 12px; border-radius: 12px; cursor: pointer;
+            font-weight: bold; letter-spacing: 1px; font-size: 13px;
+            box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
             transition: all 0.2s ease;
             display: flex; align-items: center; justify-content: center;
         }
@@ -71,11 +70,26 @@
 
         .btn-full { width: 100%; }
 
-        /* Fix 4: 新增區按鈕排版 (新增 + 重置) */
-        .action-row { display: flex; gap: 10px; margin-top: 15px; }
-        .action-btn-add { flex: 3; color: white; background-color: var(--accent-blue); }
-        .action-btn-edit { flex: 3; color: white; background-color: var(--accent-pink); }
-        .action-btn-reset { flex: 1; font-size: 12px; color: var(--text-light); }
+        /* Fix 1: 搜尋區塊並排佈局 */
+        .search-container {
+            display: flex; gap: 15px; margin-bottom: 20px;
+        }
+        .search-col {
+            flex: 1; display: flex; flex-direction: column; gap: 8px;
+            padding: 10px; border-radius: 15px;
+            background: rgba(255,255,255,0.3); /* 微透背景區隔 */
+        }
+        .search-title { font-size: 12px; color: #888; text-align: center; margin-bottom: 5px; }
+
+        .keyword-row { display: flex; gap: 5px; }
+        .keyword-row input { flex: 1; text-align: center; font-size: 12px;}
+
+        .quick-search-row { display: flex; gap: 5px; }
+        .btn-quick { 
+            flex: 1; font-size: 10px; padding: 6px; 
+            background: var(--morandi-white); color: var(--text-light);
+            white-space: nowrap;
+        }
 
         /* 類別按鈕 */
         .category-group { 
@@ -93,50 +107,51 @@
             margin-bottom: 30px;
         }
         
-        .input-group { margin-bottom: 15px; width: 100%; }
+        .input-group { margin-bottom: 12px; width: 100%; }
         .input-label {
-            font-size: 12px; color: #999; margin-left: 10px; margin-bottom: 5px; display: block;
+            font-size: 11px; color: #999; margin-left: 8px; margin-bottom: 3px; display: block;
         }
-        .input-row-multi { display: flex; gap: 10px; width: 100%; }
+        .input-row-multi { display: flex; gap: 8px; width: 100%; }
 
-        /* 圖片預覽 */
+        /* Fix 4: 圖片預覽保持比例 */
         .img-preview-box {
-            width: 100%; height: 150px; border-radius: 12px; margin-top: 10px;
+            width: 100%; min-height: 50px; border-radius: 12px; margin-top: 10px;
+            /* 移除強制高度，改為 padding 撐開或 auto */
             box-shadow: inset 3px 3px 6px rgba(0,0,0,0.1), inset -3px -3px 6px rgba(255,255,255,0.5);
             overflow: hidden; display: none; 
             align-items: center; justify-content: center;
             background: rgba(0,0,0,0.03);
+            padding: 10px; box-sizing: border-box;
         }
         .img-preview-box.has-img { display: flex; }
-        .img-preview-content { width: 100%; height: 100%; object-fit: cover; }
-
-        /* --- Fix 1: 關鍵字搜尋區改良 --- */
-        .keyword-row { display: flex; gap: 8px; margin-bottom: 10px; }
-        .keyword-row input { width: 33.33%; text-align: center; }
-        
-        /* 輔助搜尋按鈕區 */
-        .quick-search-row { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-quick { 
-            flex: 1; font-size: 12px; padding: 10px; border-radius: 12px;
-            background: #E8E8E8; color: var(--text-main);
+        .img-preview-content { 
+            max-width: 100%; max-height: 200px; /* 限制最大高度 */
+            width: auto; height: auto; /* 保持原比例 */
+            object-fit: contain; /* 完整顯示不裁切 */
         }
 
-        /* --- Fix 5: 篩選器樣式 (重置按鈕固定在內) --- */
+        /* Fix 5: 銷售平台下拉選單樣式 */
+        select.sunken-input {
+            appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235F6F6E%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;
+        }
+
+        /* --- 篩選器樣式 --- */
         .filter-wrapper {
             display: flex; gap: 8px; margin-bottom: 20px; align-items: center;
         }
         .filter-scroll-area {
             display: flex; gap: 8px; overflow-x: auto; flex: 1; padding-bottom: 5px;
-            /* 隱藏捲軸 */
-            scrollbar-width: none; -ms-overflow-style: none;
+            scrollbar-width: none;
         }
         .filter-scroll-area::-webkit-scrollbar { display: none; }
 
         .filter-select {
-            min-width: 110px;
+            min-width: 100px;
             background: #E8E8E8; border: none; 
             padding: 8px 12px; border-radius: 12px;
-            color: var(--text-main); font-size: 13px;
+            color: var(--text-main); font-size: 12px;
             box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
             outline: none; appearance: none; 
             background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235F6F6E%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
@@ -146,8 +161,7 @@
             background: var(--morandi-white); color: var(--text-light);
             border: none; padding: 0 12px; height: 36px; border-radius: 12px;
             box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
-            cursor: pointer; white-space: nowrap; font-size: 12px;
-            flex-shrink: 0; /* 防止被擠壓 */
+            cursor: pointer; white-space: nowrap; font-size: 12px; flex-shrink: 0;
         }
 
         /* --- 卡片區設定 --- */
@@ -177,24 +191,21 @@
 
         .card-body { padding: 15px; display: flex; flex-direction: column; flex: 1; }
 
-        .card-meta-row { display: flex; gap: 8px; margin-bottom: 10px; }
+        .card-meta-row { display: flex; gap: 6px; margin-bottom: 8px; }
         .meta-box {
-            width: 33.33%; font-size: 12px; color: var(--text-light); text-align: center;
+            flex: 1; /* 自動均分 */
+            font-size: 11px; color: var(--text-light); text-align: center;
             padding: 6px 2px; border-radius: 10px; background: #E8E8E8;
             box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
-        /* Fix 6: 主題名稱字體加大 */
         .card-title { 
-            font-size: 20px; /* 加大 */
-            font-family: 'Noto Serif TC', serif; 
-            color: var(--text-main); font-weight: bold; 
-            margin-bottom: 5px; line-height: 1.3;
+            font-size: 20px; font-family: 'Noto Serif TC', serif; 
+            color: var(--text-main); font-weight: bold; margin-bottom: 5px; line-height: 1.3;
             max-height: 52px; overflow: hidden;
         }
 
-        /* Fix 7: 特點備註顯示 */
         .card-feature {
             font-size: 13px; color: var(--accent-blue);
             margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -215,6 +226,12 @@
         .btn-del { color: var(--accent-red); }
         .btn-map { color: #333; }
 
+        /* 新增按鈕區塊 */
+        .action-row { display: flex; gap: 10px; margin-top: 15px; }
+        .action-btn-add { flex: 3; color: white; background-color: var(--accent-blue); }
+        .action-btn-edit { flex: 3; color: white; background-color: var(--accent-pink); }
+        .action-btn-reset { flex: 1; font-size: 12px; color: var(--text-light); }
+
         #go-top-btn {
             position: fixed; bottom: 20px; right: 20px;
             width: 50px; height: 50px; border-radius: 50%;
@@ -232,6 +249,11 @@
                 overflow-x: visible; justify-items: center; 
             }
         }
+        
+        /* RWD 調整: 左右分割變上下 (當螢幕太小時) */
+        @media(max-width: 400px) {
+            .search-container { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
@@ -240,36 +262,30 @@
 
     <div id="section-add" class="panel-container">
         
-        <p style="text-align:center; font-size:12px; color:#999; margin-bottom:15px;">🔍 方式一：輸入網址抓取 (適用有官網的產品)</p>
-        <div class="input-group">
-            <span class="input-label">參考連結</span>
-            <input type="text" id="add-link-fetch" class="sunken-input" placeholder="🔗 貼上網址">
-        </div>
-        <div class="input-group">
-            <button class="convex-btn btn-full" onclick="autoFetch('add')" style="color: var(--accent-blue);">📝 透過網址自動抓取</button>
-        </div>
-
-        <hr style="border:0; border-top:1px dashed #ccc; margin: 20px 0;">
-
-        <p style="text-align:center; font-size:12px; color:#999; margin-bottom:15px;">🔍 方式二：輸入關鍵字，使用下方按鈕輔助搜尋</p>
-        <div class="input-group">
-            <span class="input-label">關鍵字 (例如：Sony 耳機 / 京都 清水寺)</span>
-            <div class="keyword-row">
-                <input type="text" id="kw-1" class="sunken-input" placeholder="關鍵字1">
-                <input type="text" id="kw-2" class="sunken-input" placeholder="關鍵字2">
-                <input type="text" id="kw-3" class="sunken-input" placeholder="關鍵字3">
+        <div class="search-container">
+            <div class="search-col">
+                <span class="search-title">🔗 網址抓取 (官網/部落格)</span>
+                <input type="text" id="add-link-fetch" class="sunken-input" placeholder="貼上網址">
+                <button class="convex-btn btn-full" onclick="autoFetch('add')" style="color: var(--accent-blue);">📝 抓取</button>
             </div>
             
-            <div class="quick-search-row">
-                <button class="convex-btn btn-quick" onclick="quickSearch('google')">🔍 找資料 (Google)</button>
-                <button class="convex-btn btn-quick" onclick="quickSearch('image')">🖼️ 找圖片 (Google)</button>
-                <button class="convex-btn btn-quick" onclick="quickSearch('map')">🗺️ 找地圖 (Google)</button>
+            <div class="search-col">
+                <span class="search-title">🔍 關鍵字輔助搜尋</span>
+                <div class="keyword-row">
+                    <input type="text" id="kw-1" class="sunken-input" placeholder="字詞1">
+                    <input type="text" id="kw-2" class="sunken-input" placeholder="字詞2">
+                </div>
+                <div class="quick-search-row">
+                    <button class="convex-btn btn-quick" onclick="quickSearch('google')">Google</button>
+                    <button class="convex-btn btn-quick" onclick="quickSearch('image')">圖片</button>
+                    <button class="convex-btn btn-quick" onclick="quickSearch('map')">地圖</button>
+                </div>
             </div>
         </div>
 
         <div class="category-group">
             <button class="convex-btn cat-btn-layout cat-btn-add active" onclick="selectCategory('add', '購物', this)"><span class="cat-emoji">🛒</span><span class="cat-text">購物</span></button>
-            <button class="convex-btn cat-btn-layout cat-btn-add" onclick="selectCategory('add', '美食', this)"><span class="cat-emoji">🍿</span><span class="cat-text">美食</span></button>
+            <button class="convex-btn cat-btn-layout cat-btn-add" onclick="selectCategory('add', '餐廳', this)"><span class="cat-emoji">🍽️</span><span class="cat-text">餐廳</span></button>
             <button class="convex-btn cat-btn-layout cat-btn-add" onclick="selectCategory('add', '景點', this)"><span class="cat-emoji">🌎</span><span class="cat-text">景點</span></button>
             <button class="convex-btn cat-btn-layout cat-btn-add" onclick="selectCategory('add', '旅館', this)"><span class="cat-emoji">🏨</span><span class="cat-text">旅館</span></button>
             <button class="convex-btn cat-btn-layout cat-btn-add" onclick="selectCategory('add', '其他', this)"><span class="cat-emoji">💭</span><span class="cat-text">其他</span></button>
@@ -282,11 +298,6 @@
         </div>
 
         <div class="input-group">
-            <span class="input-label">特點備註 (顯示於主題下方，最多20字)</span>
-            <input type="text" id="add-feature" class="sunken-input" placeholder="✨ 例如：必吃、CP值高" maxlength="20">
-        </div>
-
-        <div class="input-group">
             <span class="input-label">圖片網址</span>
             <input type="text" id="add-img" class="sunken-input" placeholder="📸 圖片連結" oninput="updatePreview('add')">
             <div id="box-preview-add" class="img-preview-box">
@@ -295,13 +306,27 @@
         </div>
 
         <div class="input-row-multi">
-            <div class="input-group" style="width: 50%;">
+            <div class="input-group" style="width: 30%;">
                 <span class="input-label">國家</span>
-                <input type="text" id="add-country" class="sunken-input" placeholder="🏳️ 國家" maxlength="10">
+                <input type="text" id="add-country" class="sunken-input" placeholder="🏳️" maxlength="10">
             </div>
-            <div class="input-group" style="width: 50%;">
+            <div class="input-group" style="width: 30%;">
                 <span class="input-label">都市</span>
-                <input type="text" id="add-city" class="sunken-input" placeholder="🏙️ 都市" maxlength="10">
+                <input type="text" id="add-city" class="sunken-input" placeholder="🏙️" maxlength="10">
+            </div>
+            <div class="input-group" style="width: 40%;">
+                <span class="input-label">銷售平台</span>
+                <select id="add-platform" class="sunken-input" onchange="toggleOtherInput('add')">
+                    <option value="">(無)</option>
+                    <option value="官網">官網</option>
+                    <option value="蝦皮">蝦皮</option>
+                    <option value="momo">momo</option>
+                    <option value="PChome">PChome</option>
+                    <option value="淘寶">淘寶</option>
+                    <option value="Amazon">Amazon</option>
+                    <option value="其他">其他</option>
+                </select>
+                <input type="text" id="add-platform-other" class="sunken-input hidden" placeholder="輸入平台(5字)" maxlength="5" style="margin-top:5px;">
             </div>
         </div>
         
@@ -315,6 +340,11 @@
             <input type="text" id="add-ref-url" class="sunken-input" placeholder="🌐 相關網頁連結">
         </div>
         
+        <div class="input-group">
+            <span class="input-label">特點備註 (顯示於主題下方，最多20字)</span>
+            <input type="text" id="add-feature" class="sunken-input" placeholder="✨ 例如：必吃、CP值高" maxlength="20">
+        </div>
+
         <div class="input-group">
             <span class="input-label">備註說明</span>
             <textarea id="add-desc" class="sunken-input" rows="3" placeholder="📋️ 詳細說明"></textarea>
@@ -330,17 +360,17 @@
     <div id="section-edit" class="panel-container hidden">
         <input type="hidden" id="edit-id">
 
-        <div class="input-group">
-            <span class="input-label">參考連結 (自動抓取用)</span>
-            <input type="text" id="edit-link-fetch" class="sunken-input" placeholder="🔗 貼上網址">
-        </div>
-        <div class="input-group">
-            <button class="convex-btn btn-full" onclick="autoFetch('edit')">📝 自動抓取</button>
-        </div>
+        <div class="search-container">
+            <div class="search-col">
+                <span class="search-title">🔗 網址抓取</span>
+                <input type="text" id="edit-link-fetch" class="sunken-input" placeholder="貼上網址">
+                <button class="convex-btn btn-full" onclick="autoFetch('edit')">📝 抓取</button>
+            </div>
+            </div>
 
         <div class="category-group">
             <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '購物', this)"><span class="cat-emoji">🛒</span><span class="cat-text">購物</span></button>
-            <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '美食', this)"><span class="cat-emoji">🍿</span><span class="cat-text">美食</span></button>
+            <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '餐廳', this)"><span class="cat-emoji">🍽️</span><span class="cat-text">餐廳</span></button>
             <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '景點', this)"><span class="cat-emoji">🌎</span><span class="cat-text">景點</span></button>
             <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '旅館', this)"><span class="cat-emoji">🏨</span><span class="cat-text">旅館</span></button>
             <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '其他', this)"><span class="cat-emoji">💭</span><span class="cat-text">其他</span></button>
@@ -353,11 +383,6 @@
         </div>
 
         <div class="input-group">
-            <span class="input-label">特點備註</span>
-            <input type="text" id="edit-feature" class="sunken-input" placeholder="✨ 特點" maxlength="20">
-        </div>
-
-        <div class="input-group">
             <span class="input-label">圖片網址</span>
             <input type="text" id="edit-img" class="sunken-input" placeholder="📸 圖片連結" oninput="updatePreview('edit')">
             <div id="box-preview-edit" class="img-preview-box">
@@ -366,13 +391,27 @@
         </div>
 
         <div class="input-row-multi">
-            <div class="input-group" style="width: 50%;">
+            <div class="input-group" style="width: 30%;">
                 <span class="input-label">國家</span>
-                <input type="text" id="edit-country" class="sunken-input" placeholder="🏳️ 國家" maxlength="10">
+                <input type="text" id="edit-country" class="sunken-input" placeholder="🏳️" maxlength="10">
             </div>
-            <div class="input-group" style="width: 50%;">
+            <div class="input-group" style="width: 30%;">
                 <span class="input-label">都市</span>
-                <input type="text" id="edit-city" class="sunken-input" placeholder="🏙️ 都市" maxlength="10">
+                <input type="text" id="edit-city" class="sunken-input" placeholder="🏙️" maxlength="10">
+            </div>
+            <div class="input-group" style="width: 40%;">
+                <span class="input-label">銷售平台</span>
+                <select id="edit-platform" class="sunken-input" onchange="toggleOtherInput('edit')">
+                    <option value="">(無)</option>
+                    <option value="官網">官網</option>
+                    <option value="蝦皮">蝦皮</option>
+                    <option value="momo">momo</option>
+                    <option value="PChome">PChome</option>
+                    <option value="淘寶">淘寶</option>
+                    <option value="Amazon">Amazon</option>
+                    <option value="其他">其他</option>
+                </select>
+                <input type="text" id="edit-platform-other" class="sunken-input hidden" placeholder="平台(5字)" maxlength="5" style="margin-top:5px;">
             </div>
         </div>
         
@@ -384,6 +423,11 @@
         <div class="input-group">
             <span class="input-label">參考網址</span>
             <input type="text" id="edit-ref-url" class="sunken-input" placeholder="🌐 相關網頁連結">
+        </div>
+
+        <div class="input-group">
+            <span class="input-label">特點備註</span>
+            <input type="text" id="edit-feature" class="sunken-input" placeholder="✨ 特點" maxlength="20">
         </div>
 
         <div class="input-group">
@@ -408,6 +452,9 @@
             <select id="filter-city" class="filter-select" onchange="applyFilter()">
                 <option value="">所有都市</option>
             </select>
+            <select id="filter-platform" class="filter-select" onchange="applyFilter()">
+                <option value="">所有平台</option>
+            </select>
         </div>
         <button class="filter-reset-btn" onclick="resetFilter()">重置</button>
     </div>
@@ -420,7 +467,7 @@
 
     <script>
         // ==========================================
-        // Fix 8: 已固定 Supabase URL 與 Key
+        // Supabase URL 與 Key
         // ==========================================
         const supabaseUrl = 'https://ocrbkyclrhhnyvzosbyc.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcmJreWNscmhobnl2em9zYnljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyNzgyMjksImV4cCI6MjA4Mzg1NDIyOX0.DB44xf_i3WMyjpek2nQk5oo9MyzTYNsDCqiExmpMOgA';
@@ -442,6 +489,17 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // Fix 5: 切換其他平台輸入框
+        function toggleOtherInput(mode) {
+            const select = document.getElementById(`${mode}-platform`);
+            const otherInput = document.getElementById(`${mode}-platform-other`);
+            if(select.value === '其他') {
+                otherInput.classList.remove('hidden');
+            } else {
+                otherInput.classList.add('hidden');
+            }
+        }
+
         function selectCategory(mode, value, btnElement) {
             document.getElementById(`${mode}-category`).value = value;
             document.querySelectorAll(`.cat-btn-${mode}`).forEach(b => b.classList.remove('active'));
@@ -454,7 +512,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Fix 4: 重置表單功能
         function resetForm(mode) {
             if(mode === 'add') {
                 document.getElementById('add-link-fetch').value = '';
@@ -463,14 +520,15 @@
                 document.getElementById('add-img').value = '';
                 document.getElementById('add-country').value = '';
                 document.getElementById('add-city').value = '';
+                document.getElementById('add-platform').value = '';
+                document.getElementById('add-platform-other').value = '';
+                document.getElementById('add-platform-other').classList.add('hidden');
                 document.getElementById('add-loc').value = '';
                 document.getElementById('add-ref-url').value = '';
                 document.getElementById('add-desc').value = '';
                 document.getElementById('kw-1').value = '';
                 document.getElementById('kw-2').value = '';
-                document.getElementById('kw-3').value = '';
                 updatePreview('add');
-                // 恢復預設購物
                 selectCategory('add', '購物', document.querySelector('.cat-btn-add'));
             }
         }
@@ -488,33 +546,51 @@
             document.getElementById('edit-img').value = item.image_url;
             document.getElementById('edit-loc').value = item.location;
             
-            // 解析資料包 (Unbundle)
+            // 解析資料包
             let desc = item.description || "";
-            let refUrl = "", country = "", city = "", feature = "";
+            let refUrl = "", country = "", city = "", feature = "", platform = "";
             
-            // 解析 [Ref:...]
             const refMatch = desc.match(/\n?\[Ref:(.*?)\]/);
             if (refMatch) { refUrl = refMatch[1]; desc = desc.replace(refMatch[0], ""); }
-            else if(item.location && item.location.startsWith('http')) { refUrl = item.location; } // 舊相容
+            else if(item.location && item.location.startsWith('http')) { refUrl = item.location; }
 
-            // 解析 [Country:...]
             const countryMatch = desc.match(/\n?\[Country:(.*?)\]/);
             if (countryMatch) { country = countryMatch[1]; desc = desc.replace(countryMatch[0], ""); }
 
-            // 解析 [City:...]
             const cityMatch = desc.match(/\n?\[City:(.*?)\]/);
             if (cityMatch) { city = cityMatch[1]; desc = desc.replace(cityMatch[0], ""); }
             
-            // Fix 3: 解析 [Feat:...]
             const featMatch = desc.match(/\n?\[Feat:(.*?)\]/);
             if (featMatch) { feature = featMatch[1]; desc = desc.replace(featMatch[0], ""); }
 
-            document.getElementById('edit-link-fetch').value = ""; // 清空抓取欄
+            // 解析平台 [Plat:...]
+            const platMatch = desc.match(/\n?\[Plat:(.*?)\]/);
+            if (platMatch) { platform = platMatch[1]; desc = desc.replace(platMatch[0], ""); }
+
+            document.getElementById('edit-link-fetch').value = ""; 
             document.getElementById('edit-country').value = country;
             document.getElementById('edit-city').value = city;
             document.getElementById('edit-feature').value = feature;
             document.getElementById('edit-ref-url').value = refUrl;
             document.getElementById('edit-desc').value = desc.trim();
+
+            // 設定平台
+            const platformSelect = document.getElementById('edit-platform');
+            const standardPlatforms = ["官網", "蝦皮", "momo", "PChome", "淘寶", "Amazon"];
+            
+            if(platform) {
+                if(standardPlatforms.includes(platform)) {
+                    platformSelect.value = platform;
+                    toggleOtherInput('edit');
+                } else {
+                    platformSelect.value = '其他';
+                    toggleOtherInput('edit');
+                    document.getElementById('edit-platform-other').value = platform;
+                }
+            } else {
+                platformSelect.value = "";
+                toggleOtherInput('edit');
+            }
 
             updatePreview('edit');
 
@@ -569,13 +645,14 @@
             else alert('無地址資料');
         }
 
-        // 資料打包 (Bundle)
-        function bundleDescription(desc, ref, country, city, feature) {
+        // 資料打包 (含平台)
+        function bundleDescription(desc, ref, country, city, feature, platform) {
             let finalDesc = desc;
             if(country) finalDesc += `\n[Country:${country}]`;
             if(city) finalDesc += `\n[City:${city}]`;
             if(ref) finalDesc += `\n[Ref:${ref}]`;
             if(feature) finalDesc += `\n[Feat:${feature}]`;
+            if(platform) finalDesc += `\n[Plat:${platform}]`;
             return finalDesc;
         }
 
@@ -587,15 +664,16 @@
             const loc = document.getElementById('add-loc').value;
             const country = document.getElementById('add-country').value;
             const city = document.getElementById('add-city').value;
-            
-            // Fix 2: 儲存參考網址
             const ref = document.getElementById('add-ref-url').value;
-            // Fix 3: 儲存特點
             const feature = document.getElementById('add-feature').value;
+            
+            // 處理平台
+            let platform = document.getElementById('add-platform').value;
+            if(platform === '其他') platform = document.getElementById('add-platform-other').value;
 
             if (!title) return alert('請輸入主題名稱');
 
-            desc = bundleDescription(desc, ref, country, city, feature);
+            desc = bundleDescription(desc, ref, country, city, feature, platform);
 
             const { error } = await db.from('products').insert([{ 
                 title, image_url: image, category, description: desc, location: loc
@@ -619,8 +697,11 @@
             const city = document.getElementById('edit-city').value;
             const ref = document.getElementById('edit-ref-url').value;
             const feature = document.getElementById('edit-feature').value;
+            
+            let platform = document.getElementById('edit-platform').value;
+            if(platform === '其他') platform = document.getElementById('edit-platform-other').value;
 
-            desc = bundleDescription(desc, ref, country, city, feature);
+            desc = bundleDescription(desc, ref, country, city, feature, platform);
 
             const { error } = await db.from('products').update({ 
                 title, image_url: image, category, description: desc, location: loc
@@ -646,7 +727,7 @@
 
             allItems = data.map(item => {
                 let desc = item.description || "";
-                let country = "", city = "", refUrl = "", feature = "";
+                let country = "", city = "", refUrl = "", feature = "", platform = "";
                 
                 const cMatch = desc.match(/\n?\[Country:(.*?)\]/);
                 if(cMatch) { country = cMatch[1]; desc = desc.replace(cMatch[0], ""); }
@@ -658,11 +739,13 @@
                 if(refMatch) { refUrl = refMatch[1]; desc = desc.replace(refMatch[0], ""); }
                 else if(item.location && item.location.startsWith('http')) { refUrl = item.location; }
 
-                // Fix 3: 解包 Feature
                 const featMatch = desc.match(/\n?\[Feat:(.*?)\]/);
                 if(featMatch) { feature = featMatch[1]; desc = desc.replace(featMatch[0], ""); }
 
-                return { ...item, cleanDesc: desc, country, city, refUrl, feature };
+                const platMatch = desc.match(/\n?\[Plat:(.*?)\]/);
+                if(platMatch) { platform = platMatch[1]; desc = desc.replace(platMatch[0], ""); }
+
+                return { ...item, cleanDesc: desc, country, city, refUrl, feature, platform };
             });
 
             populateFilterOptions();
@@ -670,16 +753,18 @@
         }
 
         function populateFilterOptions() {
-            const cats = new Set(), countries = new Set(), cities = new Set();
+            const cats = new Set(), countries = new Set(), cities = new Set(), plats = new Set();
             allItems.forEach(i => {
                 if(i.category) cats.add(i.category);
                 if(i.country && i.country !== 'null') countries.add(i.country);
                 if(i.city && i.city !== 'null') cities.add(i.city);
+                if(i.platform) plats.add(i.platform);
             });
 
             fillSelect('filter-category', cats, '所有類別');
             fillSelect('filter-country', countries, '所有國家');
             fillSelect('filter-city', cities, '所有都市');
+            fillSelect('filter-platform', plats, '所有平台');
         }
 
         function fillSelect(id, set, defaultText) {
@@ -694,11 +779,13 @@
             const cat = document.getElementById('filter-category').value;
             const country = document.getElementById('filter-country').value;
             const city = document.getElementById('filter-city').value;
+            const plat = document.getElementById('filter-platform').value;
 
             filteredItems = allItems.filter(item => {
                 return (!cat || item.category === cat) &&
                        (!country || item.country === country) &&
-                       (!city || item.city === city);
+                       (!city || item.city === city) &&
+                       (!plat || item.platform === plat);
             });
 
             renderCards(filteredItems);
@@ -708,6 +795,7 @@
             document.getElementById('filter-category').value = "";
             document.getElementById('filter-country').value = "";
             document.getElementById('filter-city').value = "";
+            document.getElementById('filter-platform').value = "";
             applyFilter();
         }
 
@@ -725,7 +813,6 @@
                 const safeTitle = escapeHtml(item.title);
                 const safeLoc = escapeHtml(item.location || '');
                 const linkUrl = item.refUrl || "#";
-                // Fix 7: 特點顯示
                 const safeFeat = escapeHtml(item.feature || '');
 
                 let imgContent = '';
@@ -735,6 +822,18 @@
                     imgContent = `<div class="no-img-box"></div>`; 
                 }
 
+                // Fix 7: 平台顯示 (有值才顯示)
+                let metaHtml = `
+                    <div class="card-meta-row">
+                        <div class="meta-box">${item.category}</div>
+                        <div class="meta-box">${item.country || '-'}</div>
+                        <div class="meta-box">${item.city || '-'}</div>
+                `;
+                if(item.platform) {
+                    metaHtml += `<div class="meta-box" style="background:#e0e7ff; color:#6366f1;">${item.platform}</div>`;
+                }
+                metaHtml += `</div>`;
+
                 const html = `
                     <div class="card">
                         <a href="${linkUrl}" target="_blank" class="card-img-wrapper">
@@ -742,11 +841,7 @@
                         </a>
                         
                         <div class="card-body">
-                            <div class="card-meta-row">
-                                <div class="meta-box">${item.category}</div>
-                                <div class="meta-box">${item.country || '-'}</div>
-                                <div class="meta-box">${item.city || '-'}</div>
-                            </div>
+                            ${metaHtml}
 
                             <div class="card-title">${safeTitle}</div>
                             ${safeFeat ? `<div class="card-feature">✨ ${safeFeat}</div>` : ''}
@@ -788,9 +883,7 @@
                     
                     document.getElementById(`${mode}-title`).value = title;
                     document.getElementById(`${mode}-desc`).value = data.description || '';
-                    
-                    // 自動填入參考網址
-                    document.getElementById(`${mode}-ref-url`).value = url;
+                    document.getElementById(`${mode}-ref-url`).value = url; // 自動填入參考網址
                     
                     if (data.image && data.image.url) {
                         document.getElementById(`${mode}-img`).value = data.image.url;
@@ -807,12 +900,10 @@
             btn.innerText = originalText;
         }
 
-        // 輔助搜尋按鈕功能
         function quickSearch(type) {
             const k1 = document.getElementById('kw-1').value;
             const k2 = document.getElementById('kw-2').value;
-            const k3 = document.getElementById('kw-3').value;
-            const query = `${k1} ${k2} ${k3}`.trim();
+            const query = `${k1} ${k2}`.trim();
             
             if(!query) return alert('請先輸入關鍵字');
 
