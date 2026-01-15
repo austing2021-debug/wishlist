@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚜️收藏清單⚜️</title>
+    <title>⚜️收藏清單 (私人版)⚜️</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -20,13 +20,13 @@
             --bg-color: #E8E8E8;          
             --text-main: #5F6F6E;         
             --text-light: #8C9696;        
-            --accent-blue: #7A90A4;       
-            --accent-pink: #D4A5A5;       
+            --accent-blue: #7A90A4;        
+            --accent-pink: #D4A5A5;        
             --accent-red: #B86B6B;
             --morandi-white: #F2F0EB; 
             
             --shadow-light: #ffffff;      
-            --shadow-dark: #bebebe;       
+            --shadow-dark: #bebebe;        
         }
 
         body { 
@@ -39,11 +39,31 @@
             padding-bottom: 100px; 
         }
 
+        /* 登入遮罩樣式 */
+        #auth-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .auth-box {
+            width: 85%; max-width: 350px;
+            padding: 30px; border-radius: 20px;
+            background: var(--bg-color);
+            box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+            text-align: center;
+        }
+        .auth-title { font-family: 'Noto Serif TC', serif; font-size: 24px; margin-bottom: 20px; color: var(--text-main); }
+        .auth-input { margin-bottom: 15px; }
+
+        /* Header Area */
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         h1 { 
-            font-family: 'Noto Serif TC', serif; text-align: center; 
+            font-family: 'Noto Serif TC', serif; 
             color: var(--text-main); 
-            margin: 10px 0 20px 0; 
-            letter-spacing: 2px; font-size: 22px;
+            margin: 0; letter-spacing: 2px; font-size: 22px;
+        }
+        .btn-logout {
+            font-size: 12px; color: var(--accent-red); cursor: pointer; text-decoration: underline;
         }
 
         /* --- 凹陷感輸入框 --- */
@@ -79,24 +99,15 @@
             box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2), inset -2px -2px 4px rgba(255,255,255,0.1);
         }
 
-        /* Fix 1: 地圖轉換按鈕 (加上 margin-bottom 以對齊輸入框) */
+        /* 按鈕樣式補充 */
+        .btn-full { width: 100%; }
         .btn-map-convert {
-            width: 40px; height: 38px;
-            border-radius: 12px; 
-            background: #E8E8E8;
-            border: none;
-            color: var(--accent-blue);
-            font-size: 18px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-            box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
-            transition: 0.2s;
-            flex-shrink: 0; 
-            margin-bottom: 12px; /* 關鍵修正：對齊隔壁 input-group 的 margin */
+            width: 40px; height: 38px; border-radius: 12px; background: #E8E8E8; border: none;
+            color: var(--accent-blue); font-size: 18px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+            margin-bottom: 12px; flex-shrink: 0;
         }
-        .btn-map-convert:active {
-            box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
-            transform: scale(0.95);
-        }
+        .btn-map-convert:active { box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light); transform: scale(0.95); }
 
         /* 面板樣式 */
         .panel-container {
@@ -105,72 +116,46 @@
             margin-bottom: 30px;
         }
 
-        .btn-full { width: 100%; }
-
         .btn-quick { 
-            background: #E8E8E8; border: none;
-            padding: 8px 12px; border-radius: 12px; cursor: pointer;
-            font-weight: bold; font-size: 12px;
+            background: #E8E8E8; border: none; padding: 8px 12px; border-radius: 12px; cursor: pointer;
+            font-weight: bold; font-size: 12px; color: var(--accent-blue);
             box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
-            transition: all 0.2s ease;
-            flex: 1; white-space: nowrap;
-            color: var(--accent-blue);
-            display: flex; align-items: center; justify-content: center;
-            height: 38px; box-sizing: border-box;
+            flex: 1; white-space: nowrap; height: 38px; display: flex; align-items: center; justify-content: center;
         }
-        .btn-quick:active {
-            box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
-            transform: translateY(1px);
-        }
+        .btn-quick:active { box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light); transform: translateY(1px); }
 
-        .search-container {
-            display: flex; gap: 15px; margin-bottom: 20px;
-        }
+        .search-container { display: flex; gap: 15px; margin-bottom: 20px; }
         .search-col {
             flex: 1; display: flex; flex-direction: column; gap: 8px;
-            padding: 10px; border-radius: 15px;
-            background: rgba(255,255,255,0.3); 
+            padding: 10px; border-radius: 15px; background: rgba(255,255,255,0.3); 
         }
         .search-title { font-size: 12px; color: #888; text-align: center; margin-bottom: 5px; }
-
         .keyword-row { display: flex; gap: 5px; }
         .keyword-row input { flex: 1; text-align: center; font-size: 12px;}
         .quick-search-row { display: flex; gap: 8px; }
 
-        .category-group { 
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; 
-        }
-        .cat-btn-layout {
-            flex-direction: column; gap: 5px; padding: 10px 2px; height: auto; 
-        }
+        .category-group { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; }
+        .cat-btn-layout { flex-direction: column; gap: 5px; padding: 10px 2px; height: auto; }
         .cat-emoji { font-size: 20px; line-height: 1; }
         .cat-text { font-size: 11px; white-space: nowrap; }
         
         .input-group { margin-bottom: 12px; width: 100%; }
-        .input-label {
-            font-size: 11px; color: #999; margin-left: 8px; margin-bottom: 3px; display: block;
-        }
+        .input-label { font-size: 11px; color: #999; margin-left: 8px; margin-bottom: 3px; display: block; }
         .input-row-multi { display: flex; gap: 8px; width: 100%; align-items: flex-end; }
 
-        .platform-wrapper {
-            display: flex; gap: 5px; width: 100%; flex-wrap: nowrap;
-        }
-        .platform-select { flex-grow: 1; width: auto; transition: width 0.3s; } 
+        .platform-wrapper { display: flex; gap: 5px; width: 100%; flex-wrap: nowrap; }
+        .platform-select { flex-grow: 1; width: auto; } 
         .platform-other { display: none; width: 50%; }
         .platform-other.show { display: block; }
 
         .img-preview-box {
             width: 100%; min-height: 50px; border-radius: 12px; margin-top: 10px;
             box-shadow: inset 3px 3px 6px rgba(0,0,0,0.1), inset -3px -3px 6px rgba(255,255,255,0.5);
-            overflow: hidden; display: none; 
-            align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.03);
-            padding: 10px; box-sizing: border-box;
+            overflow: hidden; display: none; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.03); padding: 10px; box-sizing: border-box;
         }
         .img-preview-box.has-img { display: flex; }
-        .img-preview-content { 
-            max-width: 100%; max-height: 200px; width: auto; height: auto; object-fit: contain; 
-        }
+        .img-preview-content { max-width: 100%; max-height: 200px; width: auto; height: auto; object-fit: contain; }
 
         select.sunken-input {
             appearance: none; -webkit-appearance: none;
@@ -178,92 +163,51 @@
             background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;
         }
 
-        /* Fix 2: 篩選列陰影優化 (增加左右 Padding 避免陰影被切) */
-        .filter-wrapper {
-            display: flex; gap: 10px; margin-bottom: 20px; align-items: center;
-        }
-        .filter-scroll-area {
-            display: flex; gap: 12px; overflow-x: auto; flex: 1; 
-            padding: 10px 15px; /* 關鍵：增加左右空間 */
-            scrollbar-width: none;
-        }
+        .filter-wrapper { display: flex; gap: 10px; margin-bottom: 20px; align-items: center; }
+        .filter-scroll-area { display: flex; gap: 12px; overflow-x: auto; flex: 1; padding: 10px 15px; scrollbar-width: none; }
         .filter-scroll-area::-webkit-scrollbar { display: none; }
-
         .filter-select {
-            min-width: 100px;
-            background: #E8E8E8; border: none; 
-            padding: 8px 12px; border-radius: 12px;
-            color: var(--text-main); font-size: 12px;
-            box-shadow: 5px 5px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
-            outline: none; appearance: none; 
+            min-width: 100px; background: #E8E8E8; border: none; padding: 8px 12px; border-radius: 12px;
+            color: var(--text-main); font-size: 12px; box-shadow: 5px 5px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
+            outline: none; appearance: none;
             background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235F6F6E%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
             background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;
         }
         .filter-reset-btn {
-            background: var(--morandi-white); color: var(--text-light);
-            border: none; padding: 0 15px; height: 36px; border-radius: 12px;
-            box-shadow: 5px 5px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
+            background: var(--morandi-white); color: var(--text-light); border: none; padding: 0 15px; height: 36px;
+            border-radius: 12px; box-shadow: 5px 5px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
             cursor: pointer; white-space: nowrap; font-size: 12px; flex-shrink: 0;
         }
 
-        /* 卡片陰影 */
-        .grid-container { 
-            display: flex; overflow-x: auto; scroll-snap-type: x mandatory; 
-            gap: 20px; padding-bottom: 20px; -webkit-overflow-scrolling: touch;
-        }
+        .grid-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 20px; padding-bottom: 20px; -webkit-overflow-scrolling: touch; }
         .grid-container::-webkit-scrollbar { display: none; }
-
         .card { 
             width: 280px; height: 420px; flex-shrink: 0; scroll-snap-align: center;
             background: #E8E8E8; border-radius: 20px; overflow: hidden; 
             box-shadow: 6px 6px 12px var(--shadow-dark), -2px -2px 6px rgba(0,0,0,0.05);
             display: flex; flex-direction: column; position: relative;
         }
-
         .card-img-wrapper {
-            width: 90%; margin: 15px auto 0 auto; height: 160px; 
-            border-radius: 15px; overflow: hidden;
+            width: 90%; margin: 15px auto 0 auto; height: 160px; border-radius: 15px; overflow: hidden;
             box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
-            cursor: pointer; background: var(--morandi-white); 
-            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; background: var(--morandi-white); display: flex; align-items: center; justify-content: center;
         }
-
         .card-img { width: 100%; height: 100%; object-fit: cover; display: block;}
         .no-img-box { width: 100%; height: 100%; background: var(--morandi-white); }
-
         .card-body { padding: 15px; display: flex; flex-direction: column; flex: 1; }
-
-        .card-meta-row { 
-            display: flex; gap: 6px; margin-bottom: 8px; justify-content: center;
-        }
+        .card-meta-row { display: flex; gap: 6px; margin-bottom: 8px; justify-content: center; }
         .meta-box {
-            width: 23%; flex: 0 0 auto;
-            font-size: 11px; color: var(--text-light); text-align: center;
+            width: 23%; flex: 0 0 auto; font-size: 11px; color: var(--text-light); text-align: center;
             padding: 6px 0px; border-radius: 10px; background: #E8E8E8;
             box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-
-        .card-title { 
-            font-size: 20px; font-family: 'Noto Serif TC', serif; 
-            color: var(--text-main); font-weight: bold; margin-bottom: 5px; line-height: 1.3;
-            max-height: 52px; overflow: hidden;
-        }
-
-        .card-feature {
-            font-size: 13px; color: var(--accent-blue);
-            margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-
-        .card-btn-row { 
-            display: flex; justify-content: flex-end; gap: 8px; 
-            margin-top: auto; padding-top: 10px;
-        }
-        
+        .card-title { font-size: 20px; font-family: 'Noto Serif TC', serif; color: var(--text-main); font-weight: bold; margin-bottom: 5px; line-height: 1.3; max-height: 52px; overflow: hidden; }
+        .card-feature { font-size: 13px; color: var(--accent-blue); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-btn-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: auto; padding-top: 10px; }
         .btn-mini { 
             padding: 8px 12px; font-size: 12px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold;
-            background: #E8E8E8; box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
-            white-space: nowrap;
+            background: #E8E8E8; box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light); white-space: nowrap;
         }
         .btn-mini:active { box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light); transform: translateY(1px); }
         .btn-edit { color: var(--accent-pink); }
@@ -275,69 +219,26 @@
         .action-btn-edit { flex: 3; color: white; background-color: var(--accent-pink); }
         .action-btn-reset { flex: 1; font-size: 12px; color: var(--text-light); }
 
-        .fab-container {
-            position: fixed; bottom: 20px; right: 20px; z-index: 1000;
-            display: flex; flex-direction: column; gap: 15px;
-        }
+        .fab-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 15px; }
         .fab-btn {
-            width: 50px; height: 50px; border-radius: 50%;
-            background: #E8E8E8; color: var(--text-main);
-            border: none; cursor: pointer;
-            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 20px; opacity: 0.9; transition: 0.3s;
+            width: 50px; height: 50px; border-radius: 50%; background: #E8E8E8; color: var(--text-main);
+            border: none; cursor: pointer; box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+            display: flex; align-items: center; justify-content: center; font-size: 20px; opacity: 0.9; transition: 0.3s;
         }
         .fab-btn:active { box-shadow: inset 2px 2px 5px var(--shadow-dark); transform: scale(0.95); }
         
-        /* Map View Overlay */
-        #map-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #E8E8E8; z-index: 2000; display: none;
-            flex-direction: column;
-        }
-        #map-header {
-            padding: 15px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 2001; background: #E8E8E8;
-        }
-        #map-loading {
-            position: absolute; top: 100px; left: 50%; transform: translateX(-50%);
-            background: rgba(0,0,0,0.8); color: white; padding: 10px 20px;
-            border-radius: 20px; z-index: 3000; display: none;
-            font-size: 13px; text-align: center; white-space: nowrap;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
+        #map-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #E8E8E8; z-index: 2000; display: none; flex-direction: column; }
+        #map-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 2001; background: #E8E8E8; }
+        #map-loading { position: absolute; top: 100px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 20px; z-index: 3000; display: none; font-size: 13px; text-align: center; white-space: nowrap; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         #full-map { flex: 1; width: 100%; background: #e5e5e5; }
         
-        #picker-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); z-index: 3000; display: none;
-            flex-direction: column; align-items: center; justify-content: center;
-        }
-        #picker-container {
-            width: 90%; height: 70%; background: white; border-radius: 20px;
-            display: flex; flex-direction: column; overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-        }
+        #picker-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        #picker-container { width: 90%; height: 70%; background: white; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
         #picker-map { flex: 1; width: 100%; }
         #picker-controls { padding: 15px; text-align: center; background: #eee; }
 
-        .marker-pin {
-            width: 32px; height: 32px;
-            border-radius: 50% 50% 50% 0;
-            background: #333; 
-            position: absolute;
-            transform: rotate(-45deg);
-            left: 50%; top: 50%;
-            margin: -15px 0 0 -15px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
-            border: 2px solid white;
-        }
-        .marker-pin::after {
-            content: attr(data-emoji);
-            transform: rotate(45deg);
-            font-size: 16px;
-        }
+        .marker-pin { width: 32px; height: 32px; border-radius: 50% 50% 50% 0; background: #333; position: absolute; transform: rotate(-45deg); left: 50%; top: 50%; margin: -15px 0 0 -15px; display: flex; align-items: center; justify-content: center; box-shadow: 2px 2px 5px rgba(0,0,0,0.3); border: 2px solid white; }
+        .marker-pin::after { content: attr(data-emoji); transform: rotate(45deg); font-size: 16px; }
         .pin-shop { background: #7A90A4; }
         .pin-food { background: #F59E0B; }
         .pin-spot { background: #10B981; }
@@ -349,39 +250,32 @@
         .popup-title { font-weight: bold; font-size: 14px; margin-bottom: 3px; }
         .popup-feature { font-size: 12px; color: #7A90A4; margin-bottom: 3px; font-weight: bold;}
         .popup-desc { font-size: 12px; color: #666; }
-
-        .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
-            background-color: rgba(122, 144, 164, 0.6);
-        }
-        .marker-cluster div {
-            background-color: rgba(122, 144, 164, 0.9);
-            color: white; font-weight: bold;
-        }
+        .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background-color: rgba(122, 144, 164, 0.6); }
+        .marker-cluster div { background-color: rgba(122, 144, 164, 0.9); color: white; font-weight: bold; }
         
-        #btn-filter-area {
-            position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
-            z-index: 2500; background: white; color: var(--accent-blue);
-            padding: 10px 20px; border-radius: 25px; font-weight: bold; border: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2); cursor: pointer; display: none;
-        }
-
+        #btn-filter-area { position: absolute; top: 80px; left: 50%; transform: translateX(-50%); z-index: 2500; background: white; color: var(--accent-blue); padding: 10px 20px; border-radius: 25px; font-weight: bold; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2); cursor: pointer; display: none; }
         .hidden { display: none; }
-
-        @media(min-width: 650px) {
-            .grid-container { 
-                display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-                overflow-x: visible; justify-items: center; 
-            }
-        }
-        
-        @media(max-width: 400px) {
-            .search-container { flex-direction: column; }
-        }
+        @media(min-width: 650px) { .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); overflow-x: visible; justify-items: center; } }
+        @media(max-width: 400px) { .search-container { flex-direction: column; } }
     </style>
 </head>
 <body>
 
-    <h1>⚜️收藏清單⚜️</h1>
+    <div id="auth-overlay">
+        <div class="auth-box">
+            <div class="auth-title">⚜️ 請先登入</div>
+            <input type="email" id="auth-email" class="sunken-input auth-input" placeholder="📧 Email">
+            <input type="password" id="auth-pwd" class="sunken-input auth-input" placeholder="🔑 密碼 (至少6碼)">
+            <button id="btn-login" class="convex-btn btn-full" style="margin-bottom:10px;" onclick="handleLogin()">登入</button>
+            <button id="btn-signup" class="convex-btn btn-full" style="color: var(--accent-blue);" onclick="handleSignup()">註冊新帳號</button>
+            <p id="auth-msg" style="font-size:12px; color:red; margin-top:10px; min-height:16px;"></p>
+        </div>
+    </div>
+
+    <div class="header-row">
+        <h1>⚜️收藏清單⚜️</h1>
+        <span class="btn-logout" onclick="handleLogout()">登出</span>
+    </div>
 
     <div id="section-add" class="panel-container">
         
@@ -643,6 +537,7 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcmJreWNscmhobnl2em9zYnljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyNzgyMjksImV4cCI6MjA4Mzg1NDIyOX0.DB44xf_i3WMyjpek2nQk5oo9MyzTYNsDCqiExmpMOgA';
         const db = supabase.createClient(supabaseUrl, supabaseKey);
 
+        let currentUser = null;
         let allItems = []; 
         let filteredItems = [];
         let map = null; 
@@ -652,6 +547,59 @@
         let pickerMarker = null;
         let currentPickerMode = 'add';
 
+        // --- AUTH LOGIC ---
+        async function checkUser() {
+            const { data: { user } } = await db.auth.getUser();
+            if (user) {
+                currentUser = user;
+                document.getElementById('auth-overlay').style.display = 'none';
+                fetchItems();
+            } else {
+                document.getElementById('auth-overlay').style.display = 'flex';
+            }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-pwd').value;
+            const msg = document.getElementById('auth-msg');
+            msg.innerText = "登入中...";
+            
+            const { data, error } = await db.auth.signInWithPassword({ email, password });
+            if (error) {
+                msg.innerText = "登入失敗: " + error.message;
+            } else {
+                location.reload();
+            }
+        }
+
+        async function handleSignup() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-pwd').value;
+            const msg = document.getElementById('auth-msg');
+            
+            if(password.length < 6) return msg.innerText = "密碼至少需6位數";
+            msg.innerText = "註冊中...";
+
+            const { data, error } = await db.auth.signUp({ email, password });
+            if (error) {
+                msg.innerText = "註冊失敗: " + error.message;
+            } else {
+                msg.style.color = 'green';
+                msg.innerText = "註冊成功！請檢查信箱驗證信，或直接登入。";
+                // 部分 Supabase 設定允許免驗證直接登入，若有 user 則重整
+                if(data.user) location.reload();
+            }
+        }
+
+        async function handleLogout() {
+            await db.auth.signOut();
+            location.reload();
+        }
+
+        window.onload = checkUser;
+
+        // --- MAIN LOGIC ---
         window.onscroll = function() {
             const btn = document.getElementById('go-top-btn');
             if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
@@ -827,29 +775,6 @@
             }
         }
 
-        function parseAddress(mode) {
-            const addr = document.getElementById(`${mode}-loc`).value;
-            const countryField = document.getElementById(`${mode}-country`);
-            const cityField = document.getElementById(`${mode}-city`);
-
-            if (!addr) return;
-            if (!countryField.value) {
-                if (addr.includes('台灣') || addr.includes('Taiwan')) {
-                    countryField.value = '台灣';
-                }
-            }
-            const cities = ['台北', '新北', '桃園', '台中', '台南', '高雄', '基隆', '新竹', '嘉義', '苗栗', '彰化', '南投', '雲林', '屏東', '宜蘭', '花蓮', '台東', '澎湖', '金門', '連江'];
-            if (!cityField.value) {
-                for (let c of cities) {
-                    if (addr.includes(c)) {
-                        cityField.value = c;
-                        if(!countryField.value) countryField.value = '台灣'; 
-                        break;
-                    }
-                }
-            }
-        }
-
         function openMapDirect(loc, city) {
             const fullLoc = city + " " + loc;
             if(loc || city) window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullLoc)}`, '_blank');
@@ -868,6 +793,8 @@
         }
 
         async function executeAdd() {
+            if(!currentUser) return alert('請先登入');
+
             const title = document.getElementById('add-title').value;
             const image = document.getElementById('add-img').value;
             const category = document.getElementById('add-category').value;
@@ -886,8 +813,14 @@
 
             desc = bundleDescription(desc, ref, country, city, feature, platform, geo);
 
+            // Insert with user_id
             const { error } = await db.from('products').insert([{ 
-                title, image_url: image, category, description: desc, location: loc
+                title, 
+                image_url: image, 
+                category, 
+                description: desc, 
+                location: loc,
+                user_id: currentUser.id 
             }]);
 
             if (error) alert('新增失敗：' + error.message);
@@ -934,6 +867,7 @@
         }
 
         async function fetchItems() {
+            // RLS will automatically filter for currentUser, so we just select *
             const { data, error } = await db.from('products').select('*').order('created_at', { ascending: false });
             if (error) return console.error(error);
 
@@ -1019,7 +953,7 @@
             container.innerHTML = ''; 
             
             if(items.length === 0) {
-                 container.innerHTML = '<p style="text-align:center; width:100%; color:#999;">沒有符合的資料</p>';
+                 container.innerHTML = '<p style="text-align:center; width:100%; color:#999;">沒有符合的資料 (或尚未新增)</p>';
                  return;
             }
 
@@ -1037,7 +971,6 @@
                     imgContent = `<div class="no-img-box"></div>`; 
                 }
 
-                // Fix 4: 卡片資料隱藏邏輯 + 固定寬度
                 let metaHtml = '<div class="card-meta-row">';
                 metaHtml += `<div class="meta-box">${item.category}</div>`;
                 if (item.country && item.country !== '-') metaHtml += `<div class="meta-box">${item.country}</div>`;
@@ -1289,7 +1222,6 @@
             for(let i = 0; i < total; i++) {
                 let item = itemsToMap[i];
                 
-                // Priority 1: Saved Geo
                 if(item.geo) {
                     const parts = item.geo.split(',');
                     addMarker(item, parseFloat(parts[0]), parseFloat(parts[1]), catConfig);
@@ -1297,7 +1229,6 @@
                     continue; 
                 }
 
-                // Priority 2: Fallback to Search
                 let queryList = [];
                 if(item.location && !item.location.includes('http')) queryList.push(item.location);
                 if(item.city && item.title) queryList.push(item.city + " " + item.title);
@@ -1365,8 +1296,6 @@
             markersCluster.addLayer(marker);
             currentMarkers.push({ id: item.id, layer: marker });
         }
-
-        fetchItems();
     </script>
 </body>
 </html>
