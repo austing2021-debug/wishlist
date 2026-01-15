@@ -15,11 +15,11 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@300;400&display=swap" rel="stylesheet">
     <style>
-        /* --- 全局設定 --- */
+        /* --- 全局設定 (修改：改為黑色系) --- */
         :root {
             --bg-color: #E8E8E8;          
-            --text-main: #5F6F6E;         
-            --text-light: #8C9696;        
+            --text-main: #000000;         /* 改為純黑 */
+            --text-light: #333333;        /* 改為深灰 */
             --accent-blue: #7A90A4;        
             --accent-pink: #D4A5A5;        
             --accent-red: #B86B6B;
@@ -39,7 +39,7 @@
             padding-bottom: 100px; 
         }
 
-        /* 登入遮罩樣式 */
+        /* 登入遮罩樣式 (修改：靠左對齊、無Emoji) */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-color); z-index: 9999;
@@ -52,8 +52,15 @@
             box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
             text-align: center;
         }
-        .auth-title { font-family: 'Noto Serif TC', serif; font-size: 24px; margin-bottom: 20px; color: var(--text-main); }
-        .auth-input { margin-bottom: 15px; text-align: center; }
+        .auth-title { 
+            font-family: 'Noto Serif TC', serif; font-size: 24px; margin-bottom: 20px; 
+            color: var(--text-main); font-weight: bold; 
+        }
+        .auth-input { 
+            margin-bottom: 15px; text-align: left; padding-left: 15px; /* 修改：靠左 */
+            color: black; /* 修改：輸入文字黑色 */
+        }
+        .auth-input::placeholder { color: #666; }
 
         /* Header Area */
         .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -66,7 +73,7 @@
             font-size: 12px; color: var(--accent-red); cursor: pointer; text-decoration: underline;
         }
 
-        /* --- 凹陷感輸入框 --- */
+        /* --- 凹陷感輸入框 (修改：文字黑色) --- */
         .sunken-input {
             background: transparent; border: none; border-radius: 10px;
             padding: 8px 10px; width: 100%; box-sizing: border-box; 
@@ -75,11 +82,12 @@
             transition: 0.3s;
             height: 38px;
         }
+        .sunken-input::placeholder { color: #666; } /* 提示字深一點 */
         .sunken-input:focus {
             box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
         }
 
-        /* --- 凸起感按鈕 (通用) --- */
+        /* --- 凸起感按鈕 --- */
         .convex-btn {
             background: #E8E8E8; color: var(--text-main); border: none;
             padding: 8px 12px; border-radius: 12px; cursor: pointer;
@@ -129,7 +137,7 @@
             flex: 1; display: flex; flex-direction: column; gap: 8px;
             padding: 10px; border-radius: 15px; background: rgba(255,255,255,0.3); 
         }
-        .search-title { font-size: 12px; color: #888; text-align: center; margin-bottom: 5px; }
+        .search-title { font-size: 12px; color: #555; text-align: center; margin-bottom: 5px; font-weight: bold; } /* 修改：標題深一點 */
         .keyword-row { display: flex; gap: 5px; }
         .keyword-row input { flex: 1; text-align: center; font-size: 12px;}
         .quick-search-row { display: flex; gap: 8px; }
@@ -140,7 +148,7 @@
         .cat-text { font-size: 11px; white-space: nowrap; }
         
         .input-group { margin-bottom: 12px; width: 100%; }
-        .input-label { font-size: 11px; color: #999; margin-left: 8px; margin-bottom: 3px; display: block; }
+        .input-label { font-size: 11px; color: #555; margin-left: 8px; margin-bottom: 3px; display: block; font-weight: bold; } /* 修改：標籤深一點 */
         .input-row-multi { display: flex; gap: 8px; width: 100%; align-items: flex-end; }
 
         .platform-wrapper { display: flex; gap: 5px; width: 100%; flex-wrap: nowrap; }
@@ -159,22 +167,33 @@
 
         select.sunken-input {
             appearance: none; -webkit-appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235F6F6E%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
             background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;
         }
 
         .filter-wrapper { display: flex; gap: 10px; margin-bottom: 20px; align-items: center; }
-        .filter-scroll-area { display: flex; gap: 12px; overflow-x: auto; flex: 1; padding: 10px 15px; scrollbar-width: none; }
+        .filter-scroll-area { display: flex; gap: 12px; overflow-x: auto; flex: 1; padding: 10px 15px; scrollbar-width: none; align-items: center;}
         .filter-scroll-area::-webkit-scrollbar { display: none; }
+        
+        /* 修改：搜尋框樣式 */
+        .filter-search-box {
+            min-width: 130px;
+            background: white; border: none; 
+            padding: 8px 12px; border-radius: 12px;
+            color: var(--text-main); font-size: 13px;
+            box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
+            outline: none; flex-shrink: 0;
+        }
+
         .filter-select {
             min-width: 100px; background: #E8E8E8; border: none; padding: 8px 12px; border-radius: 12px;
             color: var(--text-main); font-size: 12px; box-shadow: 5px 5px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
-            outline: none; appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235F6F6E%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            outline: none; appearance: none; white-space: nowrap; flex-shrink: 0;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
             background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;
         }
         .filter-reset-btn {
-            background: var(--morandi-white); color: var(--text-light); border: none; padding: 0 15px; height: 36px;
+            background: var(--morandi-white); color: #333; border: none; padding: 0 15px; height: 36px;
             border-radius: 12px; box-shadow: 5px 5px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
             cursor: pointer; white-space: nowrap; font-size: 12px; flex-shrink: 0;
         }
@@ -206,7 +225,7 @@
         .card-feature { font-size: 13px; color: var(--accent-blue); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-btn-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: auto; padding-top: 10px; }
         .btn-mini { 
-            padding: 8px 12px; font-size: 12px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold;
+            padding: 8px 12px; font-size: 12px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; color: black;
             background: #E8E8E8; box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light); white-space: nowrap;
         }
         .btn-mini:active { box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light); transform: translateY(1px); }
@@ -217,7 +236,7 @@
         .action-row { display: flex; gap: 10px; margin-top: 15px; }
         .action-btn-add { flex: 3; color: white; background-color: var(--accent-blue); }
         .action-btn-edit { flex: 3; color: white; background-color: var(--accent-pink); }
-        .action-btn-reset { flex: 1; font-size: 12px; color: var(--text-light); }
+        .action-btn-reset { flex: 1; font-size: 12px; color: #555; }
 
         .fab-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 15px; }
         .fab-btn {
@@ -263,7 +282,7 @@
 
     <div id="auth-overlay">
         <div class="auth-box">
-            <div class="auth-title">⚜️ 請先登入</div>
+            <div class="auth-title">請先登入</div>
             <input type="text" id="auth-username" class="sunken-input auth-input" placeholder="👤 帳號 (5-10碼英文數字)" maxlength="10">
             <input type="password" id="auth-pwd" class="sunken-input auth-input" placeholder="🔑 密碼 (至少6碼)">
             <button id="btn-login" class="convex-btn btn-full" style="margin-bottom:10px;" onclick="handleLogin()">登入</button>
@@ -482,6 +501,7 @@
 
     <div class="filter-wrapper">
         <div class="filter-scroll-area">
+            <input type="text" id="filter-keyword" class="filter-search-box" placeholder="🔍 搜尋主題/備註..." oninput="applyFilter()">
             <select id="filter-category" class="filter-select" onchange="applyFilter()">
                 <option value="">所有類別</option>
             </select>
@@ -670,7 +690,7 @@
             }
         }
 
-        // --- SMART ADDRESS & GEO CONVERSION (智慧重試版) ---
+        // --- SMART ADDRESS & GEO CONVERSION (斷尾求生版) ---
         async function autoConvertGeo(mode) {
             const addrInput = document.getElementById(`${mode}-loc`);
             const countryField = document.getElementById(`${mode}-country`);
@@ -721,27 +741,31 @@
             // Round 1: 完整搜尋
             result = await queryOSM(baseQuery);
 
-            // Round 2: 去除樓層與細節
+            // Round 2: 斷尾求生 (只抓到"號"為止)
             if(!result) {
                 let stripAddr = cleanAddr;
-                stripAddr = stripAddr.replace(/(\d+[樓FfBb室]|Room\s*\d+|之\d+).*/g, '');
-                stripAddr = stripAddr.replace(/\(.*?\)/g, '').replace(/（.*?）/g, '');
+                // Regex: 抓取 "任意字 + 數字 + 號"
+                // 例如: "台北市信義路五段7號" (101大樓會被切掉)
+                const numMatch = stripAddr.match(/(.*?(\d+|[一二三四五六七八九十]+)(號|号))/);
                 
-                let query2 = stripAddr;
-                if(currentCountry && !query2.includes(currentCountry)) query2 = currentCountry + " " + query2;
-                
-                if(query2 !== baseQuery) {
+                if(numMatch) {
+                    let query2 = numMatch[1]; // 只取 "xxx號" 前面的部分
+                    if(currentCountry && !query2.includes(currentCountry)) query2 = currentCountry + " " + query2;
+                    
+                    console.log("Retry 2 (Cut off):", query2);
                     result = await queryOSM(query2);
                 }
             }
 
-            // Round 3: 只搜 "都市 + 路名 + 號" (模糊搜)
+            // Round 3: 只搜 "都市 + 路名" (模糊搜)
             if(!result) {
-                const roadMatch = cleanAddr.match(/.*?[路街道](?:\d+段)?(?:\d+號)?/);
+                // 抓取 "路/街/道"
+                const roadMatch = cleanAddr.match(/.*?[路街道](?:\d+段)?/);
                 if(roadMatch) {
                     let query3 = roadMatch[0];
                     if(currentCountry && !query3.includes(currentCountry)) query3 = currentCountry + " " + query3;
                     if(currentCity && !query3.includes(currentCity)) query3 = currentCity + " " + query3;
+                    console.log("Retry 3 (Road only):", query3);
                     result = await queryOSM(query3);
                 }
             }
@@ -1003,9 +1027,16 @@
             const country = document.getElementById('filter-country').value;
             const city = document.getElementById('filter-city').value;
             const plat = document.getElementById('filter-platform').value;
+            
+            // 新增：關鍵字搜尋邏輯
+            const keyword = document.getElementById('filter-keyword').value.toLowerCase();
 
             filteredItems = allItems.filter(item => {
-                return (!cat || item.category === cat) &&
+                // 檢查關鍵字 (比對 標題 title 和 備註 cleanDesc)
+                const matchKeyword = !keyword || (item.title && item.title.toLowerCase().includes(keyword)) || (item.cleanDesc && item.cleanDesc.toLowerCase().includes(keyword));
+
+                return matchKeyword &&
+                       (!cat || item.category === cat) &&
                        (!country || item.country === country) &&
                        (!city || item.city === city) &&
                        (!plat || item.platform === plat);
@@ -1015,6 +1046,7 @@
         }
 
         function resetFilter() {
+            document.getElementById('filter-keyword').value = ""; // 重置搜尋框
             document.getElementById('filter-category').value = "";
             document.getElementById('filter-country').value = "";
             document.getElementById('filter-city').value = "";
