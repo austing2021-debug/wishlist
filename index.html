@@ -287,7 +287,7 @@
             </div>
             
             <div class="search-col">
-                <span class="search-title">🔍 關鍵字輔助搜尋</span>
+                <span class="search-title">🔍 智慧搜尋</span>
                 <div class="keyword-row">
                     <input type="text" id="kw-1" class="sunken-input" placeholder="字詞1">
                     <input type="text" id="kw-2" class="sunken-input" placeholder="字詞2">
@@ -325,11 +325,11 @@
         <div class="input-row-multi">
             <div class="input-group" style="width: 30%;">
                 <span class="input-label">國家</span>
-                <input type="text" id="add-country" class="sunken-input" placeholder="🏳️" maxlength="10">
+                <input type="text" id="add-country" class="sunken-input" placeholder="自動" maxlength="10">
             </div>
             <div class="input-group" style="width: 30%;">
                 <span class="input-label">都市</span>
-                <input type="text" id="add-city" class="sunken-input" placeholder="🏙️" maxlength="10">
+                <input type="text" id="add-city" class="sunken-input" placeholder="自動" maxlength="10">
             </div>
             <div class="input-group" style="width: 40%;">
                 <span class="input-label">銷售平台</span>
@@ -352,7 +352,7 @@
         
         <div class="input-row-multi">
             <div class="input-group" style="width: 60%;">
-                <span class="input-label">詳細地址 (輸入後離開會自動轉座標)</span>
+                <span class="input-label">詳細地址 (支援全球)</span>
                 <input type="text" id="add-loc" class="sunken-input" placeholder="📍 地址" onblur="autoConvertGeo('add')">
             </div>
             <button class="btn-map-convert" onclick="openPinPicker('add')">➜</button>
@@ -421,11 +421,11 @@
         <div class="input-row-multi">
             <div class="input-group" style="width: 30%;">
                 <span class="input-label">國家</span>
-                <input type="text" id="edit-country" class="sunken-input" placeholder="🏳️" maxlength="10">
+                <input type="text" id="edit-country" class="sunken-input" placeholder="自動" maxlength="10">
             </div>
             <div class="input-group" style="width: 30%;">
                 <span class="input-label">都市</span>
-                <input type="text" id="edit-city" class="sunken-input" placeholder="🏙️" maxlength="10">
+                <input type="text" id="edit-city" class="sunken-input" placeholder="自動" maxlength="10">
             </div>
             <div class="input-group" style="width: 40%;">
                 <span class="input-label">銷售平台</span>
@@ -547,7 +547,7 @@
         let pickerMarker = null;
         let currentPickerMode = 'add';
 
-        // --- AUTH LOGIC (已修改為一般帳號) ---
+        // --- AUTH LOGIC (5-10碼帳號) ---
         async function checkUser() {
             const { data: { user } } = await db.auth.getUser();
             if (user) {
@@ -567,12 +567,10 @@
             if(!username || !password) return msg.innerText = "請輸入帳號與密碼";
             msg.innerText = "登入中...";
             
-            // 拼接假 Email 進行驗證
             const fakeEmail = `${username}@wishlist.app`;
 
             const { data, error } = await db.auth.signInWithPassword({ email: fakeEmail, password });
             if (error) {
-                // 如果是登入錯誤，提示文字友善一點
                 if(error.message.includes("Invalid login")) msg.innerText = "帳號或密碼錯誤";
                 else msg.innerText = "登入失敗: " + error.message;
             } else {
@@ -585,7 +583,6 @@
             const password = document.getElementById('auth-pwd').value;
             const msg = document.getElementById('auth-msg');
             
-            // 驗證帳號格式 (5-10位英文數字)
             const userRegex = /^[a-zA-Z0-9]{5,10}$/;
             if(!userRegex.test(username)) {
                 return msg.innerText = "帳號限 5~10 位英文或數字";
@@ -594,7 +591,6 @@
             if(password.length < 6) return msg.innerText = "密碼至少需6位數";
             msg.innerText = "註冊中...";
 
-            // 拼接假 Email
             const fakeEmail = `${username}@wishlist.app`;
 
             const { data, error } = await db.auth.signUp({ email: fakeEmail, password });
@@ -604,7 +600,6 @@
             } else {
                 msg.style.color = 'green';
                 msg.innerText = "註冊成功！";
-                // 如果後台已關閉驗證信，通常會直接登入成功
                 if(data.user) location.reload();
             }
         }
@@ -616,7 +611,7 @@
 
         window.onload = checkUser;
 
-        // --- MAIN LOGIC (以下保持不變) ---
+        // --- MAIN LOGIC ---
         window.onscroll = function() {
             const btn = document.getElementById('go-top-btn');
             if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
@@ -675,33 +670,96 @@
             }
         }
 
+        // --- SMART ADDRESS & GEO CONVERSION (智慧重試版) ---
         async function autoConvertGeo(mode) {
-            const addr = document.getElementById(`${mode}-loc`).value;
-            const city = document.getElementById(`${mode}-city`).value;
+            const addrInput = document.getElementById(`${mode}-loc`);
+            const countryField = document.getElementById(`${mode}-country`);
+            const cityField = document.getElementById(`${mode}-city`);
             const geoField = document.getElementById(`${mode}-geo`);
             
-            if(!addr || geoField.value) return; 
+            const rawAddr = addrInput.value.trim();
+            if(!rawAddr) return; 
 
-            let query = addr;
-            if(!query.includes('台灣') && !query.includes('Taiwan')) {
-                if(city) query = city + " " + query;
-                else query = "台灣 " + query;
+            // 1. 前端快速填入國家/都市
+            if(!countryField.value) {
+                if(rawAddr.match(/台灣|台北|新北|桃園|台中|台南|高雄|基隆|新竹|嘉義|宜蘭|花蓮|台東|苗栗|彰化|南投|雲林|屏東|澎湖|金門|連江/)) {
+                    countryField.value = '台灣';
+                }
+            }
+            if(!cityField.value) {
+                 const cityMatch = rawAddr.match(/(\S{2,3}[縣市])/);
+                 if(cityMatch) cityField.value = cityMatch[1];
             }
 
-            geoField.placeholder = "⏳...";
+            if(geoField.value) return; 
+
+            // 內部查詢函式
+            const queryOSM = async (queryString) => {
+                try {
+                    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(queryString)}&limit=1&addressdetails=1&accept-language=zh-TW`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    return (data && data.length > 0) ? data[0] : null;
+                } catch(e) { return null; }
+            };
+
+            geoField.placeholder = "🔍 智慧搜尋中...";
             
-            try {
-                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
-                const res = await fetch(url);
-                const data = await res.json();
-                if(data && data.length > 0) {
-                    geoField.value = `${parseFloat(data[0].lat).toFixed(6)},${parseFloat(data[0].lon).toFixed(6)}`;
-                    document.getElementById(`${mode}-geo-status`).style.display = 'block';
-                } else {
-                    geoField.placeholder = "❌ 查無";
+            // 策略準備
+            let cleanAddr = rawAddr;
+            // 移除開頭郵遞區號
+            cleanAddr = cleanAddr.replace(/^\d{3,5}\s*/, '');
+            
+            let baseQuery = cleanAddr;
+            const currentCountry = countryField.value || "";
+            const currentCity = cityField.value || "";
+            
+            if(currentCountry && !baseQuery.includes(currentCountry)) baseQuery = currentCountry + " " + baseQuery;
+
+            let result = null;
+
+            // Round 1: 完整搜尋
+            result = await queryOSM(baseQuery);
+
+            // Round 2: 去除樓層與細節
+            if(!result) {
+                let stripAddr = cleanAddr;
+                stripAddr = stripAddr.replace(/(\d+[樓FfBb室]|Room\s*\d+|之\d+).*/g, '');
+                stripAddr = stripAddr.replace(/\(.*?\)/g, '').replace(/（.*?）/g, '');
+                
+                let query2 = stripAddr;
+                if(currentCountry && !query2.includes(currentCountry)) query2 = currentCountry + " " + query2;
+                
+                if(query2 !== baseQuery) {
+                    result = await queryOSM(query2);
                 }
-            } catch(e) {
-                geoField.placeholder = "⚠️ 錯誤";
+            }
+
+            // Round 3: 只搜 "都市 + 路名 + 號" (模糊搜)
+            if(!result) {
+                const roadMatch = cleanAddr.match(/.*?[路街道](?:\d+段)?(?:\d+號)?/);
+                if(roadMatch) {
+                    let query3 = roadMatch[0];
+                    if(currentCountry && !query3.includes(currentCountry)) query3 = currentCountry + " " + query3;
+                    if(currentCity && !query3.includes(currentCity)) query3 = currentCity + " " + query3;
+                    result = await queryOSM(query3);
+                }
+            }
+
+            // 處理結果
+            if(result) {
+                geoField.value = `${parseFloat(result.lat).toFixed(6)},${parseFloat(result.lon).toFixed(6)}`;
+                document.getElementById(`${mode}-geo-status`).style.display = 'block';
+
+                const details = result.address;
+                if(!countryField.value && details.country) countryField.value = details.country;
+                if(!cityField.value) {
+                    let apiCity = details.city || details.town || details.village || details.county || details.state || "";
+                    if(details.city) apiCity = details.city; 
+                    if(apiCity) cityField.value = apiCity;
+                }
+            } else {
+                geoField.placeholder = "❌ 找不到，請手動點地圖";
             }
         }
 
@@ -884,7 +942,6 @@
         }
 
         async function fetchItems() {
-            // RLS will automatically filter for currentUser, so we just select *
             const { data, error } = await db.from('products').select('*').order('created_at', { ascending: false });
             if (error) return console.error(error);
 
