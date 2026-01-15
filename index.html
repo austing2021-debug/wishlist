@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚜️收藏清單 (私人版)⚜️</title>
+    <title>⚜️ 收藏清單 ⚜️</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -53,7 +53,7 @@
             text-align: center;
         }
         .auth-title { font-family: 'Noto Serif TC', serif; font-size: 24px; margin-bottom: 20px; color: var(--text-main); }
-        .auth-input { margin-bottom: 15px; }
+        .auth-input { margin-bottom: 15px; text-align: center; }
 
         /* Header Area */
         .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -264,7 +264,7 @@
     <div id="auth-overlay">
         <div class="auth-box">
             <div class="auth-title">⚜️ 請先登入</div>
-            <input type="email" id="auth-email" class="sunken-input auth-input" placeholder="📧 Email">
+            <input type="text" id="auth-username" class="sunken-input auth-input" placeholder="👤 帳號 (5-10碼英文數字)" maxlength="10">
             <input type="password" id="auth-pwd" class="sunken-input auth-input" placeholder="🔑 密碼 (至少6碼)">
             <button id="btn-login" class="convex-btn btn-full" style="margin-bottom:10px;" onclick="handleLogin()">登入</button>
             <button id="btn-signup" class="convex-btn btn-full" style="color: var(--accent-blue);" onclick="handleSignup()">註冊新帳號</button>
@@ -273,7 +273,7 @@
     </div>
 
     <div class="header-row">
-        <h1>⚜️收藏清單⚜️</h1>
+        <h1>⚜️ 收藏清單 ⚜️</h1>
         <span class="btn-logout" onclick="handleLogout()">登出</span>
     </div>
 
@@ -547,7 +547,7 @@
         let pickerMarker = null;
         let currentPickerMode = 'add';
 
-        // --- AUTH LOGIC ---
+        // --- AUTH LOGIC (已修改為一般帳號) ---
         async function checkUser() {
             const { data: { user } } = await db.auth.getUser();
             if (user) {
@@ -560,34 +560,51 @@
         }
 
         async function handleLogin() {
-            const email = document.getElementById('auth-email').value;
+            const username = document.getElementById('auth-username').value.trim();
             const password = document.getElementById('auth-pwd').value;
             const msg = document.getElementById('auth-msg');
+
+            if(!username || !password) return msg.innerText = "請輸入帳號與密碼";
             msg.innerText = "登入中...";
             
-            const { data, error } = await db.auth.signInWithPassword({ email, password });
+            // 拼接假 Email 進行驗證
+            const fakeEmail = `${username}@wishlist.app`;
+
+            const { data, error } = await db.auth.signInWithPassword({ email: fakeEmail, password });
             if (error) {
-                msg.innerText = "登入失敗: " + error.message;
+                // 如果是登入錯誤，提示文字友善一點
+                if(error.message.includes("Invalid login")) msg.innerText = "帳號或密碼錯誤";
+                else msg.innerText = "登入失敗: " + error.message;
             } else {
                 location.reload();
             }
         }
 
         async function handleSignup() {
-            const email = document.getElementById('auth-email').value;
+            const username = document.getElementById('auth-username').value.trim();
             const password = document.getElementById('auth-pwd').value;
             const msg = document.getElementById('auth-msg');
+            
+            // 驗證帳號格式 (5-10位英文數字)
+            const userRegex = /^[a-zA-Z0-9]{5,10}$/;
+            if(!userRegex.test(username)) {
+                return msg.innerText = "帳號限 5~10 位英文或數字";
+            }
             
             if(password.length < 6) return msg.innerText = "密碼至少需6位數";
             msg.innerText = "註冊中...";
 
-            const { data, error } = await db.auth.signUp({ email, password });
+            // 拼接假 Email
+            const fakeEmail = `${username}@wishlist.app`;
+
+            const { data, error } = await db.auth.signUp({ email: fakeEmail, password });
             if (error) {
-                msg.innerText = "註冊失敗: " + error.message;
+                if(error.message.includes("already registered")) msg.innerText = "此帳號已被註冊";
+                else msg.innerText = "註冊失敗: " + error.message;
             } else {
                 msg.style.color = 'green';
-                msg.innerText = "註冊成功！請檢查信箱驗證信，或直接登入。";
-                // 部分 Supabase 設定允許免驗證直接登入，若有 user 則重整
+                msg.innerText = "註冊成功！";
+                // 如果後台已關閉驗證信，通常會直接登入成功
                 if(data.user) location.reload();
             }
         }
@@ -599,7 +616,7 @@
 
         window.onload = checkUser;
 
-        // --- MAIN LOGIC ---
+        // --- MAIN LOGIC (以下保持不變) ---
         window.onscroll = function() {
             const btn = document.getElementById('go-top-btn');
             if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
