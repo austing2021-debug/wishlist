@@ -17,31 +17,25 @@
     <style>
         /* --- 1. 配色系統 --- */
         :root {
-            /* 條件1: 背景極淺，偏白 */
+            /* 背景與基底 */
             --bg-page: #FDFDFD;           
-            
-            /* 面板基底 */
             --bg-panel: #EAEAEA;          
             
-            /* 條件3: 輸入框顏色指定為 #FCFAF1 */
-            --bg-input: #FCFAF1;          
+            /* 條件1: 輸入欄位背景色全面改為 #EEEEEE */
+            --bg-input: #EEEEEE;          
             
             /* 文字顏色 */
-            --text-main: #000000;         /* 主要文字純黑 */
-            --text-label: #000000;        /* 條件4: 標籤文字全黑 */
+            --text-main: #000000;         
+            --text-label: #000000;        
             
             /* 功能色 */
-            --color-primary: #0D5498;     /* 深海藍 */
-            --color-accent: #837791;      /* 紫灰 */
-            --color-danger: #B86B6B;      /* 莫蘭迪紅 */
+            --color-primary: #0D5498;     
+            --color-accent: #837791;      
+            --color-danger: #B86B6B;      
             
-            /* 條件5, 6, 9: 藍系按鈕按下色 */
+            /* 互動色 */
             --active-blue: #CFDDEA;       
-            
-            /* 條件10: 紅系按鈕按下色 */
             --active-red: #FFDCE3;        
-
-            /* 條件15: 圖片指定新增按鈕色 */
             --btn-add-bg: #668BC4; 
         }
 
@@ -65,23 +59,21 @@
 
         /* --- UI 元件樣式 --- */
 
-        /* 條件2: 面板樣式 - 左上無白光，改雙重陰影強調3D浮出 */
+        /* 面板樣式 - 3D浮出感 */
         .panel-container {
             padding: 20px; border-radius: 20px; 
             background-color: var(--bg-panel);
-            /* 關鍵：使用半透明黑影模擬浮起效果 */
             box-shadow: 8px 8px 16px rgba(0,0,0,0.12), -4px -4px 12px rgba(0,0,0,0.03);
             margin-bottom: 30px;
             border: 1px solid rgba(255,255,255,0.4); 
         }
 
-        /* 條件3: 輸入框顏色 #FCFAF1 */
+        /* 輸入框樣式 */
         .sunken-input {
             background: var(--bg-input); 
             border: none; border-radius: 10px;
             padding: 0 12px; width: 100%; box-sizing: border-box; 
             color: var(--text-main); font-size: 14px; outline: none;
-            /* 內陰影保持立體感 */
             box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
             transition: 0.1s; height: 42px;
         }
@@ -95,13 +87,11 @@
             border: none;
             padding: 8px 12px; border-radius: 12px; cursor: pointer;
             font-weight: bold; letter-spacing: 1px; font-size: 13px;
-            /* 浮出陰影 */
             box-shadow: 4px 4px 8px rgba(0,0,0,0.15), -3px -3px 6px rgba(255,255,255,0.8);
             transition: all 0.1s ease;
             display: flex; align-items: center; justify-content: center;
             height: 42px; box-sizing: border-box;
         }
-        /* 條件6: 中間五大按鈕按下變色 #CFDDEA，文字保持黑色 */
         .convex-btn:active, .convex-btn.active {
             box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2);
             transform: translateY(1px);
@@ -109,19 +99,14 @@
             color: black !important;
         }
 
-        /* 條件5: 抓取按鈕 (全黑字) */
+        /* 各種按鈕變體 */
         .btn-fetch { color: black; }
         .btn-fetch:active { background-color: var(--active-blue); }
 
-        /* 條件9: 重置按鈕 (全黑字, 按下變色) */
         .action-btn-reset { color: black; }
         .action-btn-reset:active { background-color: var(--active-blue); }
 
-        /* 條件10: 登出與重整按鈕 (莫蘭迪紅字, 按下變粉紅 #FFDCE3) */
-        .btn-danger-style { 
-            color: var(--color-danger); 
-            font-weight: bold;
-        }
+        .btn-danger-style { color: var(--color-danger); font-weight: bold; }
         .btn-danger-style:active { 
             background-color: var(--active-red) !important; 
             box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2);
@@ -137,7 +122,6 @@
         .cat-icon { width: 24px; height: 24px; }
         .cat-text { font-size: 11px; white-space: nowrap; color: black; } 
 
-        /* 條件4: 表格上方文字介紹改黑色 */
         .input-group { margin-bottom: 15px; width: 100%; }
         .input-label { 
             font-size: 12px; color: black; 
@@ -159,7 +143,7 @@
         .img-preview-box.has-img { display: flex; }
         .img-preview-content { max-width: 100%; max-height: 200px; object-fit: contain; }
 
-        /* 條件13: 地圖按鈕改單色SVG */
+        /* 地圖按鈕 */
         .btn-map-convert {
             width: 42px; height: 42px; border-radius: 12px; background: var(--bg-panel); border: none;
             display: flex; align-items: center; justify-content: center;
@@ -173,7 +157,7 @@
         }
 
         /* ------------------------------------------- */
-        /* --- 篩選與搜尋 --- */
+        /* --- 篩選與搜尋 (條件3: 佈局重構) --- */
         /* ------------------------------------------- */
         .filter-wrapper { margin-bottom: 25px; }
 
@@ -193,12 +177,10 @@
             background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             background-repeat: no-repeat; background-position: right .5em center; background-size: 1em;
         }
-        /* 條件11: 篩選表按下去反應 */
         .filter-select:active, .filter-select:focus {
             box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2);
         }
 
-        /* 條件10: ↺ 按下變色 #FFDCE3 */
         .filter-reset-btn {
             background: var(--bg-panel); color: var(--color-danger); border: none; 
             border-radius: 12px; 
@@ -211,26 +193,44 @@
             background-color: var(--active-red);
         }
 
-        /* 電腦版 layout (3.1) */
+        /* --- 電腦版樣式 (一行到底，重置在最右) --- */
         @media(min-width: 650px) {
-            .filter-wrapper { display: flex; flex-direction: row; gap: 10px; height: 42px; align-items: center; }
-            .filter-search-box { width: 200px; height: 100%; } /* 左右寬 */
-            .filter-select-container { flex: 1; display: flex; gap: 8px; height: 100%; }
+            .filter-wrapper { 
+                display: flex; flex-direction: row; gap: 10px; height: 42px; align-items: center; 
+            }
+            .filter-search-box { width: 200px; height: 100%; order: 1; }
+            .filter-select-container { 
+                flex: 1; display: flex; gap: 8px; height: 100%; order: 2;
+            }
             .filter-select { flex: 1; height: 100%; }
-            .filter-reset-btn { width: 60px; height: 100%; }
+            .filter-reset-btn { width: 60px; height: 100%; order: 3; } /* 最右邊 */
         }
 
-        /* 手機版 layout (3.2 & 14) */
+        /* --- 手機版樣式 (Grid 佈局) --- */
         @media(max-width: 649px) {
-            .filter-wrapper { display: flex; flex-direction: column; gap: 10px; }
+            .filter-wrapper { 
+                display: grid; 
+                grid-template-columns: 1fr 50px; /* 搜尋框佔滿，重置按鈕50px */
+                grid-template-rows: 48px 45px;   /* 上排高，下排稍矮 */
+                gap: 10px; 
+            }
             
-            /* 條件14: 搜尋與重置按鈕並排 */
-            .filter-top-row { display: flex; gap: 10px; width: 100%; height: 48px; }
-            .filter-search-box { flex: 1; height: 100%; } /* 上下寬(高) */
-            .filter-reset-btn { width: 50px; height: 100%; }
+            .filter-search-box { 
+                grid-column: 1 / 2; grid-row: 1 / 2; 
+                height: 100%; width: 100%;
+            }
+            
+            .filter-reset-btn { 
+                grid-column: 2 / 3; grid-row: 1 / 2; 
+                height: 100%; width: 100%;
+            }
 
-            .filter-select-container { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 8px; }
-            .filter-select { width: 100%; height: 45px; } /* 拉大 */
+            .filter-select-container { 
+                grid-column: 1 / 3; grid-row: 2 / 3; 
+                display: grid; grid-template-columns: 1fr 1fr; gap: 8px; 
+                height: 100%;
+            }
+            .filter-select { width: 100%; height: 100%; }
         }
 
         /* ------------------------------------------- */
@@ -245,7 +245,6 @@
             box-shadow: 6px 6px 12px rgba(0,0,0,0.15), -4px -4px 10px rgba(255,255,255,0.8);
             display: flex; flex-direction: column;
         }
-        /* 條件12: 點擊圖片要有"按下去"反應，陰影覆蓋 */
         .card-img-wrapper {
             width: 90%; margin: 15px auto 0 auto; height: 160px; border-radius: 15px; overflow: hidden;
             box-shadow: 4px 4px 8px rgba(0,0,0,0.15), -3px -3px 6px rgba(255,255,255,0.8);
@@ -288,7 +287,6 @@
 
         .action-row { display: flex; gap: 10px; margin-top: 20px; align-items: stretch; }
         
-        /* 圖片指定新增按鈕配色 */
         .action-btn-add { flex: 2; background-color: var(--btn-add-bg); color: black; } 
         .action-btn-add:active { background-color: var(--active-blue); }
         
@@ -298,7 +296,6 @@
         .action-btn-reset { flex: 1; color: black; }
         .action-btn-reset:active { background-color: var(--active-blue); }
         
-        /* 條件2: 登出文字變方框 (同按鈕樣式) */
         .action-btn-logout { 
             flex: 0 0 60px; 
             background: var(--bg-panel); border: none;
@@ -338,7 +335,6 @@
             border: none; cursor: pointer; box-shadow: 5px 5px 10px rgba(0,0,0,0.15), -3px -3px 8px rgba(255,255,255,0.8);
             display: flex; align-items: center; justify-content: center; transition: 0.2s;
         }
-        /* 條件15: FAB SVG 單色 (深藍) */
         .fab-btn svg { width: 24px; height: 24px; fill: var(--color-primary); }
         .fab-btn:active { box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); transform: scale(0.95); background: var(--active-blue); }
         .hidden { display: none; }
@@ -468,10 +464,8 @@
     </div>
 
     <div class="filter-wrapper">
-        <div class="filter-top-row">
-            <input type="text" id="filter-keyword" class="filter-search-box" placeholder="搜尋" oninput="applyFilter()">
-            <button class="filter-reset-btn btn-danger-style" onclick="resetFilter()">↺</button>
-        </div>
+        <input type="text" id="filter-keyword" class="filter-search-box" placeholder="搜尋" oninput="applyFilter()">
+        <button class="filter-reset-btn btn-danger-style" onclick="resetFilter()">↺</button>
         
         <div class="filter-select-container">
             <select id="filter-category" class="filter-select" onchange="applyFilter()">
