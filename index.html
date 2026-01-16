@@ -17,25 +17,32 @@
     <style>
         /* --- 1. 配色系統 --- */
         :root {
-            /* 條件1: 背景更淺，偏白 */
-            --bg-page: #F7F9FA;           
-            --bg-panel: #EAEAEA;          /* 面板基底灰 */
-            --bg-input: #DCDCDC;          /* 條件3: 輸入框比面板深，但比背景淺(這裡邏輯調整為：為了顯凹，通常比面板深一點) */
+            /* 條件1: 背景極淺，偏白 */
+            --bg-page: #FDFDFD;           
             
-            --text-main: #000000;         /* 純黑 */
-            --text-label: #000000;        /* 條件4: 標籤文字改全黑 */
+            /* 面板基底 */
+            --bg-panel: #EAEAEA;          
             
+            /* 條件3: 輸入框顏色指定為 #FCFAF1 */
+            --bg-input: #FCFAF1;          
+            
+            /* 文字顏色 */
+            --text-main: #000000;         /* 主要文字純黑 */
+            --text-label: #000000;        /* 條件4: 標籤文字全黑 */
+            
+            /* 功能色 */
             --color-primary: #0D5498;     /* 深海藍 */
             --color-accent: #837791;      /* 紫灰 */
             --color-danger: #B86B6B;      /* 莫蘭迪紅 */
             
-            /* 互動色 (Active) */
-            --active-blue: #CFDDEA;       /* 條件5,6,9: 藍系按鈕按下色 */
-            --active-red: #FFDCE3;        /* 條件10: 紅系按鈕按下色 */
+            /* 條件5, 6, 9: 藍系按鈕按下色 */
+            --active-blue: #CFDDEA;       
+            
+            /* 條件10: 紅系按鈕按下色 */
+            --active-red: #FFDCE3;        
 
-            /* 陰影系統 */
-            --shadow-dark: #B0B0B0;       /* 深色陰影 */
-            --shadow-light: #FFFFFF;      /* 亮部 (部分保留給凸起感) */
+            /* 條件15: 圖片指定新增按鈕色 */
+            --btn-add-bg: #668BC4; 
         }
 
         body { 
@@ -58,81 +65,79 @@
 
         /* --- UI 元件樣式 --- */
 
-        /* 條件2: 面板樣式 - 左上不要白光，改陰影，強調3D浮出 */
+        /* 條件2: 面板樣式 - 左上無白光，改雙重陰影強調3D浮出 */
         .panel-container {
             padding: 20px; border-radius: 20px; 
             background-color: var(--bg-panel);
-            /* 關鍵修改：雙重深色陰影模擬浮出，而非傳統的光影 */
-            box-shadow: 6px 6px 12px rgba(0,0,0,0.15), -4px -4px 10px rgba(0,0,0,0.05); 
+            /* 關鍵：使用半透明黑影模擬浮起效果 */
+            box-shadow: 8px 8px 16px rgba(0,0,0,0.12), -4px -4px 12px rgba(0,0,0,0.03);
             margin-bottom: 30px;
-            border: 1px solid rgba(255,255,255,0.3); /* 微邊框增加質感 */
+            border: 1px solid rgba(255,255,255,0.4); 
         }
 
-        /* 條件3: 輸入框顏色調整 */
+        /* 條件3: 輸入框顏色 #FCFAF1 */
         .sunken-input {
             background: var(--bg-input); 
             border: none; border-radius: 10px;
             padding: 0 12px; width: 100%; box-sizing: border-box; 
             color: var(--text-main); font-size: 14px; outline: none;
-            /* 內陰影加深，增強凹陷感 */
-            box-shadow: inset 3px 3px 6px rgba(0,0,0,0.1), inset -2px -2px 5px rgba(255,255,255,0.5);
+            /* 內陰影保持立體感 */
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
             transition: 0.1s; height: 42px;
         }
-        .sunken-input::placeholder { color: #777; }
-        .sunken-input:focus { background: #D4D4D4; }
+        .sunken-input::placeholder { color: #888; }
+        .sunken-input:focus { background: #FFF; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.15); }
 
         /* 凸起按鈕 (通用) */
         .convex-btn {
             background: var(--bg-panel); 
-            color: var(--text-main); /* 預設黑色 */
+            color: var(--text-main); 
             border: none;
             padding: 8px 12px; border-radius: 12px; cursor: pointer;
             font-weight: bold; letter-spacing: 1px; font-size: 13px;
+            /* 浮出陰影 */
             box-shadow: 4px 4px 8px rgba(0,0,0,0.15), -3px -3px 6px rgba(255,255,255,0.8);
             transition: all 0.1s ease;
             display: flex; align-items: center; justify-content: center;
             height: 42px; box-sizing: border-box;
         }
-        /* 條件6, 9, 10: 按下變色邏輯 */
-        .convex-btn:active {
+        /* 條件6: 中間五大按鈕按下變色 #CFDDEA，文字保持黑色 */
+        .convex-btn:active, .convex-btn.active {
             box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2);
             transform: translateY(1px);
-            background-color: var(--active-blue); /* 預設藍色系回饋 */
-        }
-        .convex-btn.active { /* 選中狀態 */
-            background-color: var(--active-blue);
-            box-shadow: inset 3px 3px 6px rgba(0,0,0,0.2);
+            background-color: var(--active-blue) !important;
+            color: black !important;
         }
 
-        /* 條件5: 抓取按鈕 (字全黑, 反應色 #CFDDEA) */
+        /* 條件5: 抓取按鈕 (全黑字) */
         .btn-fetch { color: black; }
         .btn-fetch:active { background-color: var(--active-blue); }
 
-        /* 條件9: 重置按鈕 (字全黑, 反應色 #CFDDEA) */
+        /* 條件9: 重置按鈕 (全黑字, 按下變色) */
         .action-btn-reset { color: black; }
         .action-btn-reset:active { background-color: var(--active-blue); }
 
-        /* 條件10: 登出與重整按鈕 (字莫蘭迪紅, 反應色 #FFDCE3) */
+        /* 條件10: 登出與重整按鈕 (莫蘭迪紅字, 按下變粉紅 #FFDCE3) */
         .btn-danger-style { 
             color: var(--color-danger); 
             font-weight: bold;
         }
         .btn-danger-style:active { 
             background-color: var(--active-red) !important; 
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2);
         }
 
         .btn-full { width: 100%; }
         
-        /* 網址抓取區塊 */
         .search-container { margin-bottom: 20px; }
 
         /* 分類按鈕組 */
         .category-group { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; }
         .cat-btn-layout { flex-direction: column; gap: 5px; padding: 8px 2px; height: auto; min-height: 60px; }
         .cat-icon { width: 24px; height: 24px; }
-        .cat-text { font-size: 11px; white-space: nowrap; color: black; } /* 條件6: 文字黑色 */
+        .cat-text { font-size: 11px; white-space: nowrap; color: black; } 
 
-        /* 條件4: 標籤文字全黑 */
+        /* 條件4: 表格上方文字介紹改黑色 */
         .input-group { margin-bottom: 15px; width: 100%; }
         .input-label { 
             font-size: 12px; color: black; 
@@ -145,37 +150,37 @@
         .platform-other { display: none; width: 50%; }
         .platform-other.show { display: block; }
 
-        /* 圖片預覽 */
         .img-preview-box {
             width: 100%; min-height: 50px; border-radius: 12px; margin-top: 10px;
-            box-shadow: inset 3px 3px 6px rgba(0,0,0,0.1), inset -2px -2px 5px rgba(255,255,255,0.5);
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
             overflow: hidden; display: none; align-items: center; justify-content: center;
             padding: 10px; box-sizing: border-box; background: var(--bg-input);
         }
         .img-preview-box.has-img { display: flex; }
         .img-preview-content { max-width: 100%; max-height: 200px; object-fit: contain; }
 
-        /* 地圖轉換按鈕 */
+        /* 條件13: 地圖按鈕改單色SVG */
         .btn-map-convert {
             width: 42px; height: 42px; border-radius: 12px; background: var(--bg-panel); border: none;
-            color: var(--color-primary); font-size: 18px; display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             cursor: pointer; box-shadow: 4px 4px 8px rgba(0,0,0,0.15), -3px -3px 6px rgba(255,255,255,0.8);
             flex-shrink: 0;
         }
+        .btn-map-convert svg { width: 18px; height: 18px; fill: var(--color-primary); }
         .btn-map-convert:active { 
             box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); transform: scale(0.95); 
             background-color: var(--active-blue);
         }
 
         /* ------------------------------------------- */
-        /* --- 篩選與搜尋 (RWD) --- */
+        /* --- 篩選與搜尋 --- */
         /* ------------------------------------------- */
         .filter-wrapper { margin-bottom: 25px; }
 
         .filter-search-box {
             background: var(--bg-panel); border: none; border-radius: 12px;
             color: var(--text-main); font-size: 14px;
-            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.15), inset -2px -2px 5px rgba(255,255,255,0.8);
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.15), -2px -2px 5px rgba(255,255,255,0.8);
             outline: none; padding: 0 15px; display: flex; align-items: center;
         }
         .filter-search-box::placeholder { text-align:center; color:#777; }
@@ -191,9 +196,9 @@
         /* 條件11: 篩選表按下去反應 */
         .filter-select:active, .filter-select:focus {
             box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2);
-            background-color: var(--active-blue);
         }
 
+        /* 條件10: ↺ 按下變色 #FFDCE3 */
         .filter-reset-btn {
             background: var(--bg-panel); color: var(--color-danger); border: none; 
             border-radius: 12px; 
@@ -201,31 +206,31 @@
             cursor: pointer; display: flex; align-items: center; justify-content: center;
             font-size: 16px; font-weight: bold;
         }
-        /* 條件10: ↺ 按下反應 */
         .filter-reset-btn:active { 
             box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); 
             background-color: var(--active-red);
         }
 
-        /* 電腦版 layout */
+        /* 電腦版 layout (3.1) */
         @media(min-width: 650px) {
             .filter-wrapper { display: flex; flex-direction: row; gap: 10px; height: 42px; align-items: center; }
-            .filter-search-box { width: 200px; height: 100%; }
+            .filter-search-box { width: 200px; height: 100%; } /* 左右寬 */
             .filter-select-container { flex: 1; display: flex; gap: 8px; height: 100%; }
             .filter-select { flex: 1; height: 100%; }
             .filter-reset-btn { width: 60px; height: 100%; }
         }
 
-        /* 手機版 layout (條件14: ↺ 在搜尋格右側) */
+        /* 手機版 layout (3.2 & 14) */
         @media(max-width: 649px) {
             .filter-wrapper { display: flex; flex-direction: column; gap: 10px; }
             
+            /* 條件14: 搜尋與重置按鈕並排 */
             .filter-top-row { display: flex; gap: 10px; width: 100%; height: 48px; }
-            .filter-search-box { flex: 1; height: 100%; }
-            .filter-reset-btn { width: 50px; height: 100%; } /* ↺ 放在這 */
+            .filter-search-box { flex: 1; height: 100%; } /* 上下寬(高) */
+            .filter-reset-btn { width: 50px; height: 100%; }
 
             .filter-select-container { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 8px; }
-            .filter-select { width: 100%; height: 42px; }
+            .filter-select { width: 100%; height: 45px; } /* 拉大 */
         }
 
         /* ------------------------------------------- */
@@ -240,7 +245,7 @@
             box-shadow: 6px 6px 12px rgba(0,0,0,0.15), -4px -4px 10px rgba(255,255,255,0.8);
             display: flex; flex-direction: column;
         }
-        /* 條件12: 點擊圖片使用超連結時，整體要有"按下去"的反應 */
+        /* 條件12: 點擊圖片要有"按下去"反應，陰影覆蓋 */
         .card-img-wrapper {
             width: 90%; margin: 15px auto 0 auto; height: 160px; border-radius: 15px; overflow: hidden;
             box-shadow: 4px 4px 8px rgba(0,0,0,0.15), -3px -3px 6px rgba(255,255,255,0.8);
@@ -249,9 +254,8 @@
         }
         .card-img-wrapper:active {
             transform: scale(0.98);
-            box-shadow: inset 4px 4px 10px rgba(0,0,0,0.2);
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2);
         }
-        /* 陰影覆蓋整面效果 */
         .card-img-wrapper:active::after {
             content: ""; position: absolute; top:0; left:0; width:100%; height:100%;
             background: rgba(0,0,0,0.1); pointer-events: none;
@@ -280,22 +284,21 @@
         .btn-edit { color: var(--color-accent); }
         .btn-del { color: var(--color-danger); }
         
-        /* 條件13: 地圖按鈕改成單色SVG */
         .btn-map-icon { width: 16px; height: 16px; fill: var(--color-primary); margin-top:2px;}
 
         .action-row { display: flex; gap: 10px; margin-top: 20px; align-items: stretch; }
-        /* 條件6: 按下變色 #CFDDEA */
-        .action-btn-add { flex: 2; color: var(--color-primary); }
+        
+        /* 圖片指定新增按鈕配色 */
+        .action-btn-add { flex: 2; background-color: var(--btn-add-bg); color: black; } 
         .action-btn-add:active { background-color: var(--active-blue); }
         
         .action-btn-edit { flex: 2; color: var(--color-accent); }
         .action-btn-edit:active { background-color: var(--active-blue); }
         
-        /* 條件9: 重置按鈕全黑, 反應 #CFDDEA */
         .action-btn-reset { flex: 1; color: black; }
         .action-btn-reset:active { background-color: var(--active-blue); }
         
-        /* 條件10: 登出按鈕莫蘭迪紅, 方框 */
+        /* 條件2: 登出文字變方框 (同按鈕樣式) */
         .action-btn-logout { 
             flex: 0 0 60px; 
             background: var(--bg-panel); border: none;
@@ -332,7 +335,7 @@
         .fab-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 15px; }
         .fab-btn {
             width: 50px; height: 50px; border-radius: 50%; background: var(--bg-panel);
-            border: none; cursor: pointer; box-shadow: 5px 5px 10px rgba(0,0,0,0.2), -3px -3px 8px rgba(255,255,255,0.8);
+            border: none; cursor: pointer; box-shadow: 5px 5px 10px rgba(0,0,0,0.15), -3px -3px 8px rgba(255,255,255,0.8);
             display: flex; align-items: center; justify-content: center; transition: 0.2s;
         }
         /* 條件15: FAB SVG 單色 (深藍) */
@@ -344,7 +347,8 @@
 <body>
 
     <div id="auth-overlay">
-        <div class="auth-box panel-container"> <div class="auth-title">請先登入</div>
+        <div class="auth-box panel-container"> 
+            <div class="auth-title">請先登入</div>
             <input type="text" id="auth-username" class="sunken-input auth-input" placeholder="帳號 (5-10碼英文數字)" maxlength="10" style="margin-bottom:15px; text-align:left;">
             <input type="password" id="auth-pwd" class="sunken-input auth-input" placeholder="密碼 (至少6碼)" style="margin-bottom:20px; text-align:left;">
             <button id="btn-login" class="convex-btn btn-full" style="margin-bottom:10px;" onclick="handleLogin()">登入</button>
@@ -360,7 +364,6 @@
     <div id="section-add" class="panel-container">
         
         <div class="search-container">
-            <span class="input-label">快速填寫</span>
             <div style="display:flex; gap:10px;">
                 <input type="text" id="add-link-fetch" class="sunken-input" placeholder="🔗 網址抓取">
                 <button class="convex-btn btn-fetch" style="width:80px;" onclick="autoFetch('add')">抓取</button>
@@ -433,12 +436,12 @@
         <div class="input-group">
             <span class="input-label">詳細地址 / 座標</span>
             <div style="display:flex; gap:5px; width:100%;">
-                <input type="text" id="add-loc" class="sunken-input" style="flex:2;" placeholder="📍 地址" onblur="autoConvertGeo('add')">
-                <button class="btn-map-convert" onclick="openPinPicker('add')">➜</button>
-                <div style="flex:1; position:relative;">
-                    <input type="text" id="add-geo" class="sunken-input" readonly placeholder="座標">
-                    <span id="add-geo-status" style="display:none; color:green; position:absolute; right:5px; top:10px;">✅</span>
-                </div>
+                <input type="text" id="add-loc" class="sunken-input" style="flex:3;" placeholder="📍 地址" onblur="autoConvertGeo('add')">
+                <button class="btn-map-convert" onclick="openPinPicker('add')">
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                </button>
+                <input type="text" id="add-geo" class="sunken-input" style="flex:2;" readonly placeholder="座標">
+                <span id="add-geo-status" style="display:none; position:absolute;">✅</span>
             </div>
         </div>
 
@@ -495,7 +498,6 @@
         <input type="hidden" id="edit-id">
         
         <div class="search-container">
-            <span class="input-label">覆蓋資料</span>
             <div style="display:flex; gap:10px;">
                 <input type="text" id="edit-link-fetch" class="sunken-input" placeholder="🔗 網址抓取">
                 <button class="convex-btn btn-fetch" style="width:80px;" onclick="autoFetch('edit')">抓取</button>
@@ -568,12 +570,11 @@
         <div class="input-group">
             <span class="input-label">詳細地址 / 座標</span>
             <div style="display:flex; gap:5px; width:100%;">
-                <input type="text" id="edit-loc" class="sunken-input" style="flex:2;" placeholder="📍 地址" onblur="autoConvertGeo('edit')">
-                <button class="btn-map-convert" onclick="openPinPicker('edit')">➜</button>
-                <div style="flex:1; position:relative;">
-                    <input type="text" id="edit-geo" class="sunken-input" readonly placeholder="座標">
-                    <span id="edit-geo-status" style="display:none; color:green; position:absolute; right:5px; top:10px;">✅</span>
-                </div>
+                <input type="text" id="edit-loc" class="sunken-input" style="flex:3;" placeholder="📍 地址" onblur="autoConvertGeo('edit')">
+                <button class="btn-map-convert" onclick="openPinPicker('edit')">
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                </button>
+                <input type="text" id="edit-geo" class="sunken-input" style="flex:2;" readonly placeholder="座標">
             </div>
         </div>
 
@@ -648,7 +649,6 @@
         let pickerMarker = null;
         let currentPickerMode = 'add';
 
-        // --- SVG Icons Definition (單色線條圖 - 藍灰色 #7A90A4) ---
         const svgIcons = {
             '購物': "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A90A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z'%3E%3C/path%3E%3Cline x1='3' y1='6' x2='21' y2='6'%3E%3C/line%3E%3Cpath d='M16 10a4 4 0 0 1-8 0'%3E%3C/path%3E%3C/svg%3E",
             '餐廳': "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A90A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2'%3E%3C/path%3E%3Cpath d='M7 2v20'%3E%3C/path%3E%3Cpath d='M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7'%3E%3C/path%3E%3C/svg%3E",
