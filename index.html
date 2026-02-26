@@ -14,6 +14,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@300;400&display=swap" rel="stylesheet">
     <style>
+        /* --- 1. 配色系統 --- */
         :root {
             --bg-page: #FDFDFD;           
             --bg-panel: #EAEAEA;          
@@ -97,26 +98,29 @@
         .img-preview-box.has-img { display: flex; }
         .img-preview-content { max-width: 100%; max-height: 200px; object-fit: contain; }
 
-        /* 多選下拉選單樣式 */
-        .filter-wrapper { margin-bottom: 25px; display: flex; flex-direction: column; gap: 10px; position: relative; z-index: 10;}
+        /* --- 修正版篩選列 (徹底解決重疊跑版問題) --- */
+        .filter-wrapper { margin-bottom: 25px; position: relative; z-index: 10;}
+        
         .filter-search-box {
             background: var(--bg-panel); border: none; border-radius: 12px; color: var(--text-main); font-size: 14px;
             box-shadow: inset 2px 2px 5px rgba(0,0,0,0.15), -2px -2px 5px rgba(255,255,255,0.8);
-            outline: none; padding: 0 15px; display: flex; align-items: center;
+            outline: none; padding: 0 15px; display: flex; align-items: center; box-sizing: border-box;
         }
         .filter-search-box::placeholder { text-align:center; color:#777; }
         
-        .ms-container { position: relative; width: 100%; height: 100%; }
+        .ms-container { position: relative; width: 100%; height: 100%; box-sizing: border-box; }
         .ms-btn {
             width: 100%; height: 100%; background: var(--bg-panel); border: none; border-radius: 10px; padding: 0 10px;
             color: var(--text-main); font-size: 12px; box-shadow: 3px 3px 6px rgba(0,0,0,0.15), -2px -2px 5px rgba(255,255,255,0.8);
             display: flex; align-items: center; justify-content: space-between; cursor: pointer; white-space: nowrap; overflow: hidden;
+            box-sizing: border-box;
         }
         .ms-btn:active { box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); }
         .ms-dropdown {
             position: absolute; top: calc(100% + 5px); left: 0; width: max-content; min-width: 100%;
             background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             max-height: 200px; overflow-y: auto; z-index: 100; display: none; padding: 5px; flex-direction: column; gap: 2px;
+            box-sizing: border-box;
         }
         .ms-dropdown.show { display: flex; }
         .ms-label { display: flex; align-items: center; gap: 5px; font-size: 13px; padding: 6px 10px; cursor: pointer; border-radius: 5px; }
@@ -126,22 +130,25 @@
             background: var(--bg-panel); color: var(--color-danger); border: none; border-radius: 12px; 
             box-shadow: 3px 3px 6px rgba(0,0,0,0.15), -2px -2px 5px rgba(255,255,255,0.8);
             cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold;
+            box-sizing: border-box;
         }
         .filter-reset-btn:active { box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); background-color: var(--active-red); }
 
+        /* 電腦版排版：一字排開 */
         @media(min-width: 650px) {
-            .filter-wrapper { flex-direction: row; height: 42px; }
+            .filter-wrapper { display: flex; flex-direction: row; gap: 10px; height: 42px; align-items: center; }
             .filter-search-box { width: 200px; height: 100%; order: 1; }
             .filter-select-container { flex: 1; display: flex; gap: 8px; height: 100%; order: 2; }
             .ms-container { flex: 1; height: 100%; }
-            .filter-reset-btn { width: 60px; height: 100%; order: 3; }
+            .filter-reset-btn { width: 50px; height: 100%; order: 3; flex-shrink: 0; }
         }
+        /* 手機版排版：取消固定高度，讓格子自動撐開，解決堆疊問題 */
         @media(max-width: 649px) {
-            .filter-wrapper { display: grid; grid-template-columns: 1fr 50px; grid-template-rows: 48px 45px; gap: 10px; }
-            .filter-search-box { grid-column: 1 / 2; grid-row: 1 / 2; height: 100%; width: 100%; }
-            .filter-reset-btn { grid-column: 2 / 3; grid-row: 1 / 2; height: 100%; width: 100%; }
-            .filter-select-container { grid-column: 1 / 3; grid-row: 2 / 3; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; height: 100%; }
-            .ms-container { width: 100%; height: 45px; }
+            .filter-wrapper { display: grid; grid-template-columns: 1fr 50px; gap: 10px; }
+            .filter-search-box { grid-column: 1 / 2; height: 42px; width: 100%; }
+            .filter-reset-btn { grid-column: 2 / 3; height: 42px; width: 100%; }
+            .filter-select-container { grid-column: 1 / 3; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+            .ms-container { height: 42px; width: 100%; }
         }
 
         /* 卡片設計 */
@@ -291,7 +298,7 @@
         </div>
         
         <div class="input-group">
-            <span class="input-label">詳細地址 (若為網址則開啟連結，若為文字則搜尋地圖)</span>
+            <span class="input-label">詳細地址</span>
             <input type="text" id="add-loc" class="sunken-input" placeholder="📍 地址或Google Map連結">
         </div>
 
@@ -419,7 +426,6 @@
 
     <div class="filter-wrapper">
         <input type="text" id="filter-keyword" class="filter-search-box" placeholder="搜尋" oninput="applyFilter()">
-        <button class="filter-reset-btn btn-danger-style" onclick="resetFilter()">↺</button>
         
         <div class="filter-select-container">
             <div class="ms-container">
@@ -439,14 +445,12 @@
                 <div class="ms-dropdown" id="drop-plat"></div>
             </div>
         </div>
+
+        <button class="filter-reset-btn btn-danger-style" onclick="resetFilter()">↺</button>
     </div>
 
     <div id="card-area" class="grid-container">
         <p style="text-align:center; width:100%; color:#999; margin-top:20px;">載入中...</p>
-    </div>
-
-    <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
-        <span onclick="if(confirm('確定要清除所有「自訂」的國家與都市選項嗎？\n(這不會刪除卡片)')) { localStorage.removeItem('customLocations'); location.reload(); }" style="font-size: 12px; color: #B86B6B; cursor: pointer; text-decoration: underline;">🧹 一鍵清除所有自訂記憶</span>
     </div>
 
     <div class="fab-container">
@@ -475,7 +479,7 @@
         let allItems = []; 
         let filteredItems = [];
 
-        // 國家與都市資料庫
+        // 國家與都市資料庫 
         let locationData = {
             "美國": ["紐約", "洛杉磯", "舊金山", "芝加哥", "西雅圖"],
             "日本": ["東京都", "大阪府", "京都府", "北海道", "福岡縣", "沖繩縣"],
@@ -495,6 +499,7 @@
             fetchItems();
         };
 
+        // 點擊空白處關閉下拉選單
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.ms-container')) {
                 document.querySelectorAll('.ms-dropdown').forEach(d => d.classList.remove('show'));
@@ -734,6 +739,7 @@
                 locationData[country] = []; saveCustomLocations(); initCountrySelect('add');
             }
             initCountrySelect('edit', country);
+            
             if (country && city && !locationData[country].includes(city)) {
                 locationData[country].push(city); saveCustomLocations();
             }
@@ -1142,32 +1148,26 @@
                 let item = itemsToMap[i];
                 let address = item.location || '';
                 
-                // --- 多重智慧降級搜尋清單 ---
                 let queryList = [];
                 let city = item.city && item.city !== '-' ? item.city : '';
                 let country = item.country && item.country !== '-' ? item.country : '';
 
                 if (address && !address.startsWith('http')) {
-                    // 1. 嘗試精確地址
                     queryList.push(`${country} ${city} ${address}`.trim());
                     queryList.push(`${city} ${address}`.trim());
                     queryList.push(address); 
                 }
                 if (item.title) {
-                    // 2. 嘗試店名
                     queryList.push(`${country} ${city} ${item.title}`.trim());
                     queryList.push(`${city} ${item.title}`.trim());
                 }
                 if (city) {
-                    // 3. 終極保底：只搜城市
                     queryList.push(`${country} ${city}`.trim());
                     queryList.push(city);
                 } else if (country) {
-                    // 4. 真的沒辦法：只搜國家
                     queryList.push(country);
                 }
                 
-                // 去除空字串與重複項
                 queryList = [...new Set(queryList.filter(q => q.length > 0))];
                 if(queryList.length === 0) continue;
 
@@ -1181,7 +1181,6 @@
                     continue; 
                 }
 
-                // 依序嘗試搜尋
                 for(let q of queryList) {
                     try {
                         const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`;
@@ -1192,10 +1191,9 @@
                             addMarker(item, lat, lon);
                             localStorage.setItem(cacheKey, JSON.stringify({lat, lon}));
                             plottedCount++;
-                            break; // 找到就跳出迴圈，處理下一個 item
+                            break; 
                         }
                     } catch(e) {}
-                    // 延遲 1000ms 避免被 OpenStreetMap 伺服器封鎖 (API規定 1秒1次)
                     await new Promise(r => setTimeout(r, 1000)); 
                 }
             }
