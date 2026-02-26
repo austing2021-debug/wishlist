@@ -1035,6 +1035,7 @@
             return text.replace(/'/g, "\\'").replace(/"/g, '"');
         }
 
+// --- 條件1: 支援關鍵字與 Google Maps 商家資料「超級解析」 ---
         async function autoFetch(mode) {
             const inputVal = document.getElementById(`${mode}-link-fetch`).value.trim();
             if (!inputVal) return alert('請貼上網址或輸入關鍵字！');
@@ -1043,6 +1044,7 @@
             const originalText = btn.innerText;
             btn.innerText = "⏳";
 
+            // 1. 處理純關鍵字 (沒有 http)
             if (!inputVal.startsWith('http')) {
                 document.getElementById(`${mode}-title`).value = inputVal.substring(0, 50);
                 document.getElementById(`${mode}-ref-url`).value = `https://www.google.com/search?q=${encodeURIComponent(inputVal)}`;
@@ -1051,12 +1053,8 @@
                 return;
             }
 
-            let isGoogleMap = false;
-
-            if (inputVal.includes('maps.app.goo.gl') || inputVal.includes('goo.gl/maps') || inputVal.includes('google.com/maps') || inputVal.includes('maps.app.goo.gl')) {
-                document.getElementById(`${mode}-loc`).value = inputVal;
-                isGoogleMap = true;
-            }
+            // 判斷是否為 Google 地圖連結 (包含短網址)
+            let isGoogleMap = inputVal.includes('google.com/maps') || inputVal.includes('goo.gl/maps') || inputVal.includes('maps.app.goo.gl');
 
             try {
                 const response = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(inputVal)}&palette=true`);
@@ -1064,38 +1062,65 @@
                 
                 if (json.status === 'success') {
                     const data = json.data;
-                    let title = data.title || '';
                     
-                    if (title.includes('Google Maps')) {
+                    // --- 🗺️ Google 地圖「商家資料卡」專屬解析 ---
+                    if (isGoogleMap) {
+                        // 1. 抓取商家名稱 (去除預設的 "- Google Maps" 贅字)
+                        let title = data.title || '';
                         title = title.replace(/\s*-\s*Google Maps/g, '').replace(/Google Maps/g, '').trim();
-                    }
+                        if (title) document.getElementById(`${mode}-title`).value = title.substring(0, 50);
 
-                    if(title.length > 50) title = title.substring(0, 50);
-                    
-                    if (title) document.getElementById(`${mode}-title`).value = title;
-                    
-                    document.getElementById(`${mode}-desc`).value = data.description || '';
-                    
-                    if (!isGoogleMap) {
+                        // 2. 智慧拆解地址與分類 (Google的描述通常是 "★★★★☆ · 咖啡廳 · 台北市...")
+                        let desc = data.description || '';
+                        if (desc) {
+                            let parts = desc.split('·').map(p => p.trim());
+                            
+                            // 最後一段必定是地址
+                            let addressStr = parts[parts.length - 1];
+                            document.getElementById(`${mode}-loc`).value = addressStr;
+                            
+                            // 如果有多段，倒數第二段通常是商家類型 (例如:咖啡廳、拉麵店)，自動填入「特點備註」
+                            if (parts.length >= 2) {
+                                let categoryStr = parts[parts.length - 2].replace(/★|☆/g, '').trim();
+                                document.getElementById(`${mode}-feature`).value = categoryStr.substring(0, 20);
+                            }
+                            
+                            // 填入地址後，自動觸發座標轉換
+                            autoConvertGeo(mode);
+                        }
+
+                        // 3. 將地圖網址放入參考連結
+                        document.getElementById(`${mode}-ref-url`).value = inputVal;
+
+                        // 4. 抓取商家外觀縮圖
+                        if (data.image && data.image.url) {
+                            document.getElementById(`${mode}-img`).value = data.image.url;
+                            updatePreview(mode);
+                        }
+                        
+                    } else {
+                        // --- 🌐 一般網頁的抓取邏輯 ---
+                        let title = data.title || '';
+                        if(title.length > 50) title = title.substring(0, 50);
+                        if (title) document.getElementById(`${mode}-title`).value = title;
+                        
+                        document.getElementById(`${mode}-desc`).value = data.description || '';
                         document.getElementById(`${mode}-ref-url`).value = inputVal; 
-                    } else if (isGoogleMap && !document.getElementById(`${mode}-ref-url`).value) {
-                         // 若是GoogleMap且沒有參考網址，也可將地圖連結放入參考網址
-                         document.getElementById(`${mode}-ref-url`).value = inputVal; 
-                    }
-                    
-                    if (data.image && data.image.url) {
-                        document.getElementById(`${mode}-img`).value = data.image.url;
-                        updatePreview(mode);
-                    } else if (data.logo && data.logo.url) {
-                        document.getElementById(`${mode}-img`).value = data.logo.url;
-                        updatePreview(mode);
+                        
+                        if (data.image && data.image.url) {
+                            document.getElementById(`${mode}-img`).value = data.image.url;
+                            updatePreview(mode);
+                        } else if (data.logo && data.logo.url) {
+                            document.getElementById(`${mode}-img`).value = data.logo.url;
+                            updatePreview(mode);
+                        }
                     }
                 } else {
-                    if (!isGoogleMap) alert('無法抓取，請確認網址');
+                    alert('無法抓取，該網址可能限制了外部讀取。');
                 }
             } catch (err) { 
                 console.error(err); 
-                if (!isGoogleMap) alert('抓取發生錯誤'); 
+                alert('抓取發生錯誤，請稍後再試'); 
             }
             
             btn.innerText = originalText;
@@ -1103,3 +1128,4 @@
     </script>
 </body>
 </html>
+
