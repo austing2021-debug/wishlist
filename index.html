@@ -8,14 +8,12 @@
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@300;400&display=swap" rel="stylesheet">
     <style>
-        /* --- 1. 配色系統 --- */
         :root {
             --bg-page: #FDFDFD;           
             --bg-panel: #EAEAEA;          
@@ -30,39 +28,25 @@
         }
 
         body { 
-            font-family: 'Noto Sans TC', sans-serif; 
-            background: var(--bg-page); 
-            color: var(--text-main);
-            padding: 15px;
-            max-width: 900px; 
-            margin: 0 auto; 
-            padding-bottom: 100px; 
+            font-family: 'Noto Sans TC', sans-serif; background: var(--bg-page); 
+            color: var(--text-main); padding: 15px; max-width: 900px; 
+            margin: 0 auto; padding-bottom: 100px; 
         }
 
-        h1 { 
-            font-family: 'Noto Serif TC', serif; 
-            color: var(--text-main); 
-            margin: 0; letter-spacing: 2px; font-size: 22px; text-align: center;
-        }
-
+        h1 { font-family: 'Noto Serif TC', serif; color: var(--text-main); margin: 0; letter-spacing: 2px; font-size: 22px; text-align: center; }
         .header-row { display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
 
-        /* 面板樣式 */
         .panel-container {
-            padding: 20px; border-radius: 20px; 
-            background-color: var(--bg-panel);
+            padding: 20px; border-radius: 20px; background-color: var(--bg-panel);
             box-shadow: 8px 8px 16px rgba(0,0,0,0.12), -4px -4px 12px rgba(0,0,0,0.03);
-            margin-bottom: 30px;
-            border: 1px solid rgba(255,255,255,0.4); 
+            margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.4); 
         }
 
         .sunken-input {
-            background: var(--bg-input); 
-            border: none; border-radius: 10px;
+            background: var(--bg-input); border: none; border-radius: 10px;
             padding: 0 12px; width: 100%; box-sizing: border-box; 
             color: var(--text-main); font-size: 14px; outline: none;
-            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
-            transition: 0.1s; height: 42px;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1); transition: 0.1s; height: 42px;
         }
         .sunken-input::placeholder { color: #888; }
         .sunken-input:focus { background: #FFF; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.15); }
@@ -73,31 +57,23 @@
             background-repeat: no-repeat; background-position: right .5em center; background-size: 1em;
         }
 
-        /* 按鈕樣式 */
         .convex-btn {
-            background: var(--bg-panel); 
-            color: var(--text-main); 
-            border: none;
+            background: var(--bg-panel); color: var(--text-main); border: none;
             padding: 8px 12px; border-radius: 12px; cursor: pointer;
             font-weight: bold; letter-spacing: 1px; font-size: 13px;
             box-shadow: 4px 4px 8px rgba(0,0,0,0.15), -3px -3px 6px rgba(255,255,255,0.8);
-            transition: all 0.1s ease;
-            display: flex; align-items: center; justify-content: center;
+            transition: all 0.1s ease; display: flex; align-items: center; justify-content: center;
             height: 42px; box-sizing: border-box;
         }
         .convex-btn:active, .convex-btn.active {
-            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2);
-            transform: translateY(1px);
-            background-color: var(--active-blue) !important;
-            color: black !important;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); transform: translateY(1px);
+            background-color: var(--active-blue) !important; color: black !important;
         }
 
         .btn-fetch { color: black; }
         .btn-fetch:active { background-color: var(--active-blue); }
         .action-btn-reset { color: black; }
         .action-btn-reset:active { background-color: var(--active-blue); }
-        .btn-danger-style { color: var(--color-danger); font-weight: bold; }
-        .btn-danger-style:active { background-color: var(--active-red) !important; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); }
 
         .search-container { margin-bottom: 20px; }
         .category-group { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; }
@@ -115,19 +91,16 @@
 
         .img-preview-box {
             width: 100%; min-height: 50px; border-radius: 12px; margin-top: 10px;
-            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
-            overflow: hidden; display: none; align-items: center; justify-content: center;
-            padding: 10px; box-sizing: border-box; background: var(--bg-input);
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1); overflow: hidden; display: none; 
+            align-items: center; justify-content: center; padding: 10px; box-sizing: border-box; background: var(--bg-input);
         }
         .img-preview-box.has-img { display: flex; }
         .img-preview-content { max-width: 100%; max-height: 200px; object-fit: contain; }
 
-        /* --- 篩選列：多選 Checkbox 系統 --- */
-        .filter-wrapper { margin-bottom: 25px; position: relative; z-index: 10; }
-        
+        /* 多選下拉選單樣式 */
+        .filter-wrapper { margin-bottom: 25px; display: flex; flex-direction: column; gap: 10px; position: relative; z-index: 10;}
         .filter-search-box {
-            background: var(--bg-panel); border: none; border-radius: 12px;
-            color: var(--text-main); font-size: 14px;
+            background: var(--bg-panel); border: none; border-radius: 12px; color: var(--text-main); font-size: 14px;
             box-shadow: inset 2px 2px 5px rgba(0,0,0,0.15), -2px -2px 5px rgba(255,255,255,0.8);
             outline: none; padding: 0 15px; display: flex; align-items: center;
         }
@@ -156,23 +129,22 @@
         }
         .filter-reset-btn:active { box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); background-color: var(--active-red); }
 
-        /* 響應式佈局 */
         @media(min-width: 650px) {
-            .filter-wrapper { display: flex; flex-direction: row; gap: 10px; height: 42px; align-items: center; }
+            .filter-wrapper { flex-direction: row; height: 42px; }
             .filter-search-box { width: 200px; height: 100%; order: 1; }
             .filter-select-container { flex: 1; display: flex; gap: 8px; height: 100%; order: 2; }
             .ms-container { flex: 1; height: 100%; }
             .filter-reset-btn { width: 60px; height: 100%; order: 3; }
         }
         @media(max-width: 649px) {
-            .filter-wrapper { display: grid; grid-template-columns: 1fr 50px; gap: 10px; }
-            .filter-search-box { grid-column: 1 / 2; grid-row: 1 / 2; height: 45px; width: 100%; }
-            .filter-reset-btn { grid-column: 2 / 3; grid-row: 1 / 2; height: 45px; width: 100%; }
-            .filter-select-container { grid-column: 1 / 3; grid-row: 2 / 3; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+            .filter-wrapper { display: grid; grid-template-columns: 1fr 50px; grid-template-rows: 48px 45px; gap: 10px; }
+            .filter-search-box { grid-column: 1 / 2; grid-row: 1 / 2; height: 100%; width: 100%; }
+            .filter-reset-btn { grid-column: 2 / 3; grid-row: 1 / 2; height: 100%; width: 100%; }
+            .filter-select-container { grid-column: 1 / 3; grid-row: 2 / 3; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; height: 100%; }
             .ms-container { width: 100%; height: 45px; }
         }
 
-        /* --- 卡片設計 --- */
+        /* 卡片設計 */
         .grid-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 20px; padding-bottom: 20px; -webkit-overflow-scrolling: touch; }
         .grid-container::-webkit-scrollbar { display: none; }
         @media(min-width: 650px) { .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); overflow-x: visible; justify-items: center; } }
@@ -180,37 +152,29 @@
         .card { 
             width: 280px; height: auto; min-height: 320px; flex-shrink: 0; scroll-snap-align: center;
             background: var(--bg-panel); border-radius: 20px; overflow: hidden; 
-            box-shadow: 6px 6px 12px rgba(0,0,0,0.15), -4px -4px 10px rgba(255,255,255,0.8);
-            display: flex; flex-direction: column; padding-bottom: 15px; 
+            box-shadow: 6px 6px 12px rgba(0,0,0,0.15), -4px -4px 10px rgba(255,255,255,0.8); display: flex; flex-direction: column; padding-bottom: 15px; 
         }
         .card-img-wrapper {
             width: 90%; margin: 15px auto 0 auto; height: 140px; border-radius: 15px; overflow: hidden;
             box-shadow: 4px 4px 8px rgba(0,0,0,0.15), -3px -3px 6px rgba(255,255,255,0.8);
-            background: var(--bg-input); display: flex; align-items: center; justify-content: center;
-            transition: 0.1s; position: relative;
+            background: var(--bg-input); display: flex; align-items: center; justify-content: center; transition: 0.1s; position: relative;
         }
         .card-img-wrapper:active { transform: scale(0.98); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); }
         .card-img-wrapper:active::after { content: ""; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.1); pointer-events: none; }
-        
         .card-img { width: 100%; height: 100%; object-fit: contain; display: block; }
         .no-img-box { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #999; font-size: 14px;}
 
         .card-body { padding: 10px 15px 0 15px; display: flex; flex-direction: column; flex: 1; }
         .card-meta-row { display: flex; gap: 6px; margin-bottom: 8px; justify-content: center; }
         .meta-box {
-            width: 23%; font-size: 11px; color: #555; text-align: center;
-            padding: 4px 0; border-radius: 8px; background: var(--bg-panel);
-            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            width: 23%; font-size: 11px; color: #555; text-align: center; padding: 4px 0; border-radius: 8px; background: var(--bg-panel);
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .card-title { font-size: 18px; color: var(--text-main); font-weight: bold; margin-bottom: 3px; line-height: 1.3; max-height: 48px; overflow: hidden; }
         .card-feature { font-size: 12px; color: var(--color-primary); margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
         .card-btn-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
-        .btn-mini { 
-            padding: 6px 12px; font-size: 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold;
-            background: var(--bg-panel); box-shadow: 2px 2px 4px rgba(0,0,0,0.15);
-        }
+        .btn-mini { padding: 6px 12px; font-size: 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; background: var(--bg-panel); box-shadow: 2px 2px 4px rgba(0,0,0,0.15); }
         .btn-mini:active { box-shadow: inset 2px 2px 4px rgba(0,0,0,0.15); transform: translateY(1px); }
         .btn-edit { color: var(--color-accent); }
         .btn-del { color: var(--color-danger); }
@@ -219,7 +183,6 @@
         .action-row { display: flex; gap: 10px; margin-top: 20px; align-items: stretch; }
         .action-btn-add { flex: 3; background-color: var(--btn-add-bg); color: black; } 
         .action-btn-add:active { background-color: var(--active-blue); }
-        
         .action-btn-edit { flex: 3; background-color: var(--color-danger) !important; color: #FFFFFF !important; }
         .action-btn-edit:active { background-color: #A35E5E !important; color: #FFFFFF !important; }
         
@@ -234,7 +197,7 @@
         }
         .fab-btn svg { width: 24px; height: 24px; fill: var(--color-primary); }
         .fab-btn:active { box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); transform: scale(0.95); background: var(--active-blue); }
-
+        
         /* Map Overlay */
         #map-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-page); z-index: 2000; display: none; flex-direction: column; }
         #map-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 2001; }
@@ -276,7 +239,7 @@
                 <span class="cat-text">景點</span>
             </button>
             <button class="convex-btn cat-btn-layout cat-btn-add" onclick="selectCategory('add', '旅館', this)">
-                <img class="cat-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A90A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 22h20'%3E%3C/path%3E%3Cpath d='M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18'%3E%3C/path%3E%3Cpath d='M12 18v4'%3E%3C/path%3E%3Cpath d='M8 6h.01'%3E%3C/path%3E%3Cpath d='M16 6h.01'%3E%3C/path%3E%3Cpath d='M8 10h.01'%3E%3C/path%3E%3Cpath d='M16 10h.01'%3E%3C/path%3E%3C/svg%3E">
+                <img class="cat-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A90A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 22h20'%3E%3C/path%3E%3Cpath d='M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18'%3E%3C/path%3E%3Cpath d='M12 18v4'%3E%3C/path%3E%3Cpath d='M8 6h.01'%3E%3C/path%3E%3Cpath d='M16 6h.01'%3E%3C/path%3E%3Cpath d='M8 10h.01'%3E%3C/path%3E%3Cpath d='M16 10h.01'%3E%3C/path%3E%3Cpath d='M8 14h.01'%3E%3C/path%3E%3Cpath d='M16 14h.01'%3E%3C/path%3E%3C/svg%3E">
                 <span class="cat-text">旅館</span>
             </button>
             <button class="convex-btn cat-btn-layout cat-btn-add" onclick="selectCategory('add', '其他', this)">
@@ -328,8 +291,8 @@
         </div>
         
         <div class="input-group">
-            <span class="input-label">詳細地址</span>
-            <input type="text" id="add-loc" class="sunken-input" placeholder="📍 地址或 Google Maps 連結">
+            <span class="input-label">詳細地址 (若為網址則開啟連結，若為文字則搜尋地圖)</span>
+            <input type="text" id="add-loc" class="sunken-input" placeholder="📍 地址或Google Map連結">
         </div>
 
         <div class="input-group">
@@ -456,6 +419,7 @@
 
     <div class="filter-wrapper">
         <input type="text" id="filter-keyword" class="filter-search-box" placeholder="搜尋" oninput="applyFilter()">
+        <button class="filter-reset-btn btn-danger-style" onclick="resetFilter()">↺</button>
         
         <div class="filter-select-container">
             <div class="ms-container">
@@ -475,8 +439,6 @@
                 <div class="ms-dropdown" id="drop-plat"></div>
             </div>
         </div>
-
-        <button class="filter-reset-btn btn-danger-style" onclick="resetFilter()">↺</button>
     </div>
 
     <div id="card-area" class="grid-container">
@@ -484,7 +446,7 @@
     </div>
 
     <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
-        <span onclick="if(confirm('確定要清除所有「自訂」的國家與都市選項嗎？\n(這不會刪除您的卡片)')) { localStorage.removeItem('customLocations'); location.reload(); }" style="font-size: 12px; color: #B86B6B; cursor: pointer; text-decoration: underline;">🧹 清除所有自訂國家/都市記憶</span>
+        <span onclick="if(confirm('確定要清除所有「自訂」的國家與都市選項嗎？\n(這不會刪除卡片)')) { localStorage.removeItem('customLocations'); location.reload(); }" style="font-size: 12px; color: #B86B6B; cursor: pointer; text-decoration: underline;">🧹 一鍵清除所有自訂記憶</span>
     </div>
 
     <div class="fab-container">
@@ -501,7 +463,7 @@
             <h3 style="margin:0; color:var(--text-main);">📍 收藏總覽地圖</h3>
             <button class="convex-btn btn-danger-style" onclick="closeMap()">❌ 關閉</button>
         </div>
-        <div id="map-loading">🔍 轉換座標並載入地圖中...</div>
+        <div id="map-loading">🔍 載入座標中...</div>
         <div id="full-map"></div>
     </div>
 
@@ -513,7 +475,7 @@
         let allItems = []; 
         let filteredItems = [];
 
-        // 國家與都市資料庫 (更新台灣清單)
+        // 國家與都市資料庫
         let locationData = {
             "美國": ["紐約", "洛杉磯", "舊金山", "芝加哥", "西雅圖"],
             "日本": ["東京都", "大阪府", "京都府", "北海道", "福岡縣", "沖繩縣"],
@@ -533,7 +495,6 @@
             fetchItems();
         };
 
-        // 點擊空白處關閉下拉選單
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.ms-container')) {
                 document.querySelectorAll('.ms-dropdown').forEach(d => d.classList.remove('show'));
@@ -1059,7 +1020,7 @@
             return text.replace(/'/g, "\\'").replace(/"/g, '"');
         }
 
-        // --- 超強解析抓取器 ---
+        // --- 智慧網址與 Google Map 擷取器 ---
         async function autoFetch(mode) {
             const rawInput = document.getElementById(`${mode}-link-fetch`).value.trim();
             if (!rawInput) return alert('請貼上網址或輸入關鍵字！');
@@ -1080,7 +1041,7 @@
                 return;
             }
 
-            let isGoogleMap = targetUrl.includes('maps.app.goo.gl') || targetUrl.includes('goo.gl/maps') || targetUrl.includes('google.com/maps');
+            let isGoogleMap = targetUrl.includes('https://maps.app.goo.gl/XXXX') || targetUrl.includes('goo.gl/maps') || targetUrl.includes('google.com/maps');
 
             if (isGoogleMap) {
                 document.getElementById(`${mode}-loc`).value = targetUrl; 
@@ -1147,7 +1108,7 @@
             btn.innerText = originalText;
         }
 
-        // --- 內建總覽地圖座標轉換系統 ---
+        // --- 內建總覽地圖座標轉換系統 (Smart Fallback) ---
         let mapLoaded = false;
         let map = null;
         let markersCluster = null;
@@ -1176,22 +1137,41 @@
             let plottedCount = 0;
 
             for(let i = 0; i < itemsToMap.length; i++) {
+                loader.innerText = `🔍 轉換座標中 (${i+1}/${itemsToMap.length})...`;
+                
                 let item = itemsToMap[i];
                 let address = item.location || '';
                 
+                // --- 多重智慧降級搜尋清單 ---
                 let queryList = [];
+                let city = item.city && item.city !== '-' ? item.city : '';
+                let country = item.country && item.country !== '-' ? item.country : '';
+
                 if (address && !address.startsWith('http')) {
-                    let fullQuery = `${item.country && item.country !== '-' ? item.country : ''} ${item.city && item.city !== '-' ? item.city : ''} ${address}`.trim();
-                    queryList.push(fullQuery);
+                    // 1. 嘗試精確地址
+                    queryList.push(`${country} ${city} ${address}`.trim());
+                    queryList.push(`${city} ${address}`.trim());
                     queryList.push(address); 
                 }
-                if (item.title && item.city && item.city !== '-') {
-                    queryList.push(`${item.city} ${item.title}`);
+                if (item.title) {
+                    // 2. 嘗試店名
+                    queryList.push(`${country} ${city} ${item.title}`.trim());
+                    queryList.push(`${city} ${item.title}`.trim());
+                }
+                if (city) {
+                    // 3. 終極保底：只搜城市
+                    queryList.push(`${country} ${city}`.trim());
+                    queryList.push(city);
+                } else if (country) {
+                    // 4. 真的沒辦法：只搜國家
+                    queryList.push(country);
                 }
                 
+                // 去除空字串與重複項
+                queryList = [...new Set(queryList.filter(q => q.length > 0))];
                 if(queryList.length === 0) continue;
 
-                let cacheKey = `geo_v3_${item.id}`;
+                let cacheKey = `geo_v4_${item.id}`;
                 let cached = localStorage.getItem(cacheKey);
                 
                 if(cached) {
@@ -1201,6 +1181,7 @@
                     continue; 
                 }
 
+                // 依序嘗試搜尋
                 for(let q of queryList) {
                     try {
                         const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`;
@@ -1211,10 +1192,11 @@
                             addMarker(item, lat, lon);
                             localStorage.setItem(cacheKey, JSON.stringify({lat, lon}));
                             plottedCount++;
-                            break; 
+                            break; // 找到就跳出迴圈，處理下一個 item
                         }
                     } catch(e) {}
-                    await new Promise(r => setTimeout(r, 600)); 
+                    // 延遲 1000ms 避免被 OpenStreetMap 伺服器封鎖 (API規定 1秒1次)
+                    await new Promise(r => setTimeout(r, 1000)); 
                 }
             }
             
@@ -1223,7 +1205,7 @@
             if(plottedCount > 0 && !map.getBounds().isValid()) {
                  map.fitBounds(markersCluster.getBounds().pad(0.1));
             } else if (plottedCount === 0 && itemsToMap.length > 0) {
-                alert("目前清單中的地址格式無法精準轉換為座標。建議填入精確的路名或城市。");
+                alert("目前清單中的地址無法精準轉換為座標。");
             }
         }
 
