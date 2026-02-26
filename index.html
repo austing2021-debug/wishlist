@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>⚜️ 收藏清單 ⚜️</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@300;400&display=swap" rel="stylesheet">
     <style>
         /* --- 1. 配色系統 --- */
@@ -40,7 +39,7 @@
 
         .header-row { display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
 
-        /* 面板樣式 */
+        /* --- UI 元件樣式 --- */
         .panel-container {
             padding: 20px; border-radius: 20px; 
             background-color: var(--bg-panel);
@@ -49,7 +48,6 @@
             border: 1px solid rgba(255,255,255,0.4); 
         }
 
-        /* 輸入框樣式 */
         .sunken-input {
             background: var(--bg-input); 
             border: none; border-radius: 10px;
@@ -61,14 +59,12 @@
         .sunken-input::placeholder { color: #888; }
         .sunken-input:focus { background: #FFF; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.15); }
 
-        /* 下拉選單樣式 */
         select.sunken-input {
             appearance: none; -webkit-appearance: none;
             background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             background-repeat: no-repeat; background-position: right .5em center; background-size: 1em;
         }
 
-        /* 按鈕樣式 */
         .convex-btn {
             background: var(--bg-panel); 
             color: var(--text-main); 
@@ -89,24 +85,19 @@
 
         .btn-fetch { color: black; }
         .btn-fetch:active { background-color: var(--active-blue); }
-
         .action-btn-reset { color: black; }
         .action-btn-reset:active { background-color: var(--active-blue); }
+        .btn-danger-style { color: var(--color-danger); font-weight: bold; }
+        .btn-danger-style:active { background-color: var(--active-red) !important; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); }
 
-        .btn-full { width: 100%; }
         .search-container { margin-bottom: 20px; }
-
-        /* 分類按鈕 */
         .category-group { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; }
         .cat-btn-layout { flex-direction: column; gap: 5px; padding: 8px 2px; height: auto; min-height: 60px; }
         .cat-icon { width: 24px; height: 24px; }
         .cat-text { font-size: 11px; white-space: nowrap; color: black; } 
 
         .input-group { margin-bottom: 15px; width: 100%; }
-        .input-label { 
-            font-size: 12px; color: black; 
-            margin-left: 5px; margin-bottom: 4px; display: block; font-weight: bold; 
-        }
+        .input-label { font-size: 12px; color: black; margin-left: 5px; margin-bottom: 4px; display: block; font-weight: bold; }
         .input-row-multi { display: flex; gap: 10px; width: 100%; align-items: flex-end; }
 
         .platform-wrapper { display: flex; gap: 5px; width: 100%; }
@@ -123,7 +114,7 @@
         .img-preview-box.has-img { display: flex; }
         .img-preview-content { max-width: 100%; max-height: 200px; object-fit: contain; }
 
-        /* 篩選列 */
+        /* --- 篩選與搜尋 --- */
         .filter-wrapper { margin-bottom: 25px; }
         .filter-search-box {
             background: var(--bg-panel); border: none; border-radius: 12px;
@@ -150,10 +141,7 @@
             cursor: pointer; display: flex; align-items: center; justify-content: center;
             font-size: 16px; font-weight: bold;
         }
-        .filter-reset-btn:active { 
-            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); 
-            background-color: var(--active-red);
-        }
+        .filter-reset-btn:active { box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); background-color: var(--active-red); }
 
         /* 響應式佈局 */
         @media(min-width: 650px) {
@@ -163,41 +151,27 @@
             .filter-select { flex: 1; height: 100%; }
             .filter-reset-btn { width: 60px; height: 100%; order: 3; }
         }
-
         @media(max-width: 649px) {
-            .filter-wrapper { 
-                display: grid; 
-                grid-template-columns: 1fr 50px; 
-                grid-template-rows: 48px 45px;   
-                gap: 10px; 
-            }
+            .filter-wrapper { display: grid; grid-template-columns: 1fr 50px; grid-template-rows: 48px 45px; gap: 10px; }
             .filter-search-box { grid-column: 1 / 2; grid-row: 1 / 2; height: 100%; width: 100%; }
             .filter-reset-btn { grid-column: 2 / 3; grid-row: 1 / 2; height: 100%; width: 100%; }
-            .filter-select-container { 
-                grid-column: 1 / 3; grid-row: 2 / 3; 
-                display: grid; grid-template-columns: 1fr 1fr; gap: 8px; height: 100%;
-            }
+            .filter-select-container { grid-column: 1 / 3; grid-row: 2 / 3; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; height: 100%; }
             .filter-select { width: 100%; height: 100%; }
         }
 
-        /* 卡片 */
+        /* --- 卡片設計 --- */
         .grid-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 20px; padding-bottom: 20px; -webkit-overflow-scrolling: touch; }
         .grid-container::-webkit-scrollbar { display: none; }
         @media(min-width: 650px) { .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); overflow-x: visible; justify-items: center; } }
 
         .card { 
-            width: 280px; 
-            height: auto; min-height: 320px; 
-            flex-shrink: 0; scroll-snap-align: center;
+            width: 280px; height: auto; min-height: 320px; flex-shrink: 0; scroll-snap-align: center;
             background: var(--bg-panel); border-radius: 20px; overflow: hidden; 
             box-shadow: 6px 6px 12px rgba(0,0,0,0.15), -4px -4px 10px rgba(255,255,255,0.8);
-            display: flex; flex-direction: column;
-            padding-bottom: 15px; 
+            display: flex; flex-direction: column; padding-bottom: 15px; 
         }
         .card-img-wrapper {
-            width: 90%; margin: 15px auto 0 auto; 
-            height: 140px; 
-            border-radius: 15px; overflow: hidden;
+            width: 90%; margin: 15px auto 0 auto; height: 140px; border-radius: 15px; overflow: hidden;
             box-shadow: 4px 4px 8px rgba(0,0,0,0.15), -3px -3px 6px rgba(255,255,255,0.8);
             background: var(--bg-input); display: flex; align-items: center; justify-content: center;
             transition: 0.1s; position: relative;
@@ -206,7 +180,6 @@
         .card-img-wrapper:active::after { content: ""; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.1); pointer-events: none; }
         
         .card-img { width: 100%; height: 100%; object-fit: contain; display: block; }
-        
         .no-img-box { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #999; font-size: 14px;}
 
         .card-body { padding: 10px 15px 0 15px; display: flex; flex-direction: column; flex: 1; }
@@ -233,10 +206,17 @@
         .action-row { display: flex; gap: 10px; margin-top: 20px; align-items: stretch; }
         .action-btn-add { flex: 3; background-color: var(--btn-add-bg); color: black; } 
         .action-btn-add:active { background-color: var(--active-blue); }
-        .action-btn-edit { flex: 3; color: var(--color-accent); }
-        .action-btn-edit:active { background-color: var(--active-blue); }
-        .action-btn-reset { flex: 1; color: black; }
-        .action-btn-reset:active { background-color: var(--active-blue); }
+        
+        /* 確認修改按鈕：莫蘭迪紅底、白字 */
+        .action-btn-edit { 
+            flex: 3; 
+            background-color: var(--color-danger) !important; 
+            color: #FFFFFF !important; 
+        }
+        .action-btn-edit:active { 
+            background-color: #A35E5E !important; /* 按下時微深紅 */
+            color: #FFFFFF !important; 
+        }
         
         .hidden { display: none !important; }
     </style>
@@ -250,7 +230,7 @@
     <div id="section-add" class="panel-container">
         <div class="search-container">
             <div style="display:flex; gap:10px;">
-                <input type="text" id="add-link-fetch" class="sunken-input" placeholder="🔗 貼上網址 / 或輸入關鍵字">
+                <input type="text" id="add-link-fetch" class="sunken-input" placeholder="🔗 貼上網址或地圖連結 / 或輸入關鍵字">
                 <button id="btn-fetch-add" class="convex-btn btn-fetch" style="width:80px;" onclick="autoFetch('add')">抓取</button>
             </div>
         </div>
@@ -269,7 +249,7 @@
                 <span class="cat-text">景點</span>
             </button>
             <button class="convex-btn cat-btn-layout cat-btn-add" onclick="selectCategory('add', '旅館', this)">
-                <img class="cat-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A90A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 22h20'%3E%3C/path%3E%3Cpath d='M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18'%3E%3C/path%3E%3Cpath d='M12 18v4'%3E%3C/path%3E%3Cpath d='M8 6h.01'%3E%3C/path%3E%3Cpath d='M16 6h.01'%3E%3C/path%3E%3Cpath d='M8 10h.01'%3E%3C/path%3E%3Cpath d='M16 10h.01'%3E%3C/path%3E%3Cpath d='M8 14h.01'%3E%3C/path%3E%3Cpath d='M16 14h.01'%3E%3C/path%3E%3C/svg%3E">
+                <img class="cat-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A90A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 22h20'%3E%3C/path%3E%3Cpath d='M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18'%3E%3C/path%3E%3Cpath d='M12 18v4'%3E%3C/path%3E%3Cpath d='M8 6h.01'%3E%3C/path%3E%3Cpath d='M16 6h.01'%3E%3C/path%3E%3Cpath d='M8 10h.01'%3E%3C/path%3E%3Cpath d='M16 10h.01'%3E%3C/path%3E%3C/svg%3E">
                 <span class="cat-text">旅館</span>
             </button>
             <button class="convex-btn cat-btn-layout cat-btn-add" onclick="selectCategory('add', '其他', this)">
@@ -362,7 +342,7 @@
                 <span class="cat-text">購物</span>
             </button>
             <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '餐廳', this)">
-                <img class="cat-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A90A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2'%3E%3C/path%3E%3Cpath d='M7 2v20'%3E%3C/path%3E%3Cpath d='M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7'%3E%3C/path%3E%3C/svg%3E">
+                <img class="cat-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A90A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2'%3E%3Cpath d='M7 2v20'%3E%3C/path%3E%3Cpath d='M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7'%3E%3C/path%3E%3C/svg%3E">
                 <span class="cat-text">餐廳</span>
             </button>
             <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '景點', this)">
@@ -446,6 +426,7 @@
             <button class="convex-btn action-btn-reset" onclick="switchToAddMode()">取消</button>
         </div>
     </div>
+
     <div class="filter-wrapper">
         <input type="text" id="filter-keyword" class="filter-search-box" placeholder="搜尋" oninput="applyFilter()">
         
@@ -491,7 +472,6 @@
 
         const CUSTOM_CITY_VALUE = "custom_input";
 
-        // 初始化
         window.onload = function() {
             loadCustomLocations();
             initCountrySelect('add');
@@ -499,7 +479,6 @@
             fetchItems();
         };
 
-        // 讀取 LocalStorage 中的自訂資料
         function loadCustomLocations() {
             const saved = localStorage.getItem('customLocations');
             if (saved) {
@@ -518,12 +497,10 @@
             }
         }
 
-        // 儲存自訂資料到 LocalStorage
         function saveCustomLocations() {
             localStorage.setItem('customLocations', JSON.stringify(locationData));
         }
 
-        // 初始化國家選單
         function initCountrySelect(mode, selectedCountry = null) {
             const select = document.getElementById(`${mode}-country`);
             select.innerHTML = `<option value="">請選擇</option>`;
@@ -586,8 +563,6 @@
                     citySelect.innerHTML += `<option value="${city}">${city}</option>`;
                 });
                 citySelect.innerHTML += `<option value="${CUSTOM_CITY_VALUE}">➕ 自訂...</option>`;
-            } else if (country === CUSTOM_CITY_VALUE) {
-                // 自訂國家中
             }
 
             if (selectedCity) {
@@ -713,7 +688,6 @@
 
             document.getElementById('edit-link-fetch').value = ""; 
             
-            // 設定國家與都市，如果舊資料有未知國家，自動加入
             if (country && !locationData[country]) {
                 locationData[country] = [];
                 saveCustomLocations();
@@ -774,11 +748,9 @@
         function openMapDirect(loc, city) {
             if (!loc && !city) return alert('無地址資料');
             
-            // 如果地址本身就是連結 (例如 Google Maps 短網址)
             if (loc && loc.startsWith('http')) {
                 window.open(loc, '_blank');
             } else {
-                // 否則當作文字搜尋
                 const query = city ? city + " " + loc : loc;
                 window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, '_blank');
             }
@@ -812,7 +784,6 @@
 
             desc = bundleDescription(desc, ref, country, city, feature, platform);
 
-            // 移除 user_id 欄位 (公開模式)
             const { error } = await db.from('products').insert([{ 
                 title, image_url: image, category, description: desc, location: loc
             }]);
@@ -975,7 +946,6 @@
                 if (item.platform && item.platform !== '-') metaHtml += `<div class="meta-box">${item.platform}</div>`;
                 metaHtml += '</div>';
                 
-                // 條件判斷：是否有地址，決定要不要顯示地圖按鈕
                 let mapBtnHtml = '';
                 if (safeLoc) {
                     mapBtnHtml = `
@@ -1020,7 +990,7 @@
             const originalText = btn.innerText;
             btn.innerText = "⏳";
 
-            // 如果沒有 http，視為關鍵字輸入，自動填寫 Google 搜尋連結
+            // 處理非網址的純關鍵字
             if (!inputVal.startsWith('http')) {
                 document.getElementById(`${mode}-title`).value = inputVal.substring(0, 50);
                 document.getElementById(`${mode}-ref-url`).value = `https://www.google.com/search?q=${encodeURIComponent(inputVal)}`;
@@ -1029,10 +999,13 @@
                 return;
             }
 
-            if (inputVal.includes('google.com/maps') || inputVal.includes('goo.gl/maps')) {
+            let isGoogleMap = false;
+
+            // 處理 Google Maps 連結 (包含各種縮網址形式)
+            if (inputVal.includes('maps.app.goo.gl') || inputVal.includes('goo.gl/maps') || inputVal.includes('google.com/maps')) {
                 document.getElementById(`${mode}-loc`).value = inputVal;
-                btn.innerText = originalText;
-                return;
+                isGoogleMap = true;
+                // 不要 Return！繼續讓 microlink 抓取網頁標題與縮圖
             }
 
             try {
@@ -1042,11 +1015,22 @@
                 if (json.status === 'success') {
                     const data = json.data;
                     let title = data.title || '';
+                    
+                    // 針對 Google Maps 抓出來的標題進行去贅字處理
+                    if (title.includes('Google Maps')) {
+                        title = title.replace(/\s*-\s*Google Maps/g, '').replace(/Google Maps/g, '').trim();
+                    }
+
                     if(title.length > 50) title = title.substring(0, 50);
                     
-                    document.getElementById(`${mode}-title`).value = title;
+                    if (title) document.getElementById(`${mode}-title`).value = title;
+                    
                     document.getElementById(`${mode}-desc`).value = data.description || '';
-                    document.getElementById(`${mode}-ref-url`).value = inputVal; 
+                    
+                    // 如果不是 Google Map 才蓋掉參考網址，因為 Map 網址我們已經塞給地址欄位了
+                    if (!isGoogleMap) {
+                        document.getElementById(`${mode}-ref-url`).value = inputVal; 
+                    }
                     
                     if (data.image && data.image.url) {
                         document.getElementById(`${mode}-img`).value = data.image.url;
@@ -1056,9 +1040,12 @@
                         updatePreview(mode);
                     }
                 } else {
-                    alert('無法抓取，請確認網址');
+                    if (!isGoogleMap) alert('無法抓取，請確認網址');
                 }
-            } catch (err) { console.error(err); alert('抓取發生錯誤'); }
+            } catch (err) { 
+                console.error(err); 
+                if (!isGoogleMap) alert('抓取發生錯誤'); 
+            }
             
             btn.innerText = originalText;
         }
