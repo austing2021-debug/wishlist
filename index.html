@@ -180,23 +180,23 @@
             .filter-select { width: 100%; height: 100%; }
         }
 
-        /* --- 條件3: 縮短卡片上下距離 --- */
+        /* 卡片 */
         .grid-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 20px; padding-bottom: 20px; -webkit-overflow-scrolling: touch; }
         .grid-container::-webkit-scrollbar { display: none; }
         @media(min-width: 650px) { .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); overflow-x: visible; justify-items: center; } }
 
         .card { 
             width: 280px; 
-            height: auto; min-height: 320px; /* 取消固定高度，改為自動適應內容 */
+            height: auto; min-height: 320px; 
             flex-shrink: 0; scroll-snap-align: center;
             background: var(--bg-panel); border-radius: 20px; overflow: hidden; 
             box-shadow: 6px 6px 12px rgba(0,0,0,0.15), -4px -4px 10px rgba(255,255,255,0.8);
             display: flex; flex-direction: column;
-            padding-bottom: 15px; /* 增加底部留白 */
+            padding-bottom: 15px; 
         }
         .card-img-wrapper {
             width: 90%; margin: 15px auto 0 auto; 
-            height: 140px; /* 縮小圖片高度 */
+            height: 140px; 
             border-radius: 15px; overflow: hidden;
             box-shadow: 4px 4px 8px rgba(0,0,0,0.15), -3px -3px 6px rgba(255,255,255,0.8);
             background: var(--bg-input); display: flex; align-items: center; justify-content: center;
@@ -204,10 +204,12 @@
         }
         .card-img-wrapper:active { transform: scale(0.98); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); }
         .card-img-wrapper:active::after { content: ""; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.1); pointer-events: none; }
-        .card-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* 條件1: 圖片縮小符合框格，並加上 display:block 避免奇怪空隙 */
+        .card-img { width: 100%; height: 100%; object-fit: contain; display: block; }
+        
         .no-img-box { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #999; font-size: 14px;}
 
-        /* 縮減卡片內文間距 */
         .card-body { padding: 10px 15px 0 15px; display: flex; flex-direction: column; flex: 1; }
         .card-meta-row { display: flex; gap: 6px; margin-bottom: 8px; justify-content: center; }
         .meta-box {
@@ -227,7 +229,7 @@
         .btn-mini:active { box-shadow: inset 2px 2px 4px rgba(0,0,0,0.15); transform: translateY(1px); }
         .btn-edit { color: var(--color-accent); }
         .btn-del { color: var(--color-danger); }
-        .btn-map-icon { width: 16px; height: 16px; fill: var(--color-primary); margin-top:2px;}
+        .btn-map-icon { width: 16px; height: 16px; fill: var(--color-primary); margin-top:2px; pointer-events: none;}
 
         .action-row { display: flex; gap: 10px; margin-top: 20px; align-items: stretch; }
         .action-btn-add { flex: 3; background-color: var(--btn-add-bg); color: black; } 
@@ -369,7 +371,7 @@
                 <span class="cat-text">景點</span>
             </button>
             <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '旅館', this)">
-                <img class="cat-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A90A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 22h20'%3E%3C/path%3E%3Cpath d='M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18'%3E%3C/path%3E%3Cpath d='M12 18v4'%3E%3C/path%3E%3Cpath d='M8 6h.01'%3E%3C/path%3E%3Cpath d='M16 6h.01'%3E%3C/path%3E%3Cpath d='M8 10h.01'%3E%3C/path%3E%3Cpath d='M16 10h.01'%3E%3C/path%3E%3Cpath d='M8 14h.01'%3E%3C/path%3E%3Cpath d='M16 14h.01'%3E%3C/path%3E%3C/svg%3E">
+                <img class="cat-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A90A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 22h20'%3E%3C/path%3E%3Cpath d='M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18'%3E%3C/path%3E%3Cpath d='M12 18v4'%3E%3C/path%3E%3Cpath d='M8 6h.01'%3E%3C/path%3E%3Cpath d='M16 6h.01'%3E%3C/path%3E%3Cpath d='M8 10h.01'%3E%3C/path%3E%3Cpath d='M16 10h.01'%3E%3C/path%3E%3C/svg%3E">
                 <span class="cat-text">旅館</span>
             </button>
             <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '其他', this)">
@@ -445,9 +447,9 @@
             <button class="convex-btn action-btn-reset" onclick="switchToAddMode()">取消</button>
         </div>
     </div>
+
     <div class="filter-wrapper">
         <input type="text" id="filter-keyword" class="filter-search-box" placeholder="搜尋" oninput="applyFilter()">
-        <button class="filter-reset-btn btn-danger-style" onclick="resetFilter()">↺</button>
         
         <div class="filter-select-container">
             <select id="filter-category" class="filter-select" onchange="applyFilter()">
@@ -463,6 +465,8 @@
                 <option value="">所有平台</option>
             </select>
         </div>
+
+        <button class="filter-reset-btn btn-danger-style" onclick="resetFilter()">↺</button>
     </div>
 
     <div id="card-area" class="grid-container">
@@ -477,7 +481,7 @@
         let allItems = []; 
         let filteredItems = [];
 
-        // 條件2: 國家與都市資料庫 (會與 LocalStorage 合併)
+        // 國家與都市資料庫 (含自訂)
         let locationData = {
             "美國": ["紐約", "洛杉磯", "舊金山", "芝加哥", "西雅圖"],
             "日本": ["東京都", "大阪府", "京都府", "北海道", "福岡縣", "沖繩縣"],
@@ -521,7 +525,7 @@
             localStorage.setItem('customLocations', JSON.stringify(locationData));
         }
 
-        // 初始化國家選單 (條件2a)
+        // 初始化國家選單
         function initCountrySelect(mode, selectedCountry = null) {
             const select = document.getElementById(`${mode}-country`);
             select.innerHTML = `<option value="">請選擇</option>`;
@@ -538,7 +542,6 @@
             }
         }
 
-        // 檢查是否選擇自訂國家
         function checkCustomCountry(mode) {
             const select = document.getElementById(`${mode}-country`);
             const input = document.getElementById(`${mode}-country-custom`);
@@ -551,7 +554,6 @@
             }
         }
 
-        // 確認自訂國家輸入 (條件2b)
         function confirmCustomCountry(mode) {
             const select = document.getElementById(`${mode}-country`);
             const input = document.getElementById(`${mode}-country-custom`);
@@ -575,12 +577,11 @@
             input.value = "";
         }
 
-        // 更新都市選單 (Cascading)
         function updateCityOptions(mode, selectedCity = null) {
             const country = document.getElementById(`${mode}-country`).value;
             const citySelect = document.getElementById(`${mode}-city`);
             
-            citySelect.innerHTML = `<option value="">   </option>`; // 空白選項
+            citySelect.innerHTML = `<option value="">   </option>`; 
 
             if (country && locationData[country]) {
                 locationData[country].forEach(city => {
@@ -588,7 +589,7 @@
                 });
                 citySelect.innerHTML += `<option value="${CUSTOM_CITY_VALUE}">➕ 自訂...</option>`;
             } else if (country === CUSTOM_CITY_VALUE) {
-                // 若國家正在自訂中，都市清空
+                // 自訂國家中
             }
 
             if (selectedCity) {
@@ -602,7 +603,6 @@
             }
         }
 
-        // 檢查是否選擇了自訂都市
         function checkCustomCity(mode) {
             const select = document.getElementById(`${mode}-city`);
             const input = document.getElementById(`${mode}-city-custom`);
@@ -613,7 +613,6 @@
             }
         }
 
-        // 確認自訂都市輸入 (條件2b)
         function confirmCustomCity(mode) {
             const select = document.getElementById(`${mode}-city`);
             const input = document.getElementById(`${mode}-city-custom`);
@@ -641,11 +640,6 @@
             input.value = "";
         }
 
-        // --- MAIN LOGIC ---
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
         function toggleOtherInput(mode) {
             const select = document.getElementById(`${mode}-platform`);
             const otherInput = document.getElementById(`${mode}-platform-other`);
@@ -668,32 +662,12 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function resetForm(mode) {
-            if(mode === 'add') {
-                document.getElementById('add-link-fetch').value = ''; 
-                document.getElementById('add-title').value = '';
-                document.getElementById('add-feature').value = '';
-                document.getElementById('add-img').value = '';
-                document.getElementById('add-country').value = '';
-                updateCityOptions('add'); 
-                document.getElementById('add-platform').value = '';
-                document.getElementById('add-platform-other').value = '';
-                document.getElementById('add-platform-other').classList.remove('show');
-                document.getElementById('add-loc').value = '';
-                document.getElementById('add-ref-url').value = '';
-                document.getElementById('add-desc').value = '';
-                updatePreview('add');
-                selectCategory('add', '購物', document.querySelector('.cat-btn-add'));
-            }
-        }
-
         function triggerEdit(id) {
             const item = allItems.find(i => i.id == id);
             if (!item) return alert('讀取資料錯誤');
             
             document.getElementById('section-add').classList.add('hidden');
             document.getElementById('section-edit').classList.remove('hidden');
-            // 條件4: 編輯面板現在在 HTML 結構上方，且會自動滾動到最上方
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
             document.getElementById('edit-id').value = item.id;
@@ -722,7 +696,6 @@
 
             document.getElementById('edit-link-fetch').value = ""; 
             
-            // 設定國家與都市，如果舊資料有未知國家，自動加入
             if (country && !locationData[country]) {
                 locationData[country] = [];
                 saveCustomLocations();
@@ -818,7 +791,6 @@
 
             desc = bundleDescription(desc, ref, country, city, feature, platform);
 
-            // 移除 user_id (公開模式)
             const { error } = await db.from('products').insert([{ 
                 title, image_url: image, category, description: desc, location: loc
             }]);
@@ -888,7 +860,7 @@
 
                 const platMatch = desc.match(/\n?\[Plat:(.*?)\]/);
                 if(platMatch) { platform = platMatch[1]; desc = desc.replace(platMatch[0], ""); }
-                
+
                 return { ...item, cleanDesc: desc, country, city, refUrl, feature, platform };
             });
 
@@ -956,7 +928,7 @@
             container.innerHTML = ''; 
             
             if(items.length === 0) {
-                 container.innerHTML = '<p style="text-align:center; width:100%; color:#5F6F6E;">沒有符合的資料 (或尚未新增)</p>';
+                 container.innerHTML = '<p style="text-align:center; width:100%; color:#5F6F6E;">沒有符合的資料</p>';
                  return;
             }
 
@@ -983,18 +955,17 @@
 
                 const html = `
                     <div class="card">
-                        <a href="${linkUrl}" target="_blank" class="card-img-wrapper">
+                        <a href="${linkUrl}" target="_blank" class="card-img-wrapper" title="網址">
                             ${imgContent}
                         </a>
                         
                         <div class="card-body">
                             ${metaHtml}
-
                             <div class="card-title">${safeTitle}</div>
                             ${safeFeat ? `<div class="card-feature">✨ ${safeFeat}</div>` : ''}
 
                             <div class="card-btn-row">
-                                <button class="btn-mini btn-map" onclick="openMapDirect('${safeLoc}', '${item.city}')">
+                                <button class="btn-mini btn-map" onclick="openMapDirect('${safeLoc}', '${item.city}')" title="地圖">
                                     <svg class="btn-map-icon" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
                                 </button>
                                 <button class="btn-mini btn-edit" onclick="triggerEdit('${item.id}')">編輯</button>
@@ -1012,25 +983,23 @@
             return text.replace(/'/g, "\\'").replace(/"/g, '"');
         }
 
-        // --- 條件1: 支援關鍵字抓取 ---
         async function autoFetch(mode) {
             const inputVal = document.getElementById(`${mode}-link-fetch`).value.trim();
             if (!inputVal) return alert('請貼上網址或輸入關鍵字！');
             
             const btn = event.target;
             const originalText = btn.innerText;
-            btn.innerText = "⏳"; // 條件2: 沙漏動畫
+            btn.innerText = "⏳";
 
-            // 如果沒有 http，視為關鍵字輸入
+            // 如果沒有 http，視為關鍵字輸入，自動填寫 Google 搜尋連結
             if (!inputVal.startsWith('http')) {
                 document.getElementById(`${mode}-title`).value = inputVal.substring(0, 50);
                 document.getElementById(`${mode}-ref-url`).value = `https://www.google.com/search?q=${encodeURIComponent(inputVal)}`;
                 btn.innerText = originalText;
-                alert('已將關鍵字自動填入「標題」與「參考網址」，您可自行補充圖片！');
+                alert('已將關鍵字填入「標題」與「參考網址」，請自行補充圖片與其他資料。');
                 return;
             }
 
-            // 如果是 Google Maps 短網址或長網址，直接填入地址
             if (inputVal.includes('google.com/maps') || inputVal.includes('goo.gl/maps')) {
                 document.getElementById(`${mode}-loc`).value = inputVal;
                 btn.innerText = originalText;
