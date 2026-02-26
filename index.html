@@ -205,7 +205,6 @@
         .card-img-wrapper:active { transform: scale(0.98); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); }
         .card-img-wrapper:active::after { content: ""; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.1); pointer-events: none; }
         
-        /* 條件1: 圖片縮小符合框格，並加上 display:block 避免奇怪空隙 */
         .card-img { width: 100%; height: 100%; object-fit: contain; display: block; }
         
         .no-img-box { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #999; font-size: 14px;}
@@ -371,7 +370,7 @@
                 <span class="cat-text">景點</span>
             </button>
             <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '旅館', this)">
-                <img class="cat-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A90A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 22h20'%3E%3C/path%3E%3Cpath d='M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18'%3E%3C/path%3E%3Cpath d='M12 18v4'%3E%3C/path%3E%3Cpath d='M8 6h.01'%3E%3C/path%3E%3Cpath d='M16 6h.01'%3E%3C/path%3E%3Cpath d='M8 10h.01'%3E%3C/path%3E%3Cpath d='M16 10h.01'%3E%3C/path%3E%3C/svg%3E">
+                <img class="cat-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A90A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 22h20'%3E%3C/path%3E%3Cpath d='M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18'%3E%3C/path%3E%3Cpath d='M12 18v4'%3E%3C/path%3E%3Cpath d='M8 6h.01'%3E%3C/path%3E%3Cpath d='M16 6h.01'%3E%3C/path%3E%3Cpath d='M8 10h.01'%3E%3C/path%3E%3Cpath d='M16 10h.01'%3E%3C/path%3E%3Cpath d='M8 14h.01'%3E%3C/path%3E%3Cpath d='M16 14h.01'%3E%3C/path%3E%3C/svg%3E">
                 <span class="cat-text">旅館</span>
             </button>
             <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '其他', this)">
@@ -447,7 +446,6 @@
             <button class="convex-btn action-btn-reset" onclick="switchToAddMode()">取消</button>
         </div>
     </div>
-
     <div class="filter-wrapper">
         <input type="text" id="filter-keyword" class="filter-search-box" placeholder="搜尋" oninput="applyFilter()">
         
@@ -662,6 +660,25 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        function resetForm(mode) {
+            if(mode === 'add') {
+                document.getElementById('add-link-fetch').value = ''; 
+                document.getElementById('add-title').value = '';
+                document.getElementById('add-feature').value = '';
+                document.getElementById('add-img').value = '';
+                document.getElementById('add-country').value = '';
+                updateCityOptions('add'); 
+                document.getElementById('add-platform').value = '';
+                document.getElementById('add-platform-other').value = '';
+                document.getElementById('add-platform-other').classList.remove('show');
+                document.getElementById('add-loc').value = '';
+                document.getElementById('add-ref-url').value = '';
+                document.getElementById('add-desc').value = '';
+                updatePreview('add');
+                selectCategory('add', '購物', document.querySelector('.cat-btn-add'));
+            }
+        }
+
         function triggerEdit(id) {
             const item = allItems.find(i => i.id == id);
             if (!item) return alert('讀取資料錯誤');
@@ -696,6 +713,7 @@
 
             document.getElementById('edit-link-fetch').value = ""; 
             
+            // 設定國家與都市，如果舊資料有未知國家，自動加入
             if (country && !locationData[country]) {
                 locationData[country] = [];
                 saveCustomLocations();
@@ -755,9 +773,12 @@
 
         function openMapDirect(loc, city) {
             if (!loc && !city) return alert('無地址資料');
+            
+            // 如果地址本身就是連結 (例如 Google Maps 短網址)
             if (loc && loc.startsWith('http')) {
                 window.open(loc, '_blank');
             } else {
+                // 否則當作文字搜尋
                 const query = city ? city + " " + loc : loc;
                 window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, '_blank');
             }
@@ -791,6 +812,7 @@
 
             desc = bundleDescription(desc, ref, country, city, feature, platform);
 
+            // 移除 user_id 欄位 (公開模式)
             const { error } = await db.from('products').insert([{ 
                 title, image_url: image, category, description: desc, location: loc
             }]);
@@ -952,6 +974,15 @@
                 if (item.city && item.city !== '-') metaHtml += `<div class="meta-box">${item.city}</div>`;
                 if (item.platform && item.platform !== '-') metaHtml += `<div class="meta-box">${item.platform}</div>`;
                 metaHtml += '</div>';
+                
+                // 條件判斷：是否有地址，決定要不要顯示地圖按鈕
+                let mapBtnHtml = '';
+                if (safeLoc) {
+                    mapBtnHtml = `
+                    <button class="btn-mini btn-map" onclick="openMapDirect('${safeLoc}', '${item.city}')" title="地圖">
+                        <svg class="btn-map-icon" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
+                    </button>`;
+                }
 
                 const html = `
                     <div class="card">
@@ -965,9 +996,7 @@
                             ${safeFeat ? `<div class="card-feature">✨ ${safeFeat}</div>` : ''}
 
                             <div class="card-btn-row">
-                                <button class="btn-mini btn-map" onclick="openMapDirect('${safeLoc}', '${item.city}')" title="地圖">
-                                    <svg class="btn-map-icon" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
-                                </button>
+                                ${mapBtnHtml}
                                 <button class="btn-mini btn-edit" onclick="triggerEdit('${item.id}')">編輯</button>
                                 <button class="btn-mini btn-del" onclick="deleteItem('${item.id}')">刪除</button>
                             </div>
