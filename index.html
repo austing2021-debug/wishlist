@@ -1035,77 +1035,102 @@
             return text.replace(/'/g, "\\'").replace(/"/g, '"');
         }
 
-// --- 條件1: 支援關鍵字與 Google Maps 商家資料「超級解析」 ---
+// --- 智慧網址與關鍵字解析器 (防呆升級版) ---
         async function autoFetch(mode) {
-            const inputVal = document.getElementById(`${mode}-link-fetch`).value.trim();
-            if (!inputVal) return alert('請貼上網址或輸入關鍵字！');
+            const rawInput = document.getElementById(`${mode}-link-fetch`).value.trim();
+            if (!rawInput) return alert('請貼上網址或輸入關鍵字！');
             
             const btn = event.target;
             const originalText = btn.innerText;
             btn.innerText = "⏳";
 
-            // 1. 處理純關鍵字 (沒有 http)
-            if (!inputVal.startsWith('http')) {
-                document.getElementById(`${mode}-title`).value = inputVal.substring(0, 50);
-                document.getElementById(`${mode}-ref-url`).value = `https://www.google.com/search?q=${encodeURIComponent(inputVal)}`;
+            // 1. 智慧分離：從一坨文字中精準抽取出 "http" 開頭的純網址
+            const urlMatch = rawInput.match(/https?:\/\/[^\s]+/);
+            const targetUrl = urlMatch ? urlMatch[0] : null;
+            
+            // 提取網址以外的文字 (手機 Google Map 複製通常會自帶店名)
+            const extraText = rawInput.replace(/https?:\/\/[^\s]+/, '').trim();
+
+            // 2. 如果完全沒有網址，視為「純關鍵字」
+            if (!targetUrl) {
+                document.getElementById(`${mode}-title`).value = rawInput.substring(0, 50);
+                document.getElementById(`${mode}-ref-url`).value = `https://www.google.com/search?q=${encodeURIComponent(rawInput)}`;
                 btn.innerText = originalText;
                 alert('已將關鍵字填入「標題」與「參考網址」，請自行補充圖片與其他資料。');
                 return;
             }
 
-            // 判斷是否為 Google 地圖連結 (包含短網址)
-            let isGoogleMap = inputVal.includes('google.com/maps') || inputVal.includes('goo.gl/maps') || inputVal.includes('maps.app.goo.gl');
+            // 判斷是否為 Google Maps 相關連結
+            let isGoogleMap = targetUrl.includes('maps.app.goo.gl') || targetUrl.includes('goo.gl/maps') || targetUrl.includes('google.com/maps');
+
+            // 3. 備案機制：如果是 Google Map，先把已知資訊塞進去，就算等一下 API 失敗也不怕
+            if (isGoogleMap) {
+                document.getElementById(`${mode}-loc`).value = targetUrl; 
+                document.getElementById(`${mode}-ref-url`).value = targetUrl;
+                if (extraText) {
+                    // 取第一行通常就是店名
+                    let firstLine = extraText.split('\n')[0].trim();
+                    if(firstLine) document.getElementById(`${mode}-title`).value = firstLine.substring(0, 50);
+                }
+            }
 
             try {
-                const response = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(inputVal)}&palette=true`);
+                // 4. 只傳送「純淨的網址」給 API 抓取
+                const response = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(targetUrl)}&palette=true`);
+                
+                // 如果 API 伺服器有問題，直接跳轉錯誤處理
+                if (!response.ok) throw new Error('API 伺服器無回應');
+                
                 const json = await response.json();
                 
                 if (json.status === 'success') {
                     const data = json.data;
                     
-                    // --- 🗺️ Google 地圖「商家資料卡」專屬解析 ---
                     if (isGoogleMap) {
-                        // 1. 抓取商家名稱 (去除預設的 "- Google Maps" 贅字)
+                        // --- Google 地圖專屬處理 ---
                         let title = data.title || '';
                         title = title.replace(/\s*-\s*Google Maps/g, '').replace(/Google Maps/g, '').trim();
-                        if (title) document.getElementById(`${mode}-title`).value = title.substring(0, 50);
-
-                        // 2. 智慧拆解地址與分類 (Google的描述通常是 "★★★★☆ · 咖啡廳 · 台北市...")
-                        let desc = data.description || '';
-                        if (desc) {
-                            let parts = desc.split('·').map(p => p.trim());
-                            
-                            // 最後一段必定是地址
-                            let addressStr = parts[parts.length - 1];
-                            document.getElementById(`${mode}-loc`).value = addressStr;
-                            
-                            // 如果有多段，倒數第二段通常是商家類型 (例如:咖啡廳、拉麵店)，自動填入「特點備註」
-                            if (parts.length >= 2) {
-                                let categoryStr = parts[parts.length - 2].replace(/★|☆/g, '').trim();
-                                document.getElementById(`${mode}-feature`).value = categoryStr.substring(0, 20);
-                            }
-                            
-                            // 填入地址後，自動觸發座標轉換
-                            autoConvertGeo(mode);
+                        
+                        // 如果有抓到更好的標題，就蓋過備案
+                        if (title && title !== 'Google Maps') {
+                            document.getElementById(`${mode}-title`).value = title.substring(0, 50);
                         }
 
-                        // 3. 將地圖網址放入參考連結
-                        document.getElementById(`${mode}-ref-url`).value = inputVal;
+                        let desc = data.description || '';
+                        if (desc && desc.includes('·')) {
+                            let parts = desc.split('·').map(p => p.trim());
+                            
+                            let addressStr = parts[parts.length - 1];
+                            if(addressStr.length > 3) {
+                                document.getElementById(`${mode}-loc`).value = addressStr;
+                                // 嘗試呼叫座標轉換 (如果不在此文件中可略過)
+                                if(typeof autoConvertGeo === 'function') autoConvertGeo(mode);
+                            }
+                            
+                            if (parts.length >= 2) {
+                                let categoryStr = parts[parts.length - 2].replace(/★|☆/g, '').trim();
+                                if(categoryStr && !categoryStr.includes('Google')) {
+                                    document.getElementById(`${mode}-feature`).value = categoryStr.substring(0, 20);
+                                }
+                            }
+                        } else if (desc) {
+                             document.getElementById(`${mode}-desc`).value = desc;
+                        }
 
-                        // 4. 抓取商家外觀縮圖
+                        // 抓取圖片
                         if (data.image && data.image.url) {
                             document.getElementById(`${mode}-img`).value = data.image.url;
                             updatePreview(mode);
                         }
                         
                     } else {
-                        // --- 🌐 一般網頁的抓取邏輯 ---
+                        // --- 一般網頁處理 ---
                         let title = data.title || '';
                         if(title.length > 50) title = title.substring(0, 50);
                         if (title) document.getElementById(`${mode}-title`).value = title;
                         
                         document.getElementById(`${mode}-desc`).value = data.description || '';
-                        document.getElementById(`${mode}-ref-url`).value = inputVal; 
+                        document.getElementById(`${mode}-ref-url`).value = targetUrl; 
                         
                         if (data.image && data.image.url) {
                             document.getElementById(`${mode}-img`).value = data.image.url;
@@ -1116,11 +1141,14 @@
                         }
                     }
                 } else {
-                    alert('無法抓取，該網址可能限制了外部讀取。');
+                    if (!isGoogleMap) alert('該網頁限制了外部讀取，僅能手動填寫。');
                 }
             } catch (err) { 
-                console.error(err); 
-                alert('抓取發生錯誤，請稍後再試'); 
+                console.error("抓取失敗:", err); 
+                // 若是一般網址才跳警告，Google Map 有備案所以靜默處理即可
+                if (!isGoogleMap) {
+                    alert('抓取發生錯誤，請確認網址是否正確。'); 
+                }
             }
             
             btn.innerText = originalText;
@@ -1128,4 +1156,5 @@
     </script>
 </body>
 </html>
+
 
