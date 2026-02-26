@@ -448,8 +448,12 @@
         <button class="filter-reset-btn btn-danger-style" onclick="resetFilter()">↺</button>
     </div>
 
-    <div id="card-area" class="grid-container">
+   <div id="card-area" class="grid-container">
         <p style="text-align:center; width:100%; color:#999; margin-top:20px;">載入中...</p>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
+        <span onclick="if(confirm('確定要清除所有「自訂」的國家與都市選項嗎？\n(這不會刪除您的卡片，只會將下拉選單恢復成預設值)')) { localStorage.removeItem('customLocations'); location.reload(); }" style="font-size: 12px; color: #B86B6B; cursor: pointer; text-decoration: underline;">🧹 清除自訂國家/都市選項</span>
     </div>
 
     <script>
@@ -1052,3 +1056,4 @@
     </script>
 </body>
 </html>
+
