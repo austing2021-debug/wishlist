@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@300;400&display=swap" rel="stylesheet">
     <style>
-        /* --- 1. 配色系統 --- */
+        /* --- 配色系統 --- */
         :root {
             --bg-page: #FDFDFD;           
             --bg-panel: #EAEAEA;          
@@ -39,7 +39,7 @@
 
         .header-row { display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
 
-        /* --- UI 元件樣式 --- */
+        /* 面板樣式 */
         .panel-container {
             padding: 20px; border-radius: 20px; 
             background-color: var(--bg-panel);
@@ -48,6 +48,7 @@
             border: 1px solid rgba(255,255,255,0.4); 
         }
 
+        /* 輸入框樣式 */
         .sunken-input {
             background: var(--bg-input); 
             border: none; border-radius: 10px;
@@ -65,6 +66,7 @@
             background-repeat: no-repeat; background-position: right .5em center; background-size: 1em;
         }
 
+        /* 按鈕樣式 */
         .convex-btn {
             background: var(--bg-panel); 
             color: var(--text-main); 
@@ -143,7 +145,6 @@
         }
         .filter-reset-btn:active { box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); background-color: var(--active-red); }
 
-        /* 響應式佈局 */
         @media(min-width: 650px) {
             .filter-wrapper { display: flex; flex-direction: row; gap: 10px; height: 42px; align-items: center; }
             .filter-search-box { width: 200px; height: 100%; order: 1; }
@@ -207,16 +208,8 @@
         .action-btn-add { flex: 3; background-color: var(--btn-add-bg); color: black; } 
         .action-btn-add:active { background-color: var(--active-blue); }
         
-        /* 確認修改按鈕：莫蘭迪紅底、白字 */
-        .action-btn-edit { 
-            flex: 3; 
-            background-color: var(--color-danger) !important; 
-            color: #FFFFFF !important; 
-        }
-        .action-btn-edit:active { 
-            background-color: #A35E5E !important; /* 按下時微深紅 */
-            color: #FFFFFF !important; 
-        }
+        .action-btn-edit { flex: 3; background-color: var(--color-danger) !important; color: #FFFFFF !important; }
+        .action-btn-edit:active { background-color: #A35E5E !important; color: #FFFFFF !important; }
         
         .hidden { display: none !important; }
     </style>
@@ -249,7 +242,7 @@
                 <span class="cat-text">景點</span>
             </button>
             <button class="convex-btn cat-btn-layout cat-btn-add" onclick="selectCategory('add', '旅館', this)">
-                <img class="cat-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A90A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 22h20'%3E%3C/path%3E%3Cpath d='M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18'%3E%3C/path%3E%3Cpath d='M12 18v4'%3E%3C/path%3E%3Cpath d='M8 6h.01'%3E%3C/path%3E%3Cpath d='M16 6h.01'%3E%3C/path%3E%3Cpath d='M8 10h.01'%3E%3C/path%3E%3Cpath d='M16 10h.01'%3E%3C/path%3E%3C/svg%3E">
+                <img class="cat-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A90A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 22h20'%3E%3C/path%3E%3Cpath d='M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18'%3E%3C/path%3E%3Cpath d='M12 18v4'%3E%3C/path%3E%3Cpath d='M8 6h.01'%3E%3C/path%3E%3Cpath d='M16 6h.01'%3E%3C/path%3E%3Cpath d='M8 10h.01'%3E%3C/path%3E%3Cpath d='M16 10h.01'%3E%3C/path%3E%3Cpath d='M8 14h.01'%3E%3C/path%3E%3Cpath d='M16 14h.01'%3E%3C/path%3E%3C/svg%3E">
                 <span class="cat-text">旅館</span>
             </button>
             <button class="convex-btn cat-btn-layout cat-btn-add" onclick="selectCategory('add', '其他', this)">
@@ -342,7 +335,7 @@
                 <span class="cat-text">購物</span>
             </button>
             <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '餐廳', this)">
-                <img class="cat-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A90A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2'%3E%3Cpath d='M7 2v20'%3E%3C/path%3E%3Cpath d='M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7'%3E%3C/path%3E%3C/svg%3E">
+                <img class="cat-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A90A4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2'%3E%3C/path%3E%3Cpath d='M7 2v20'%3E%3C/path%3E%3Cpath d='M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7'%3E%3C/path%3E%3C/svg%3E">
                 <span class="cat-text">餐廳</span>
             </button>
             <button class="convex-btn cat-btn-layout cat-btn-edit" onclick="selectCategory('edit', '景點', this)">
@@ -448,12 +441,8 @@
         <button class="filter-reset-btn btn-danger-style" onclick="resetFilter()">↺</button>
     </div>
 
-   <div id="card-area" class="grid-container">
+    <div id="card-area" class="grid-container">
         <p style="text-align:center; width:100%; color:#999; margin-top:20px;">載入中...</p>
-    </div>
-
-    <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
-        <span onclick="if(confirm('確定要清除所有「自訂」的國家與都市選項嗎？\n(這不會刪除您的卡片，只會將下拉選單恢復成預設值)')) { localStorage.removeItem('customLocations'); location.reload(); }" style="font-size: 12px; color: #B86B6B; cursor: pointer; text-decoration: underline;">🧹 清除自訂國家/都市選項</span>
     </div>
 
     <script>
@@ -468,13 +457,15 @@
         let locationData = {
             "美國": ["紐約", "洛杉磯", "舊金山", "芝加哥", "西雅圖"],
             "日本": ["東京都", "大阪府", "京都府", "北海道", "福岡縣", "沖繩縣"],
-            "台灣": ["台北", "新北", "桃園", "台中", "台南", "高雄", "基隆", "新竹", "嘉義", "宜蘭", "花蓮"],
+            "台灣": ["台北", "新北", "桃園", "新竹", "苗栗", "台中", "彰化", "雲林", "嘉義", "台南", "高雄", "屏東", "台東", "花蓮", "宜蘭", "基隆", "南投", "馬祖", "澎湖", "金門"],
             "大陸": ["上海", "北京", "廣州", "深圳", "成都"],
             "法國": ["巴黎", "里昂", "馬賽", "尼斯"],
             "韓國": ["首爾", "釜山", "仁川", "濟州"]
         };
 
         const CUSTOM_CITY_VALUE = "custom_input";
+        const DELETE_CUSTOM_VALUE = "delete_custom";
+        const DEFAULT_COUNTRIES = ["美國", "日本", "台灣", "大陸", "法國", "韓國"];
 
         window.onload = function() {
             loadCustomLocations();
@@ -512,10 +503,11 @@
                 select.innerHTML += `<option value="${country}">${country}</option>`;
             }
             select.innerHTML += `<option value="${CUSTOM_CITY_VALUE}">➕ 自訂...</option>`;
+            select.innerHTML += `<option value="${DELETE_CUSTOM_VALUE}">➖ 刪除...</option>`;
 
             if (selectedCountry) {
-                if(!locationData[selectedCountry] && selectedCountry !== CUSTOM_CITY_VALUE) {
-                    select.innerHTML += `<option value="${selectedCountry}">${selectedCountry}</option>`;
+                if(!locationData[selectedCountry] && selectedCountry !== CUSTOM_CITY_VALUE && selectedCountry !== DELETE_CUSTOM_VALUE) {
+                    select.innerHTML = select.innerHTML.replace(`<option value="${CUSTOM_CITY_VALUE}">`, `<option value="${selectedCountry}">${selectedCountry}</option><option value="${CUSTOM_CITY_VALUE}">`);
                 }
                 select.value = selectedCountry;
             }
@@ -524,10 +516,24 @@
         function checkCustomCountry(mode) {
             const select = document.getElementById(`${mode}-country`);
             const input = document.getElementById(`${mode}-country-custom`);
+            
             if (select.value === CUSTOM_CITY_VALUE) {
                 select.classList.add("hidden");
                 input.classList.remove("hidden");
                 input.focus();
+            } else if (select.value === DELETE_CUSTOM_VALUE) {
+                const toDelete = prompt('請輸入要刪除的「自訂國家」名稱：\n(注意：預設國家無法刪除)');
+                if (toDelete) {
+                    if (locationData[toDelete] && !DEFAULT_COUNTRIES.includes(toDelete)) {
+                        delete locationData[toDelete];
+                        saveCustomLocations();
+                        alert(`已成功刪除自訂國家：${toDelete}`);
+                    } else {
+                        alert('刪除失敗：找不到該國家，或該國家為預設國家不可刪除。');
+                    }
+                }
+                initCountrySelect(mode);
+                updateCityOptions(mode);
             } else {
                 updateCityOptions(mode);
             }
@@ -567,9 +573,10 @@
                     citySelect.innerHTML += `<option value="${city}">${city}</option>`;
                 });
                 citySelect.innerHTML += `<option value="${CUSTOM_CITY_VALUE}">➕ 自訂...</option>`;
+                citySelect.innerHTML += `<option value="${DELETE_CUSTOM_VALUE}">➖ 刪除...</option>`;
             }
 
-            if (selectedCity) {
+            if (selectedCity && selectedCity !== CUSTOM_CITY_VALUE && selectedCity !== DELETE_CUSTOM_VALUE) {
                 if (country && locationData[country] && !locationData[country].includes(selectedCity)) {
                      const opt = document.createElement("option");
                      opt.value = selectedCity;
@@ -583,10 +590,30 @@
         function checkCustomCity(mode) {
             const select = document.getElementById(`${mode}-city`);
             const input = document.getElementById(`${mode}-city-custom`);
+            
             if (select.value === CUSTOM_CITY_VALUE) {
                 select.classList.add("hidden");
                 input.classList.remove("hidden");
                 input.focus();
+            } else if (select.value === DELETE_CUSTOM_VALUE) {
+                const country = document.getElementById(`${mode}-country`).value;
+                if (!country || !locationData[country]) {
+                    alert('請先選擇上方的國家');
+                    updateCityOptions(mode);
+                    return;
+                }
+                const toDelete = prompt(`請輸入要從「${country}」中刪除的「都市」名稱：`);
+                if (toDelete) {
+                    const cityIndex = locationData[country].indexOf(toDelete);
+                    if (cityIndex > -1) {
+                        locationData[country].splice(cityIndex, 1);
+                        saveCustomLocations();
+                        alert(`已成功刪除都市：${toDelete}`);
+                    } else {
+                        alert('刪除失敗：找不到該都市名稱。');
+                    }
+                }
+                updateCityOptions(mode);
             }
         }
 
@@ -596,7 +623,7 @@
             const newVal = input.value.trim();
             const country = document.getElementById(`${mode}-country`).value;
 
-            if (newVal && country && country !== CUSTOM_CITY_VALUE) {
+            if (newVal && country && locationData[country]) {
                 if (!locationData[country].includes(newVal)) {
                     locationData[country].push(newVal);
                     saveCustomLocations();
@@ -861,30 +888,48 @@
                 return { ...item, cleanDesc: desc, country, city, refUrl, feature, platform };
             });
 
-            populateFilterOptions();
+            // 首次載入時以空條件執行聯動更新
+            updateDynamicFilters({ category: "", country: "", city: "", platform: "", keyword: "" });
             applyFilter(); 
         }
 
-        function populateFilterOptions() {
-            const cats = new Set(), countries = new Set(), cities = new Set(), plats = new Set();
-            allItems.forEach(i => {
-                if(i.category) cats.add(i.category);
-                if(i.country && i.country !== 'null' && i.country !== '-') countries.add(i.country);
-                if(i.city && i.city !== 'null' && i.city !== '-') cities.add(i.city);
-                if(i.platform) plats.add(i.platform);
-            });
+        // 智慧聯動篩選核心邏輯
+        function updateDynamicFilters(filters) {
+            const getSet = (field) => {
+                return new Set(allItems.filter(item => {
+                    let match = true;
+                    // 過濾掉 "除了自己以外" 的其他條件
+                    if (field !== 'category' && filters.category && item.category !== filters.category) match = false;
+                    if (field !== 'country' && filters.country && item.country !== filters.country) match = false;
+                    if (field !== 'city' && filters.city && item.city !== filters.city) match = false;
+                    if (field !== 'platform' && filters.platform && item.platform !== filters.platform) match = false;
+                    
+                    if (filters.keyword) {
+                        const matchKw = (item.title && item.title.toLowerCase().includes(filters.keyword)) || 
+                                        (item.cleanDesc && item.cleanDesc.toLowerCase().includes(filters.keyword)) ||
+                                        (item.feature && item.feature.toLowerCase().includes(filters.keyword));
+                        if (!matchKw) match = false;
+                    }
+                    return match;
+                }).map(item => item[field]).filter(v => v && v !== 'null' && v !== '-'));
+            };
 
-            fillSelect('filter-category', cats, '所有類別');
-            fillSelect('filter-country', countries, '所有國家');
-            fillSelect('filter-city', cities, '所有都市');
-            fillSelect('filter-platform', plats, '所有平台');
+            fillSelectDynamic('filter-category', getSet('category'), filters.category, '所有類別');
+            fillSelectDynamic('filter-country', getSet('country'), filters.country, '所有國家');
+            fillSelectDynamic('filter-city', getSet('city'), filters.city, '所有都市');
+            fillSelectDynamic('filter-platform', getSet('platform'), filters.platform, '所有平台');
         }
 
-        function fillSelect(id, set, defaultText) {
+        function fillSelectDynamic(id, set, currentValue, defaultText) {
             const sel = document.getElementById(id);
             sel.innerHTML = `<option value="">${defaultText}</option>`;
-            set.forEach(val => {
-                sel.innerHTML += `<option value="${val}">${val}</option>`;
+            
+            // 確保目前選中的值不會因為資料過濾而消失
+            if (currentValue) set.add(currentValue);
+            
+            const sorted = Array.from(set).sort();
+            sorted.forEach(val => {
+                sel.innerHTML += `<option value="${val}" ${val === currentValue ? 'selected' : ''}>${val}</option>`;
             });
         }
 
@@ -894,6 +939,8 @@
             const city = document.getElementById('filter-city').value;
             const plat = document.getElementById('filter-platform').value;
             const keyword = document.getElementById('filter-keyword').value.toLowerCase();
+
+            const currentFilters = { category: cat, country: country, city: city, platform: plat, keyword: keyword };
 
             filteredItems = allItems.filter(item => {
                 const matchKeyword = !keyword || 
@@ -909,6 +956,8 @@
             });
 
             renderCards(filteredItems);
+            // 更新選單選項
+            updateDynamicFilters(currentFilters);
         }
 
         function resetFilter() {
@@ -994,7 +1043,6 @@
             const originalText = btn.innerText;
             btn.innerText = "⏳";
 
-            // 處理非網址的純關鍵字
             if (!inputVal.startsWith('http')) {
                 document.getElementById(`${mode}-title`).value = inputVal.substring(0, 50);
                 document.getElementById(`${mode}-ref-url`).value = `https://www.google.com/search?q=${encodeURIComponent(inputVal)}`;
@@ -1005,11 +1053,9 @@
 
             let isGoogleMap = false;
 
-            // 處理 Google Maps 連結 (包含各種縮網址形式)
-            if (inputVal.includes('maps.app.goo.gl') || inputVal.includes('goo.gl/maps') || inputVal.includes('google.com/maps')) {
+            if (inputVal.includes('maps.app.goo.gl') || inputVal.includes('goo.gl/maps') || inputVal.includes('google.com/maps') || inputVal.includes('maps.app.goo.gl')) {
                 document.getElementById(`${mode}-loc`).value = inputVal;
                 isGoogleMap = true;
-                // 不要 Return！繼續讓 microlink 抓取網頁標題與縮圖
             }
 
             try {
@@ -1020,7 +1066,6 @@
                     const data = json.data;
                     let title = data.title || '';
                     
-                    // 針對 Google Maps 抓出來的標題進行去贅字處理
                     if (title.includes('Google Maps')) {
                         title = title.replace(/\s*-\s*Google Maps/g, '').replace(/Google Maps/g, '').trim();
                     }
@@ -1031,9 +1076,11 @@
                     
                     document.getElementById(`${mode}-desc`).value = data.description || '';
                     
-                    // 如果不是 Google Map 才蓋掉參考網址，因為 Map 網址我們已經塞給地址欄位了
                     if (!isGoogleMap) {
                         document.getElementById(`${mode}-ref-url`).value = inputVal; 
+                    } else if (isGoogleMap && !document.getElementById(`${mode}-ref-url`).value) {
+                         // 若是GoogleMap且沒有參考網址，也可將地圖連結放入參考網址
+                         document.getElementById(`${mode}-ref-url`).value = inputVal; 
                     }
                     
                     if (data.image && data.image.url) {
@@ -1056,4 +1103,3 @@
     </script>
 </body>
 </html>
-
