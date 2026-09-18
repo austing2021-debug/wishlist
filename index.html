@@ -1045,7 +1045,7 @@
             return text.replace(/'/g, "\\'").replace(/"/g, '"');
         }
 
-        // --- 🤖 AI 賦能版超級抓取器 (自動偵測模型版) ---
+        // --- 🤖 AI 賦能版超級抓取器 (直攻最新 3.6 版模型) ---
         async function autoFetch(mode) {
             const rawInput = document.getElementById(`${mode}-link-fetch`).value.trim();
             if (!rawInput) return alert('請貼上網址或輸入文字！');
@@ -1108,37 +1108,8 @@
             `;
 
             try {
-                // 🚀 關鍵升級：先向 Google 查詢您的金鑰「真正支援」哪些模型
-                const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`);
-                if (!listRes.ok) {
-                    if (listRes.status === 400 || listRes.status === 403) {
-                        localStorage.removeItem("my_gemini_key");
-                        throw new Error("您的 API Key 無效或已被停用！請按確定後【再點一次抓取】重新輸入正確的金鑰。");
-                    }
-                    throw new Error(`無法取得模型清單 (狀態碼: ${listRes.status})`);
-                }
-                
-                const listData = await listRes.json();
-                let targetModel = "gemini-1.5-flash"; // 預設值
-                
-                // 自動從清單中篩選出正確的模型名稱 (例如它可能會回傳 gemini-1.5-flash-001)
-                if (listData && listData.models) {
-                    const validModels = listData.models.filter(m => 
-                        m.name.includes("gemini") && 
-                        m.supportedGenerationMethods && 
-                        m.supportedGenerationMethods.includes("generateContent")
-                    );
-                    
-                    if (validModels.length > 0) {
-                        const preferred = validModels.find(m => m.name.includes("1.5-flash"));
-                        targetModel = preferred ? preferred.name.replace("models/", "") : validModels[0].name.replace("models/", "");
-                    }
-                }
-
-                console.log("系統已為您自動選擇可用模型:", targetModel);
-
-                // 4. 使用自動挑選的正確模型呼叫 Gemini AI
-                const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${GEMINI_API_KEY}`, {
+                // 4. 根據 Google 官方要求，直接指定呼叫 gemini-3.6-flash 模型
+                const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1153,6 +1124,11 @@
                         const errData = await aiRes.json();
                         if (errData.error && errData.error.message) googleErrMsg = errData.error.message;
                     } catch(e) {}
+
+                    if (aiRes.status === 400 && googleErrMsg.toLowerCase().includes('api key')) {
+                        localStorage.removeItem("my_gemini_key");
+                        throw new Error("您的 API Key 無效或已被停用！請按確定後【再點一次抓取】重新輸入正確的金鑰。");
+                    }
                     throw new Error(`Google AI 拒絕請求: ${googleErrMsg}`);
                 }
                 
