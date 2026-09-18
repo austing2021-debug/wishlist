@@ -497,6 +497,21 @@
             initCountrySelect('add');
             initCountrySelect('edit');
             fetchItems();
+
+            // 🌟 新增：監聽網址列是否有傳遞 URL 過來 (擴充功能專用)
+            const urlParams = new URLSearchParams(window.location.search);
+            const externalUrl = urlParams.get('url');
+            if (externalUrl) {
+                // 自動切換到新增面板
+                switchToAddMode();
+                // 將網址自動填入輸入框
+                document.getElementById('add-link-fetch').value = externalUrl;
+                // 延遲 0.5 秒讓畫面準備好後，自動觸發抓取
+                setTimeout(() => {
+                    // 模擬點擊抓取按鈕，觸發 autoFetch
+                    document.getElementById('btn-fetch-add').click();
+                }, 500);
+            }
         };
 
         // 點擊空白處關閉下拉選單
