@@ -1108,8 +1108,8 @@
             `;
 
             try {
-                // 4. 呼叫 Gemini AI 進行智慧解析 (強制要求輸出 JSON 格式)
-                const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                // 4. 呼叫 Gemini AI 進行智慧解析
+                const aiRes = await fetch(`[https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$](https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$){GEMINI_API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1118,10 +1118,21 @@
                     })
                 });
                 
-                if (!aiRes.ok) throw new Error('AI 伺服器異常');
+                // 💡 新增防呆：如果金鑰無效或遭拒絕，自動清除本機記憶，下次點擊就能重輸
+                if (!aiRes.ok) {
+                    if (aiRes.status === 400 || aiRes.status === 403) {
+                        localStorage.removeItem("my_gemini_key");
+                        throw new Error('您的 API Key 無效或已過期。已自動為您清除舊紀錄，請關閉視窗後「再點擊一次抓取」來重新輸入正確的金鑰！');
+                    }
+                    throw new Error(`AI 伺服器連線異常 (狀態碼: ${aiRes.status})`);
+                }
                 
                 const aiJson = await aiRes.json();
-                const aiResultStr = aiJson.candidates[0].content.parts[0].text;
+                let aiResultStr = aiJson.candidates[0].content.parts[0].text;
+
+                // 💡 關鍵修復：強制過濾掉 AI 偶爾會亂加的 Markdown 標記，確保純 JSON
+                aiResultStr = aiResultStr.replace(/```json/gi, '').replace(/```/g, '').trim();
+                
                 const result = JSON.parse(aiResultStr); // 將 AI 結果轉為物件
 
                 // 5. 將 AI 整理好的資料，精準填入您的表單
@@ -1180,7 +1191,12 @@
 
             } catch (e) {
                 console.error("AI 解析失敗:", e);
-                alert("AI 解析發生錯誤，這可能是由於網址無法讀取或格式無法辨識。");
+                // 💡 錯誤提示升級：如果是金鑰問題會精準提示，否則顯示解析錯誤
+                if (e.message.includes('API Key')) {
+                    alert(e.message);
+                } else {
+                    alert("AI 解析發生錯誤，可能是網址內容無法辨識。\n詳細原因: " + e.message);
+                }
             }
 
             btn.innerText = originalText;
