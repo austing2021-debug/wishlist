@@ -14,7 +14,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@300;400&display=swap" rel="stylesheet">
     <style>
-        /* --- 1. 配色系統 --- */
+        /* --- 配色系統 --- */
         :root {
             --bg-page: #FDFDFD;           
             --bg-panel: #EAEAEA;          
@@ -98,7 +98,7 @@
         .img-preview-box.has-img { display: flex; }
         .img-preview-content { max-width: 100%; max-height: 200px; object-fit: contain; }
 
-        /* --- 修正版篩選列 (徹底解決重疊跑版問題) --- */
+        /* --- 多選下拉選單樣式與修復版響應式 --- */
         .filter-wrapper { margin-bottom: 25px; position: relative; z-index: 10;}
         
         .filter-search-box {
@@ -134,7 +134,6 @@
         }
         .filter-reset-btn:active { box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); background-color: var(--active-red); }
 
-        /* 電腦版排版：一字排開 */
         @media(min-width: 650px) {
             .filter-wrapper { display: flex; flex-direction: row; gap: 10px; height: 42px; align-items: center; }
             .filter-search-box { width: 200px; height: 100%; order: 1; }
@@ -142,7 +141,6 @@
             .ms-container { flex: 1; height: 100%; }
             .filter-reset-btn { width: 50px; height: 100%; order: 3; flex-shrink: 0; }
         }
-        /* 手機版排版：取消固定高度，讓格子自動撐開，解決堆疊問題 */
         @media(max-width: 649px) {
             .filter-wrapper { display: flex; flex-wrap: wrap; gap: 10px; }
             .filter-search-box { flex: 1; height: 45px; order: 1; }
@@ -224,6 +222,7 @@
         <h1>⚜️ 收藏清單 ⚜️</h1>
     </div>
 
+    <!-- 新增資料面板 -->
     <div id="section-add" class="panel-container">
         <div class="search-container">
             <div style="display:flex; gap:10px;">
@@ -299,7 +298,7 @@
         
         <div class="input-group">
             <span class="input-label">詳細地址</span>
-            <input type="text" id="add-loc" class="sunken-input" placeholder="📍 地址或Google Map連結">
+            <input type="text" id="add-loc" class="sunken-input" placeholder="📍 地址或 Google Maps 連結">
         </div>
 
         <div class="input-group">
@@ -323,6 +322,7 @@
         </div>
     </div>
 
+    <!-- 編輯面板 -->
     <div id="section-edit" class="panel-container hidden">
         <input type="hidden" id="edit-id">
         
@@ -424,6 +424,7 @@
         </div>
     </div>
 
+    <!-- 篩選列：多選 Checkbox 系統 -->
     <div class="filter-wrapper">
         <input type="text" id="filter-keyword" class="filter-search-box" placeholder="搜尋" oninput="applyFilter()">
         
@@ -449,11 +450,14 @@
         <button class="filter-reset-btn btn-danger-style" onclick="resetFilter()">↺</button>
     </div>
 
+    <!-- 卡片顯示區 -->
     <div id="card-area" class="grid-container">
         <p style="text-align:center; width:100%; color:#999; margin-top:20px;">載入中...</p>
     </div>
 
+    <!-- 懸浮按鈕：Map & 回頂部 -->
     <div class="fab-container">
+        <!-- 開啟內建地圖總覽 -->
         <button class="fab-btn" onclick="showMap()" title="開啟總覽地圖">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
         </button>
@@ -462,6 +466,7 @@
         </button>
     </div>
 
+    <!-- 地圖彈窗 -->
     <div id="map-overlay">
         <div id="map-header">
             <h3 style="margin:0; color:var(--text-main);">📍 收藏總覽地圖</h3>
@@ -479,7 +484,7 @@
         let allItems = []; 
         let filteredItems = [];
 
-        // 國家與都市資料庫 
+        // 國家與都市資料庫
         let locationData = {
             "美國": ["紐約", "洛杉磯", "舊金山", "芝加哥", "西雅圖"],
             "日本": ["東京都", "大阪府", "京都府", "北海道", "福岡縣", "沖繩縣"],
@@ -498,17 +503,13 @@
             initCountrySelect('edit');
             fetchItems();
 
-            // 🌟 新增：監聽網址列是否有傳遞 URL 過來 (擴充功能專用)
+            // 🌟 擴充功能專用：自動擷取 URL
             const urlParams = new URLSearchParams(window.location.search);
             const externalUrl = urlParams.get('url');
             if (externalUrl) {
-                // 自動切換到新增面板
                 switchToAddMode();
-                // 將網址自動填入輸入框
                 document.getElementById('add-link-fetch').value = externalUrl;
-                // 延遲 0.5 秒讓畫面準備好後，自動觸發抓取
                 setTimeout(() => {
-                    // 模擬點擊抓取按鈕，觸發 autoFetch
                     document.getElementById('btn-fetch-add').click();
                 }, 500);
             }
@@ -866,7 +867,10 @@
 
         async function fetchItems() {
             const { data, error } = await db.from('products').select('*').order('created_at', { ascending: false });
-            if (error) return console.error(error);
+            if (error) {
+                alert("讀取資料失敗：" + error.message + "\n(請至 Supabase 後台確認 RLS 是否已關閉)");
+                return console.error(error);
+            }
 
             allItems = data.map(item => {
                 let desc = item.description || "";
@@ -1041,12 +1045,7 @@
             return text.replace(/'/g, "\\'").replace(/"/g, '"');
         }
 
-        // 🌟 安全獲取 Gemini API Key (不寫死在程式碼中)
-        let GEMINI_API_KEY = localStorage.getItem("my_gemini_key");
-
-        // 萬一需要重設金鑰，可以在網頁主控台輸入 localStorage.removeItem("my_gemini_key") 
-
-        // --- AI 賦能版超級抓取器 ---
+        // --- 🤖 AI 賦能版超級抓取器 (安全記憶金鑰版) ---
         async function autoFetch(mode) {
             const rawInput = document.getElementById(`${mode}-link-fetch`).value.trim();
             if (!rawInput) return alert('請貼上網址或輸入文字！');
@@ -1055,9 +1054,10 @@
             const originalText = btn.innerText;
             btn.innerText = "🤖 AI 解析中...";
 
-            // 如果瀏覽器沒記住金鑰，就跳出視窗詢問使用者
+            // 安全獲取 API Key
+            let GEMINI_API_KEY = localStorage.getItem("my_gemini_key");
             if (!GEMINI_API_KEY) {
-                const userInputKey = prompt("🤖 首次使用 AI 解析，請輸入您的 Gemini API Key：\n(只需輸入一次，會安全地儲存在您當前的瀏覽器中)");
+                const userInputKey = prompt("🤖 首次使用 AI 解析，請貼上您的 Gemini API Key：\n(金鑰將安全地儲存在您的瀏覽器中，不會上傳 GitHub)");
                 if (userInputKey && userInputKey.trim() !== "") {
                     GEMINI_API_KEY = userInputKey.trim();
                     localStorage.setItem("my_gemini_key", GEMINI_API_KEY);
@@ -1068,7 +1068,7 @@
                 }
             }
 
-            // 1. 抽取網址 (為了抓圖片)
+            // 1. 抽取網址
             const urlMatch = rawInput.match(/https?:\/\/[^\s]+/);
             const targetUrl = urlMatch ? urlMatch[0] : null;
 
@@ -1076,7 +1076,7 @@
             let siteTitle = "";
             let siteDesc = "";
 
-            // 2. 透過 Microlink 抓取圖片與網頁底層資訊
+            // 2. 抓取網頁底層資訊 (Microlink)
             if (targetUrl) {
                 try {
                     const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(targetUrl)}&palette=true`);
@@ -1090,7 +1090,7 @@
                 } catch(e) { console.log("圖片抓取忽略", e); }
             }
 
-            // 3. 定義給 AI 的指令 (Prompt)
+            // 3. 定義給 AI 的指令
             const promptText = `
             你是一個專業的資料整理助手。請從以下使用者輸入的內容與網頁資訊中，擷取並分類出結構化資料。
             使用者輸入：${rawInput}
@@ -1103,13 +1103,13 @@
             "city": "判斷所屬城市 (例如:台北、大阪)，若無法判斷請留空",
             "category": "只能從 [購物, 餐廳, 景點, 旅館, 其他] 挑選一個最適合的",
             "location": "盡可能擷取出詳細地址，若無地址則填入原始網址",
-            "feature": "用一句話(10字內)總結特點，例如:必吃燒肉、高CP值",
+            "feature": "用一句話(10字內)總結特點",
             "platform": "若為購物網址，請判斷平台 (如:蝦皮, momo, 淘寶, 官網, 實體)，若非購物請留空"
             `;
 
             try {
-                // 4. 呼叫 Gemini AI 進行智慧解析
-                const aiRes = await fetch(`[https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$](https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$){GEMINI_API_KEY}`, {
+                // 4. 呼叫 Gemini AI
+                const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1118,31 +1118,38 @@
                     })
                 });
                 
-                // 💡 新增防呆：如果金鑰無效或遭拒絕，自動清除本機記憶，下次點擊就能重輸
+                // 防呆：精準抓出伺服器的拒絕原因
                 if (!aiRes.ok) {
-                    if (aiRes.status === 400 || aiRes.status === 403) {
+                    let googleErrMsg = `狀態碼: ${aiRes.status}`;
+                    try {
+                        const errData = await aiRes.json();
+                        if (errData.error && errData.error.message) {
+                            googleErrMsg = errData.error.message;
+                        }
+                    } catch(e) {}
+                    
+                    // 如果原因是 API Key 無效，自動清除記憶
+                    if (aiRes.status === 400 && googleErrMsg.toLowerCase().includes('api key')) {
                         localStorage.removeItem("my_gemini_key");
-                        throw new Error('您的 API Key 無效或已過期。已自動為您清除舊紀錄，請關閉視窗後「再點擊一次抓取」來重新輸入正確的金鑰！');
+                        throw new Error("您的 API Key 無效或已過期！\n系統已清除錯誤金鑰，請按確定後【再點一次抓取】重新貼上金鑰。");
                     }
-                    throw new Error(`AI 伺服器連線異常 (狀態碼: ${aiRes.status})`);
+                    throw new Error(`Google AI 拒絕請求: ${googleErrMsg}`);
                 }
                 
                 const aiJson = await aiRes.json();
                 let aiResultStr = aiJson.candidates[0].content.parts[0].text;
 
-                // 💡 關鍵修復：強制過濾掉 AI 偶爾會亂加的 Markdown 標記，確保純 JSON
+                // 強制過濾 Markdown 標記，確保 JSON.parse 成功
                 aiResultStr = aiResultStr.replace(/```json/gi, '').replace(/```/g, '').trim();
-                
-                const result = JSON.parse(aiResultStr); // 將 AI 結果轉為物件
+                const result = JSON.parse(aiResultStr); 
 
-                // 5. 將 AI 整理好的資料，精準填入您的表單
+                // 5. 填入表單
                 document.getElementById(`${mode}-title`).value = result.title || "";
                 document.getElementById(`${mode}-loc`).value = result.location || targetUrl || "";
                 document.getElementById(`${mode}-feature`).value = result.feature || "";
                 
                 if (targetUrl) document.getElementById(`${mode}-ref-url`).value = targetUrl;
 
-                // 自動切換上方類別按鈕
                 if(result.category) {
                     const catBtns = document.querySelectorAll(`.cat-btn-${mode}`);
                     catBtns.forEach(b => {
@@ -1150,7 +1157,6 @@
                     });
                 }
 
-                // 智慧連動「國家」與「都市」
                 if(result.country) {
                     const countrySelect = document.getElementById(`${mode}-country`);
                     if(locationData[result.country]) {
@@ -1171,7 +1177,6 @@
                     }
                 }
 
-                // 智慧選擇「平台」
                 if(result.platform) {
                     const platSelect = document.getElementById(`${mode}-platform`);
                     if(["官網", "實體", "蝦皮", "momo", "淘寶"].includes(result.platform)) {
@@ -1183,7 +1188,6 @@
                     toggleOtherInput(mode);
                 }
 
-                // 填入圖片
                 if (imageUrl) {
                     document.getElementById(`${mode}-img`).value = imageUrl;
                     updatePreview(mode);
@@ -1191,7 +1195,6 @@
 
             } catch (e) {
                 console.error("AI 解析失敗:", e);
-                // 💡 錯誤提示升級：如果是金鑰問題會精準提示，否則顯示解析錯誤
                 if (e.message.includes('API Key')) {
                     alert(e.message);
                 } else {
@@ -1314,4 +1317,3 @@
     </script>
 </body>
 </html>
-
